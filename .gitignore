@@ -1,3 +1,5 @@
+*.userprefs
+
 # Compiled Object files
 *.slo
 *.lo
@@ -23,6 +25,9 @@
 *.lib
 
 # Executables
+bin/
+obj/
 *.exe
 *.out
 *.app
+*.dll
