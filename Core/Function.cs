@@ -51,8 +51,8 @@ namespace CSim.Core {
 		/// <summary>
 		/// Execute the function with the specified realParams.
 		/// </summary>
-		/// <param name="realParams">Real parameters, as a read only collection of Variable's.</param>
-		public abstract Variable Execute(ReadOnlyCollection<RValue> realParams);
+		/// <param name="realParams">Real parameters, as a primitive argument collection.</param>
+		public abstract void Execute(RValue[] realParams);
 
 		/// <summary>
 		/// Gets the identifier of the function to call.

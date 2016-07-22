@@ -181,7 +181,7 @@ namespace CSim.Gui
 			float charHeightSmallFont = this.CharHeight( this.SmallFont );
 
 			box.StrValue = box.Variable.LiteralValue.ToString();
-            box.StrName = box.Variable.Name.Value;
+            box.StrName = box.Variable.Name.Name;
             box.StrType = box.Variable.Type.ToString()
                 + " :" + box.Variable.Type.Size
                 + " [" + Literal.ToPrettyNumber( box.Variable.Address ) + ']';

@@ -1,14 +1,14 @@
-using System;
 
-namespace CSim.Core
-{
-    public class Lexer
-    {
+namespace CSim.Core {
+	using System;
+
+    public class Lexer {
         public const string SpecialCharacter = ";.,=(){}";
         public const string BooleanValues = " true false ";
 		public const string HexDigits = "0123456789abcdef";
         public const char EOS = ';';
-        public enum TokenType { Id, BooleanValue, Number, Char, Text, SpecialCharacter, Invalid };
+        public enum TokenType { Id, BooleanValue, HexNumber, IntNumber, RealNumber,
+								Char, Text, SpecialCharacter, Invalid };
         
         public Lexer(string ln)
         {
@@ -151,7 +151,7 @@ namespace CSim.Core
         }
         
         /// <summary>
-        /// Gets the next character in the source code.
+        /// Gets the next character literal in the source code.
         /// </summary>
         /// <returns>
         /// A string formed by a ', char, and '
@@ -162,25 +162,25 @@ namespace CSim.Core
             int oldPos = Pos;
             token = "";
             
-            if ( GetCurrentChar() == '\'' ) {
+			if ( this.GetCurrentChar() == '\'' ) {
                 this.Advance();
                 
                 token += '\'';
-                token += GetCurrentChar();
+				token += this.GetCurrentChar();
                 
-                if ( GetCurrentChar() == '\\' ) {
-                    Advance();
-                    token += GetCurrentChar();
+				if ( this.GetCurrentChar() == '\\' ) {
+					this.Advance();
+					token += this.GetCurrentChar();
                 }
                 
 				this.Advance();
-                if ( GetCurrentChar() != '\'' ) {
+				if ( this.GetCurrentChar() != '\'' ) {
                     this.Pos = oldPos;
                 }
                 
                 token += '\'';
-                Advance();
-                SkipSpaces();
+				this.Advance();
+				this.SkipSpaces();
             }
             
             return token;
@@ -227,7 +227,7 @@ namespace CSim.Core
             char toret = '\0';
             
             if ( !this.IsEOL() ) {
-                toret = Line[ Pos ];
+                toret = this.Line[ this.Pos ];
             }
             
             return toret;
@@ -246,34 +246,52 @@ namespace CSim.Core
         public TokenType GetCurrentTokenType()
         {
             TokenType toret = TokenType.Invalid;
+			string token = this.GetCurrentToken();
             
-            if ( GetCurrentToken().Length > 0 ) {
-                char ch = GetCurrentToken()[ 0 ];
+			if ( token.Length > 0 ) {
+                char ch = token[ 0 ];
                 
-                if ( IsBool( GetCurrentToken() ) ) {
+				if ( IsBool( token ) ) {
                     toret = TokenType.BooleanValue;
                 }
                 else
                 if ( ch == '\''
-                  && IsCharacter( GetCurrentToken() ) )
+				  && IsCharacter( token ) )
                 {
                     toret = TokenType.Char;
                 }
                 else
                 if ( ch == '"'
-                  && IsStringLiteral( GetCurrentToken() ) )
+				  && IsStringLiteral( token ) )
                 {
                     toret = TokenType.Text;
                 }
-                else
-                if ( ( Char.IsDigit( ch )
-                      || ch == '+'
-                      || ch == '-' )
-                    && IsNumber( GetCurrentToken() ) )
-                {
-                    toret = TokenType.Number;
-                }
-                else
+				else
+				if (  ch == '+'
+				   || ch == '-'
+				   || char.IsDigit( ch ) )
+				{
+					int pos = 0;
+					
+					if ( ch == '+'
+					  || ch == '-' )
+					{
+						++pos;
+					}
+
+				    if ( token[ pos ] == '0'
+					  && char.ToUpper( this.GetCurrentChar() ) == 'X' )
+					{
+						toret = TokenType.HexNumber;
+					} else {
+						toret = TokenType.RealNumber;
+
+						if ( IsIntNumber( token ) ) {
+							toret = TokenType.IntNumber;
+						}
+					}
+				}
+				else
                 if ( Char.IsLetter( ch )
                     || ch == '_' )
                 {
@@ -293,7 +311,8 @@ namespace CSim.Core
             TokenType type = GetCurrentTokenType();
             
             return ( type == TokenType.BooleanValue
-                    || type == TokenType.Number
+                    || type == TokenType.IntNumber
+					|| type == TokenType.RealNumber
                     || type == TokenType.Text
                     || type == TokenType.Char
                     || type == TokenType.Id )
@@ -304,7 +323,8 @@ namespace CSim.Core
         {
             SkipSpaces();
             int oldPos = Pos;
-            GetToken();
+            
+			this.GetToken();
             TokenType toret = GetCurrentTokenType();
             
             Pos = oldPos;
@@ -314,7 +334,7 @@ namespace CSim.Core
         }
         
         /// <summary>
-        /// Determines wether the token is a number or not.
+        /// Determines wether the token is a real number or not.
         /// </summary>
         /// <returns>
         /// true when number, false otherwise
@@ -322,11 +342,27 @@ namespace CSim.Core
         /// <param name='token'>
         /// A string to compare
         /// </param>
-        public static bool IsNumber(string token) {
+        public static bool IsRealNumber(string token) {
             double number;
 
-            return Double.TryParse( token, out number );
+            return double.TryParse( token, out number );
         }
+
+		/// <summary>
+		/// Determines wether the token is an integer number or not.
+		/// </summary>
+		/// <returns>
+		/// true when number, false otherwise
+		/// </returns>
+		/// <param name='token'>
+		/// A string to compare
+		/// </param>
+		public static bool IsIntNumber(string token) {
+			int number;
+
+			return int.TryParse( token, out number );
+		}
+
 
         /// <summary>
         /// Determines whether the token holds a char of the form: 'c'

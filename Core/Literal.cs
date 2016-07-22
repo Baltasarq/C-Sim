@@ -2,6 +2,7 @@
 
 using CSim.Core.Types;
 using CSim.Core.Literals;
+using CSim.Core.Exceptions;
 
 namespace CSim.Core {
     /// <summary>
@@ -23,8 +24,8 @@ namespace CSim.Core {
         /// The value stored, of no type at this level.
         /// </summary>
         /// <value>The value.</value>
-        public virtual object Value {
-			get; set;
+        public override object Value {
+			get;
         }
 
 		/// <summary>
@@ -93,6 +94,25 @@ namespace CSim.Core {
 			}
 			else {
 				toret = ToPrettyHex( value );
+			}
+
+			return toret;
+		}
+
+		/// <summary>
+		/// Gets the value as int, if possible.
+		/// </summary>
+		/// <returns>The value as int.</returns>
+		public int GetValueAsInt() {
+			int toret = 0;
+
+			if ( this is IntLiteral
+			  || this is CharLiteral
+			  || this is DoubleLiteral )
+			{
+				toret = Convert.ToInt32( this.Value );
+			} else {
+				throw new TypeMismatchException( this.Value.ToString() );
 			}
 
 			return toret;

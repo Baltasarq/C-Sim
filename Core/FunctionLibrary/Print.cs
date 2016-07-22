@@ -15,7 +15,7 @@ namespace CSim.Core.FunctionLibrary {
 		/// <summary>
 		/// The identifier for the function.
 		/// </summary>
-		public const string Name = "print";
+		public const string Name = "printf";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
@@ -42,9 +42,10 @@ namespace CSim.Core.FunctionLibrary {
 			return instance;
 		}
 
-		public override Variable Execute(ReadOnlyCollection<RValue> realParams)
+		public override void Execute(RValue[] realParams)
 		{
-			return this.Machine.TDS.LookForRValue( null, realParams[ 0 ] );
+			Variable result = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
+			this.Machine.ExecutionStack.Push( result );
 		}
 
 		private static Print instance = null;

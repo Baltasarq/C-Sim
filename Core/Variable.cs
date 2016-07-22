@@ -1,10 +1,11 @@
-using System;
-
-using CSim.Core.Variables;
-using CSim.Core.Exceptions;
 
 namespace CSim.Core {
-    public class Variable {
+	using System;
+
+	using CSim.Core.Variables;
+	using CSim.Core.Exceptions;
+
+    public class Variable: RValue {
 		protected Variable(Machine m)
 		{
 			this.machine = m;
@@ -70,7 +71,7 @@ namespace CSim.Core {
 		/// Gets the type of this variable.
 		/// </summary>
 		/// <value>The type.</value>
-        public Type Type {
+        public override Type Type {
             get {
 				return this.type;
 			}
@@ -123,13 +124,19 @@ namespace CSim.Core {
             }
         }
 
+		public override object Value {
+			get {
+				return this.LiteralValue;
+			}
+		}
+
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.
         /// </summary>
         /// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.</returns>
         public override string ToString()
         {
-            return this.Type.ToString() + " " + this.Name;
+            return this.Type.ToString() + " " + this.Name.Name;
         }
 
         /// <summary>

@@ -1,8 +1,9 @@
-using System;
-using System.Text;
 
-namespace CSim.Core
-{
+namespace CSim.Core {
+	using System;
+	using System.Text;
+	using System.Collections.Generic;
+
     /// <summary>
     /// Represents the target machine emulated
     /// </summary>
@@ -26,6 +27,7 @@ namespace CSim.Core
 		public Machine()
 			:this( DefaultWordSize, MemoryManager.DefaultMaxMemory, Endianness.LittleEndian )
 		{
+			this.ExecutionStack = new ExecutionStack();
 		}
 
 		/// <summary>
@@ -44,6 +46,15 @@ namespace CSim.Core
 			this.memory = new MemoryManager( this, maxMemory );
 			this.tds = new SymbolTable( this );
 			this.stdLib = new StdLib( this );
+			this.SetRandomEngine();
+		}
+
+		public void SetRandomEngine() {
+			this.Random = new Random();
+		}
+
+		public void SetRandomEngine(int seed) {
+			this.Random = new Random( seed );
 		}
 
 		/// <summary>
@@ -284,12 +295,45 @@ namespace CSim.Core
 		{
 			var toret = BitConverter.GetBytes( value );
 
-			if ( this.IsLittleEndian != BitConverter.IsLittleEndian )
-			{
+			if ( this.IsLittleEndian != BitConverter.IsLittleEndian ) {
 				Array.Reverse( toret );
 			}
 
 			return toret;
+		}
+
+		/// <summary>
+		/// Parses given input and executes its opcodes.
+		/// </summary>
+		/// <param name="input">The user's input, as a string.</param>
+		public Variable Execute(string input)
+		{
+			Variable toret = null;
+			var parser = new Parser( input, this );
+
+			this.ExecutionStack.Clear();
+
+			try {
+				// Execute opcodes
+				foreach(Opcode opcode in parser.Parse()) {
+					opcode.Execute();
+				}
+
+				toret = (Variable) this.ExecutionStack.Pop();
+			}
+			finally {
+				this.TDS.Collect();
+			}
+
+			return toret;
+		}
+
+		public ExecutionStack ExecutionStack {
+			get; private set;
+		}
+
+		public Random Random {
+			get; private set;
 		}
 
 		private int wordSize;

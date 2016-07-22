@@ -67,37 +67,12 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="id">The identifier of the function, as a string.</param>
 		/// <param name="args">The real arguments, as a collection of Variable.</param>
-		public EmbeddedFunction Match(string id, ReadOnlyCollection<RValue> args)
+		public EmbeddedFunction Match(string id)
 		{
 			EmbeddedFunction toret = null;
 
 			// Look up id in function dictionary
-			if ( this.fnslkup.TryGetValue( id, out toret ) ) {
-				// Check parameters count
-				if ( toret.ParamCount != args.Count ) {
-					throw new TypeMismatchException(
-						string.Format( L18n.Get( L18n.Id.ErrParamCount ), id, args.Count ) );
-				}
-
-				// Check types
-				for(int i = 0; i < args.Count; ++i) {
-					CSim.Core.Type t1 = args[ i ].Type;
-					CSim.Core.Type t2 = toret.FormalParams[ i ].Type;
-
-					if ( t1 != t2 ) {
-						throw new TypeMismatchException(
-							string.Format( L18n.Get( L18n.Id.ErrParamType ),
-						              i,
-						              toret.FormalParams[ i ].Name,
-						              id,
-						              t2.ToString(),
-						              t1.ToString()
-						              ));
-					}
-				}
-			} else {
-				throw new TypeMismatchException(
-					string.Format( L18n.Get( L18n.Id.ErrFunctionNotFound ), id ) );
+			if ( !this.fnslkup.TryGetValue( id, out toret ) ) {
 			}
 
 			return toret;

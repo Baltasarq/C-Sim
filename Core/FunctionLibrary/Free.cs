@@ -25,17 +25,20 @@ namespace CSim.Core.FunctionLibrary {
 		{
 		}
 
-		public override Variable Execute(ReadOnlyCollection<RValue> realParams)
+		public override void Execute(RValue[] realParams)
 		{
 			int address = this.Machine.Memory.Max;
-			var vbleId = realParams[ 0 ] as Id;
-
-			Variable vble = this.Machine.TDS.LookUp( vbleId.Value );
+			Variable vble = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
 			var ptrVble = vble as PtrVariable;
 
 			if ( ptrVble != null ) {
 				address = ptrVble.LiteralValue.Value;
-			} else {
+			}
+			else
+			if ( vble.Type == this.Machine.TypeSystem.GetIntType() ) {
+				address = (int) vble.LiteralValue.Value;
+			}
+			else {
 				throw new TypeMismatchException(
 					L18n.Get( L18n.Id.LblPointer ).ToLower()
 					+ " (" + L18n.Get( L18n.Id.ErrNotAPointer )
@@ -44,7 +47,10 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			this.Machine.TDS.DeleteBlk( address );
-			return null;
+
+			Variable result = new TempVariable( Machine.TypeSystem.GetIntType() );
+			result.LiteralValue = new IntLiteral( this.Machine, 0 );
+			this.Machine.ExecutionStack.Push( result );
 		}
 
 		/// <summary>

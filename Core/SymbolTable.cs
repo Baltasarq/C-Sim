@@ -1,15 +1,15 @@
-using System;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
 
-using CSim.Core.Exceptions;
-using CSim.Core.Types;
-using CSim.Core.Variables;
-using CSim.Core.Literals;
+namespace CSim.Core {
+	using System;
+	using System.Collections;
+	using System.Collections.ObjectModel;
+	using System.Collections.Generic;
 
-namespace CSim.Core
-{
+	using CSim.Core.Exceptions;
+	using CSim.Core.Types;
+	using CSim.Core.Variables;
+	using CSim.Core.Literals;
+
     public class SymbolTable {
         public const string MemBlockName = "_mblk#";
 
@@ -56,16 +56,21 @@ namespace CSim.Core
 			return this.Add( new PtrVariable( id, t, this.Machine, -1 ) );
         }
 
+		public Variable AddVector(Id id, CSim.Core.Type t, int size)
+		{
+			return this.Add( new VectorVariable( id, t, this.Machine, size ) );
+		}
+
         private Variable Add(Variable v)
 		{
             // Chk
 			if ( this.IsIdOfExistingVariable( v.Name ) ) {
-				throw new AlreadyExistingVbleException( v.Name.Value );
+				throw new AlreadyExistingVbleException( v.Name.Name );
 			}
 
             // Store
             v.Address = this.Reserve( v );
-            this.tds.Add( v.Name.Value, v );
+            this.tds.Add( v.Name.Name, v );
 
             return v;
         }
@@ -114,7 +119,7 @@ namespace CSim.Core
 
 			// Remove
 			foreach(RefVariable r in refs) {
-				this.Remove( r.Name.Value );
+				this.Remove( r.Name.Name );
 			}
 
 			return;
@@ -245,7 +250,7 @@ namespace CSim.Core
 		/// <param name="idVble">The identifier in question, as a string.</param>
 		public bool IsIdOfExistingVariable(Id id)
 		{
-			return ( this.LookForVariableOfId( id.Value ) != null );
+			return ( this.LookForVariableOfId( id.Name ) != null );
 		}
 
         /// <summary>
@@ -303,78 +308,28 @@ namespace CSim.Core
 		}
 
 		/// <summary>
-		/// Interprets the rvalue.
+		/// Solves the rvalue to a variable.
 		/// </summary>
-		/// <returns>
-		/// Following the rvalue:
-		/// 	- the variable hold by the rvalue
-		/// 	- the value hold by the rvalue, as a TempVariable
-		/// 	- the variable pointed by the pointer hold by the rvalue
-		/// </returns>
-		/// <param name='lvble'>
-		/// The lvalue to be checked, must be a variable.
-		/// It is checked to be of the same type of the rvalue, if not null.
-		/// </param>
-		/// <param name='value'>
-		/// The value to interpret
-		/// </param>
-		public Variable LookForRValue(Variable lvble, RValue value)
+		/// <returns>A variable, being a TempVariable or a true one.</returns>
+		/// <param name="rvalue">The rvalue to be solved.</param>
+		public Variable SolveToVariable(RValue rvalue)
 		{
 			Variable toret = null;
-			var lit = value as Literal;
+			var lit = rvalue as Literal;
+			var id = rvalue as Id;
+			var vble = rvalue as Variable;
 
 			if ( lit != null ) {
 				// Plain value
 				toret = new TempVariable( lit );
 			}
 			else
-				if ( value is StrLiteral ) {
-				string rightId = ((StrLiteral) value).Value;
-				Variable rightVble = null;
-				bool isRightPtrAccess = false;
-
-				if ( rightId[ 0 ] == '*' ) {
-					isRightPtrAccess = true;
-					rightId = rightId.Substring( 1 );
-				}
-
-				rightVble = this.LookUp( rightId );
-				var rightRefVble = rightVble as RefVariable;
-
-				if ( isRightPtrAccess ) {
-					var rightPtrVbleType = rightVble.Type as Ptr;
-					if ( rightPtrVbleType != null ) {
-						var rightPtrVble = rightVble as PtrVariable;
-
-						if ( lvble != null ) {
-							var lvalueType = lvble.GetTargetType();
-
-							if ( rightPtrVbleType.AssociatedType != lvalueType ) {
-								throw new TypeMismatchException( lvalueType.Name );
-							}
-						}
-
-						if ( rightPtrVble == null ) {
-							throw new TypeMismatchException(
-								L18n.Get( L18n.Id.LblPointer ).ToLower()
-								+ " (rvalue)" );
-						}
-
-						// Get the pointed variable, if possible, or access the memory
-						toret = this.GetPointedValueAsVariable( rightPtrVble );
-					} else {
-						throw new TypeMismatchException(
-							L18n.Get( L18n.Id.LblPointer ).ToLower()
-							+ " (rvalue)" );
-					}
-				}
-				else
-					if ( rightRefVble != null ) {
-					toret = rightRefVble.PointedVble;
-				} else {
-					// Plain variable
-					toret = rightVble;
-				}
+			if ( id != null ) {
+				toret = this.LookUp( id.Name );
+			}
+			else
+			if ( vble != null ) {
+				toret = vble;
 			}
 
 			return toret;
@@ -392,7 +347,7 @@ namespace CSim.Core
 
 			if ( pointedVble != null ) {
 				if ( pointedVble.IsInHeap ) {
-					this.Machine.TDS.Remove( pointedVble.Name.Value );
+					this.Machine.TDS.Remove( pointedVble.Name.Name );
 				} else {
 					throw new IncorrectAddressException(
 						L18n.Get( L18n.Id.ErrMemoryNotInHeap )

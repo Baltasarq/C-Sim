@@ -11,7 +11,7 @@ namespace CSim.Core {
 
 		public Id(string id)
 		{
-			this.Value = id;
+			this.Name = id;
 		}
 
 		/// <summary>
@@ -79,16 +79,22 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Gets or sets the value.
+		/// Gets or sets the id name.
 		/// </summary>
-		/// <value>The value.</value>
-		public string Value {
+		/// <value>The name, as string.</value>
+		public string Name {
 			get {
 				return this.id;
 			}
 			set {
 				Id.Chk( value );
 				this.id = value.Trim();
+			}
+		}
+
+		public override object Value {
+			get {
+				return this.Name;
 			}
 		}
 

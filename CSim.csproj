@@ -11,7 +11,6 @@
     <AssemblyName>CSim</AssemblyName>
     <StartupObject>CSim.Gui.PPal</StartupObject>
     <ApplicationIcon>Res\appIcon.ico</ApplicationIcon>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,7 +45,6 @@
     <Folder Include="Core\Functions\" />
     <Folder Include="Core\FunctionLibrary\" />
     <Folder Include="Core\Literals\" />
-    <Folder Include="Core\Opcodes\Operands\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Gui\MainWindow.cs" />
@@ -63,7 +61,6 @@
     <Compile Include="Core\Exceptions\UnknownVbleException.cs" />
     <Compile Include="Core\Exceptions\TypeMismatchException.cs" />
     <Compile Include="Core\EngineException.cs" />
-    <Compile Include="Core\Opcodes\ModificationOpcode.cs" />
     <Compile Include="Core\Exceptions\AlreadyExistingVbleException.cs" />
     <Compile Include="Core\Exceptions\ExhaustedMemoryException.cs" />
     <Compile Include="Core\Types\Ptr.cs" />
@@ -77,9 +74,6 @@
     <Compile Include="Core\Types\Primitives\Int.cs" />
     <Compile Include="Core\Types\Primitive.cs" />
     <Compile Include="Core\Variables\RefVariable.cs" />
-    <Compile Include="Core\Variables\PtrVariable.cs" />
-    <Compile Include="Core\Opcodes\ModifyWithVbleAddress.cs" />
-    <Compile Include="Core\ArchManager.cs" />
     <Compile Include="Core\Variables\TempVariable.cs" />
     <Compile Include="Core\Locale.cs" />
     <Compile Include="Core\L18n.cs" />
@@ -88,7 +82,6 @@
     <Compile Include="Core\Function.cs" />
     <Compile Include="Core\Functions\EmbeddedFunction.cs" />
     <Compile Include="Core\Functions\UserFunction.cs" />
-    <Compile Include="Core\FunctionLibrary\Print.cs" />
     <Compile Include="Core\StdLib.cs" />
     <Compile Include="Core\Exceptions\ParsingException.cs" />
     <Compile Include="Core\RValue.cs" />
@@ -105,20 +98,64 @@
     <Compile Include="Core\FunctionLibrary\Free.cs" />
     <Compile Include="Core\Types\Any.cs" />
     <Compile Include="Core\Variables\VoidPtrVariable.cs" />
-    <Compile Include="Core\Opcodes\Operand.cs" />
-    <Compile Include="Core\Opcodes\Operands\AccessTo.cs" />
-    <Compile Include="Core\Opcodes\Operands\AddressOf.cs" />
-    <Compile Include="Core\Opcodes\Assign.cs" />
-    <Compile Include="Core\Opcodes\Create.cs" />
-    <Compile Include="Core\Opcodes\Call.cs" />
-    <Compile Include="Core\Opcodes\Load.cs" />
-    <Compile Include="Core\Opcodes\Fetch.cs" />
     <Compile Include="Core\TypeSystem.cs" />
+    <Compile Include="Gui\MainWindowView.cs" />
+    <Compile Include="Core\ExecutionStack.cs" />
+    <Compile Include="Core\Opcodes\CallOpcode.cs" />
+    <Compile Include="Core\Opcodes\AssignOpcode.cs" />
+    <Compile Include="Core\Opcodes\AddressOpcode.cs" />
+    <Compile Include="Core\Opcodes\CreateOpcode.cs" />
+    <Compile Include="Core\Opcodes\StoreRValue.cs" />
+    <Compile Include="Core\FunctionLibrary\SizeOf.cs" />
+    <Compile Include="Core\FunctionLibrary\Print.cs" />
+    <Compile Include="Core\Variables\VectorVariable.cs" />
+    <Compile Include="Core\Variables\PtrVariable.cs" />
+    <Compile Include="Core\Literals\VectorLiteral.cs" />
+    <Compile Include="Core\Opcodes\AccessOpcode.cs" />
+    <Compile Include="Core\FunctionLibrary\Abs.cs" />
+    <Compile Include="Core\Opcodes\ArrayIndexAccessOpcode.cs" />
+    <Compile Include="Core\FunctionLibrary\IntCast.cs" />
+    <Compile Include="Core\FunctionLibrary\DoubleCast.cs" />
+    <Compile Include="Core\FunctionLibrary\CharCast.cs" />
+    <Compile Include="Core\FunctionLibrary\Atoi.cs" />
+    <Compile Include="Core\FunctionLibrary\Atof.cs" />
+    <Compile Include="Core\FunctionLibrary\Malloc.cs" />
+    <Compile Include="Core\FunctionLibrary\Floor.cs" />
+    <Compile Include="Core\FunctionLibrary\Ceil.cs" />
+    <Compile Include="Core\FunctionLibrary\Time.cs" />
+    <Compile Include="Core\FunctionLibrary\SRand.cs" />
+    <Compile Include="Core\FunctionLibrary\Exp.cs" />
+    <Compile Include="Core\FunctionLibrary\Log.cs" />
+    <Compile Include="Core\FunctionLibrary\Log10.cs" />
+    <Compile Include="Core\FunctionLibrary\Mod.cs" />
+    <Compile Include="Core\FunctionLibrary\Pow.cs" />
+    <Compile Include="Core\FunctionLibrary\Sqrt.cs" />
+    <Compile Include="Core\FunctionLibrary\Sin.cs" />
+    <Compile Include="Core\FunctionLibrary\Cos.cs" />
+    <Compile Include="Core\FunctionLibrary\Tan.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
+    <Reference Include="nunit.framework">
+      <HintPath>packages\NUnit.3.4.1\lib\net35\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.engine">
+      <HintPath>packages\NUnit.Engine.3.4.1\lib\nunit.engine.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.engine.api">
+      <HintPath>packages\NUnit.Engine.3.4.1\lib\nunit.engine.api.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>packages\NUnit.Engine.3.4.1\lib\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit-agent">
+      <HintPath>packages\NUnit.Engine.3.4.1\lib\nunit-agent.exe</HintPath>
+    </Reference>
+    <Reference Include="nunit-agent-x86">
+      <HintPath>packages\NUnit.Engine.3.4.1\lib\nunit-agent-x86.exe</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Res\appIcon.png" />
@@ -137,5 +174,8 @@
     <EmbeddedResource Include="Res\zero.png" />
     <EmbeddedResource Include="Res\random.png" />
     <EmbeddedResource Include="Res\back.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

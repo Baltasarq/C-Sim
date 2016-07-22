@@ -105,8 +105,51 @@ namespace CSim.Core
 			return string.Format( "[Type: name={0}, size={1}]", this.Name, this.Size );
 		}
 
+		public bool IsArithmetic() {
+			return ( this is Core.Types.Primitives.Int
+				  || this is Core.Types.Primitives.Char
+				  || this is Core.Types.Primitives.Double );
+		}
+
+		public bool IsAny() {
+			bool toret = ( this is Any );
+
+			// "any" type (void*) or pointer to any.
+			if ( !toret ) {
+				Ptr ptr = this as Ptr;
+
+				if ( ptr != null ) {
+					toret = ( ptr.AssociatedType is Any );
+				}
+			}
+
+			return toret;
+		}
+
+		public bool IsCompatibleWith(Type other)
+		{
+			bool toret = ( this.IsAny() || other.IsAny() );
+
+			// Maybe they are just the same
+			if ( !toret ) {
+				toret = ( this == other );
+			}
+
+			// One of them is a pointer and the other a numeric value
+			if ( !toret ) {
+				toret = ( ( this is Ptr && other.IsArithmetic() )
+				  	   || ( this.IsArithmetic() && other is Ptr ) );
+			}
+
+			// Compatibility between arithmetic types
+			if ( !toret ) {
+				toret = ( this.IsArithmetic() || other.IsArithmetic() );
+			}
+ 
+			return toret;
+		}
+
         private string name;
         private int size;
     }
 }
-

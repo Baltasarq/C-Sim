@@ -13,7 +13,7 @@ namespace CSim.Core.Variables
 		{
 		}
 
-        public PtrVariable(Id id, CSim.Core.Type t, Machine m, int address)
+		public PtrVariable(Id id, CSim.Core.Type t, Machine m, int address)
             : this( id, t, m )
         {
             this.Address = address;

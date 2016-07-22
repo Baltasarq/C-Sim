@@ -12,6 +12,10 @@ namespace CSim.Core {
         public abstract CSim.Core.Type Type {
             get;
         }
+
+		public abstract object Value {
+			get;
+		}
     }
 }
     

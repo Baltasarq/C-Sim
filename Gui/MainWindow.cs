@@ -15,7 +15,7 @@ namespace CSim.Gui {
     /// <summary>
     /// The main window of the application.
     /// </summary>
-    public class MainWindow: Form {
+    public partial class MainWindow: Form {
         public const int FontStep = 2;
         public const int MaxDataColumns = 16;
 		public const string EtqLocale = "locale";
@@ -120,34 +120,12 @@ namespace CSim.Gui {
         /// </summary>
         private void DoInput()
 		{
-			Variable[] results = new Variable[ 0 ];
 			string input = this.edInput.Text;
 
-			// Prepare interface
 			this.edInput.Text = "";
 			this.SetStatus();
-
-			try {
-				// Do it
-                results = ArchManager.Execute( this.machine, input );
-				this.AddToHistory( input );
-
-				// Update output
-				foreach(Variable v in results) {
-					this.printOutput( string.Format( "{0}({1} [{2}]) = {3}",
-					                                v.Name.Value,
-					                                v.Type,
-					                                Literal.ToPrettyNumber( v.Address ),
-                                                    v.LiteralValue ) );
-				}
-			}
-			catch(EngineException exc)
-			{
-				this.SetStatus( exc.Message );
-			}
-			finally {
-				this.UpdateView( results );
-			}
+			this.Execute( input );
+			this.edInput.Items.Add( input );
         }
 
         private void DoSwitchToMemory()
@@ -239,557 +217,6 @@ namespace CSim.Gui {
             return;
         }
 		
-        private void BuildInput()
-        {
-            // Line input
-            this.edInput = new TextBox();
-            this.edInput.Dock = DockStyle.Bottom;
-            this.edInput.Font = this.baseFont;
-			this.edInput.KeyDown += delegate(object sender, KeyEventArgs e) {
-                if ( e.KeyCode == Keys.Enter ) {
-                    this.DoInput();
-					e.Handled = true;
-					e.SuppressKeyPress = true;
-                }
-            };
-
-            this.pnlIO.Controls.Add( this.edInput );
-        }
-
-        private void BuildHistory()
-        {
-            this.lbHistory = new ListBox();
-            this.lbHistory.Font = this.baseFont;
-            this.lbHistory.Dock = DockStyle.Fill;
-            this.splHistory.Panel2.Controls.Add( this.lbHistory );
-        }
-
-        private void BuildMemoryView()
-        {
-            // Grid for memory
-            int columnWidth = ( this.CharWidth * 2 );
-            this.grdMemory = new DataGridView();
-            this.grdMemory.AllowUserToResizeRows = false;
-            this.grdMemory.AllowUserToAddRows = false;
-            this.grdMemory.RowHeadersVisible = false;
-            this.grdMemory.AutoGenerateColumns = false;
-            this.grdMemory.MultiSelect = false;
-			this.grdMemory.ShowCellToolTips = true;
-
-            // Style for regular columns
-            var style = new DataGridViewCellStyle();
-            style.Font = new Font( this.baseFont, FontStyle.Bold );
-            style.BackColor = Color.AntiqueWhite;
-            style.ForeColor = Color.Black;
-			style.SelectionBackColor = Color.Black;
-			style.SelectionForeColor = Color.AntiqueWhite;
-            this.grdMemory.DefaultCellStyle = style;
-
-            // Style for headers
-            var styleHeaders = new DataGridViewCellStyle();
-            styleHeaders.BackColor = Color.Black;
-            styleHeaders.ForeColor = Color.White;
-            styleHeaders.Font = new Font( this.baseFont, FontStyle.Bold );
-            this.grdMemory.ColumnHeadersDefaultCellStyle = styleHeaders;
-
-            // Style for first column
-            var styleFirstColumn = new DataGridViewCellStyle();
-            styleFirstColumn.Font = new Font( this.baseFont, FontStyle.Bold );
-            styleFirstColumn.BackColor = Color.Black;
-            styleFirstColumn.ForeColor = Color.White;
-
-            // Create columns
-            DataGridViewTextBoxColumn[] columns = new DataGridViewTextBoxColumn[ MaxDataColumns +1 ];
-
-            for(int i = 0; i < columns.Length; ++i) {
-                columns[ i ] = new DataGridViewTextBoxColumn();
-
-                if ( i == 0 ) {
-                    columns[ i ].DefaultCellStyle = styleFirstColumn;
-                    columns[ i ].HeaderText = "/";
-                    columns[ i ].Width = columnWidth + ( (int) ( columnWidth * 0.2 ) );
-                } else {
-                    columns[ i ].HeaderText = Literal.ToHex( i -1 );
-                    columns[ i ].Width = columnWidth;
-                }
-
-                columns[ i ].SortMode = DataGridViewColumnSortMode.NotSortable;
-                columns[ i ].ReadOnly = true;
-            }
-
-            this.grdMemory.Columns.AddRange( columns );
-
-            // Create rows
-            var rows = new DataGridViewRow[ this.machine.Memory.Max / MaxDataColumns ];
-
-            for(int i = 0; i < rows.Length; ++i) {
-                rows[ i ] = new DataGridViewRow();
-            }
-
-            this.grdMemory.Rows.AddRange( rows );
-
-            this.grdMemory.Dock = DockStyle.Fill;
-            this.tcTabs.TabPages[ 0 ].Controls.Add( this.grdMemory );
-            this.splHistory.SplitterDistance = this.CharWidth * 10;
-        }
-
-        private void BuildSymbolTable()
-        {
-            // Symbol table
-            this.tvSymbolTable = new TreeView();
-            this.tvSymbolTable.Dock = DockStyle.Fill;
-            this.tvSymbolTable.Font = this.baseFont;
-            this.tvSymbolTable.PathSeparator = ".";
-            this.tvSymbolTable.AfterSelect += (sender, e) => this.DoTreeSelect();
-            this.splSymbolTable.Panel1.Controls.Add( this.tvSymbolTable );
-            this.splSymbolTable.SplitterDistance = this.CharWidth;
-        }
-
-        private void BuildAboutPanel()
-        {
-            // Panel for about info
-            this.pnlAbout = new Panel();
-            this.pnlAbout.SuspendLayout();
-            this.pnlAbout.Dock = DockStyle.Bottom;
-            this.pnlAbout.BackColor = Color.LightYellow;
-            var lblAbout = new Label();
-            lblAbout.Text = AppInfo.Name + " v" + AppInfo.Version + ", " + AppInfo.Author;
-            lblAbout.Dock = DockStyle.Left;
-            lblAbout.TextAlign = ContentAlignment.MiddleCenter;
-            lblAbout.AutoSize = true;
-            var font = new Font( lblAbout.Font, FontStyle.Bold );
-            font = new Font( font.FontFamily, 14 );
-            lblAbout.Font = font;
-            var btCloseAboutPanel = new Button();
-            btCloseAboutPanel.Text = "X";
-            btCloseAboutPanel.Font = new Font( btCloseAboutPanel.Font, FontStyle.Bold );
-            btCloseAboutPanel.Dock = DockStyle.Right;
-            btCloseAboutPanel.Width = this.CharWidth * 5;
-            btCloseAboutPanel.FlatStyle = FlatStyle.Flat;
-            btCloseAboutPanel.FlatAppearance.BorderSize = 0;
-			btCloseAboutPanel.Click += (obj, args) => this.pnlAbout.Hide();
-            this.pnlAbout.Controls.Add( lblAbout );
-            this.pnlAbout.Controls.Add( btCloseAboutPanel );
-            this.pnlAbout.Hide();
-            this.pnlAbout.MinimumSize = new Size( this.Width, lblAbout.Height +5 );
-            this.pnlAbout.MaximumSize = new Size( Int32.MaxValue, lblAbout.Height +5 );
-            this.pnlAbout.ResumeLayout();
-            this.Controls.Add( this.pnlAbout );
-        }
-
-        private void BuildIcons()
-        {
-			var resourceAppIcon = System.Reflection.Assembly.
-			                      GetEntryAssembly().
-			                      GetManifestResourceStream( "CSim.Res.appIcon.png" );
-
-            // Prepare icons
-			if ( resourceAppIcon != null ) {
-				this.appIconBmp = new Bitmap( resourceAppIcon );
-				this.Icon = Icon.FromHandle( this.appIconBmp.GetHicon() );
-
-				this.backIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.back.png" ) );
-
-				this.openIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.open.png" ) );
-
-				this.saveIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.save.png" ) );
-
-				this.resetIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.reset.png" ) );
-
-				this.zoomInIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.zoom_in.png" ) );
-
-				this.zoomOutIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.zoom_out.png" ) );
-
-				this.aboutIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.info.png" ) );
-
-				this.helpIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.help.png" ) );
-
-				this.memoryIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.memory.png" ) );
-
-				this.diagramIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.diagram.png" ) );
-
-				this.hexIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.hex.png" ) );
-
-				this.decIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.dec.png" ) );
-
-				this.zeroIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.zero.png" ) );
-
-				this.randIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.random.png" ) );
-
-				this.settingsIconBmp = new Bitmap( System.Reflection.Assembly.
-					GetEntryAssembly().
-					GetManifestResourceStream( "CSim.Res.settings.png" ) );
-			}
-
-			return;
-        }
-
-        private void BuildDrawingTab()
-        {
-            var scroll = new Panel();
-
-            this.pbCanvas = new PictureBox();
-            this.pbCanvas.BackColor = Color.GhostWhite;
-            this.pbCanvas.ForeColor = Color.Navy;
-            this.pbCanvas.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-            this.pbCanvas.SizeMode = PictureBoxSizeMode.AutoSize;
-
-            scroll.Dock = DockStyle.Fill;
-            scroll.Controls.Add( this.pbCanvas );
-            scroll.AutoScroll = true;
-           
-            this.tcTabs.TabPages[ 1 ].Controls.Add( scroll );
-            this.sdDrawingBoard = new SchemaDrawer( this.machine.TDS );
-        }
-/*
-		private void BuildToolbar()
-		{
-			var tbZero = new ToolStripButton( "Zero",
-				this.zeroIconBmp, (o, e) => this.DoReset(),
-				"Zero" );
-			var tbRandom = new ToolStripButton( "Random",
-				this.randIconBmp, (o, e) => this.DoReset( MemoryManager.ResetType.Random ),
-				"Random" );
-
-			tbZero.DisplayStyle = tbRandom.DisplayStyle = ToolStripItemDisplayStyle.Image;
-
-			this.tbIconBar = new ToolStrip( new ToolStripItem[]
-			{
-					new ToolStripDropDownButton( "Reset", this.resetIconBmp,
-						new ToolStripButton[] { tbZero, tbRandom } ),
-					new ToolStripButton( "Open", this.openIconBmp, (o, e) => this.DoOpen(), "Open" ),
-					new ToolStripButton( "Save", this.saveIconBmp, (o, e) => this.DoSave(), "Save" ),
-					new ToolStripButton( "Hex", this.hexIconBmp, (o, e) => this.DoDisplayInHex(), "Hex" ),
-					new ToolStripButton( "Dec", this.decIconBmp, (o, e) => this.DoDisplayInDec(), "Dec"  ),
-					new ToolStripButton( "Zoom In", this.zoomInIconBmp, (o, e) => this.DoIncreaseFont(), "ZoomIn" ),
-					new ToolStripButton( "Zoom out", this.zoomOutIconBmp, (o, e) => this.DoDecreaseFont(), "ZoomOut"  ),
-					new ToolStripButton( "Memory", this.memoryIconBmp, (o, e) => this.DoSwitchToMemory(), "Memory" ),
-					new ToolStripButton( "Visual", this.diagramIconBmp, (o, e) => this.DoSwitchToDrawing(), "Visual"  ),
-					new ToolStripButton( "Help", this.helpIconBmp, (o, e) => this.DoHelp(), "Help" ),
-					new ToolStripButton( "About", this.aboutIconBmp, (o, e) => this.DoAbout(), "About" ),
-			} );
-
-			// Remove the appearance of text from all of the buttons
-			foreach (ToolStripItem bt in this.tbIconBar.Items) {
-				bt.DisplayStyle = ToolStripItemDisplayStyle.Image;
-			}
-
-			this.tbIconBar.Dock = DockStyle.Top;
-			this.tbIconBar.GripStyle = ToolStripGripStyle.Hidden;
-			this.tbIconBar.AutoSize = false;
-			this.tbIconBar.Height = 24;
-			this.tbIconBar.ImageScalingSize = new Size( 24, 24 );
-			this.Controls.Add( this.tbIconBar );
-		}
-*/
-		private void BuildToolbar()
-		{
-            // Image list
-			var imgList = new ImageList();
-            imgList.ImageSize = new System.Drawing.Size( 24, 24 );
-            imgList.Images.AddRange( new Bitmap[] {
-                this.resetIconBmp, this.openIconBmp,
-                this.saveIconBmp, this.hexIconBmp,
-                this.decIconBmp, this.zoomInIconBmp,
-                this.zoomOutIconBmp, this.memoryIconBmp,
-                this.diagramIconBmp, this.helpIconBmp,
-                this.aboutIconBmp, this.settingsIconBmp
-            } );
-
-            // Toolbar
-			this.tbIconBar = new ToolBar();
-			this.tbIconBar.AutoSize = true;
-			this.tbIconBar.Dock = DockStyle.Top;
-			this.tbIconBar.Appearance = ToolBarAppearance.Flat;
-			this.tbIconBar.BorderStyle = BorderStyle.None;
-			this.tbIconBar.ImageList = imgList;
-			this.tbIconBar.ShowToolTips = true;
-
-            // Toolbar buttons
-			var tbbReset = new ToolBarButton();
-			tbbReset.ImageIndex = 0;
-			tbbReset.Style = ToolBarButtonStyle.DropDownButton;
-
-			var mniZero = new MenuItem( "Zero", (o, e) => DoReset() );
-			mniZero.OwnerDraw = true;
-			mniZero.DrawItem += delegate(object sender, DrawItemEventArgs e) {
-				double factor = (double) e.Bounds.Height / this.zeroIconBmp.Height;
-				var rect = new Rectangle( e.Bounds.X, e.Bounds.Y,
-				                         (int) ( this.zeroIconBmp.Width * factor ),
-				                         (int) ( this.zeroIconBmp.Height * factor ) );
-				e.Graphics.DrawImage( this.zeroIconBmp, rect );
-			};
-
-			var mniRandom = new MenuItem( "Random", (o, e) => DoReset( MemoryManager.ResetType.Random ) );
-			mniRandom.OwnerDraw = true;
-			mniRandom.DrawItem += delegate(object sender, DrawItemEventArgs e) {
-				double factor = (double) ( e.Bounds.Height ) / this.randIconBmp.Height;
-				var rect = new Rectangle( e.Bounds.X, e.Bounds.Y,
-				                         (int) ( this.randIconBmp.Width * factor ),
-				                         (int) ( this.randIconBmp.Height * factor ) );
-				e.Graphics.DrawImage( this.randIconBmp, rect );
-			};
-
-			tbbReset.DropDownMenu = new ContextMenu( new MenuItem[]{
-				mniZero, mniRandom,
-			});
-
-			var tbbOpen = new ToolBarButton();
-			tbbOpen.ImageIndex = 1;
-			var tbbSave = new ToolBarButton();
-			tbbSave.ImageIndex = 2;
-			var tbbHex = new ToolBarButton();
-			tbbHex.ImageIndex = 3;
-			var tbbDec = new ToolBarButton();
-			tbbDec.ImageIndex = 4;
-			var tbbZoomIn = new ToolBarButton();
-			tbbZoomIn.ImageIndex = 5;
-			var tbbZoomOut = new ToolBarButton();
-			tbbZoomOut.ImageIndex = 6;
-			var tbbMem = new ToolBarButton();
-			tbbMem.ImageIndex = 7;
-			var tbbVisual = new ToolBarButton();
-			tbbVisual.ImageIndex = 8;
-			var tbbHelp = new ToolBarButton();
-			tbbHelp.ImageIndex = 9;
-			var tbbAbout = new ToolBarButton();
-            tbbAbout.ImageIndex = 10;
-			var tbbSettings = new ToolBarButton();
-            tbbSettings.ImageIndex = 11;
-
-			this.tbIconBar.ButtonClick += (object o, ToolBarButtonClickEventArgs e) => {
-				switch( this.tbIconBar.Buttons.IndexOf( e.Button ) ) {
-					case 0: this.DoReset(); break;
-					case 1: this.DoOpen(); break;
-					case 2: this.DoSave(); break;
-					case 3: this.DoDisplayInHex(); break;
-					case 4: this.DoDisplayInDec(); break;
-					case 5: this.DoIncreaseFont(); break;
-					case 6: this.DoDecreaseFont(); break;
-					case 7: this.DoSwitchToMemory(); break;
-					case 8: this.DoSwitchToDrawing(); break;
-					case 9: this.ShowSettings(); break;
-					case 10: this.DoHelp(); break;
-					case 11: this.DoAbout(); break;
-					default: throw new ArgumentException( "unexpected toolbar button: unhandled" );
-				}
-			}; 
-
-			this.tbIconBar.Buttons.AddRange( new ToolBarButton[]{
-				tbbReset, tbbOpen, tbbSave,
-				tbbHex, tbbDec, tbbZoomIn,
-				tbbZoomOut, tbbMem, tbbVisual,
-				tbbSettings, tbbHelp, tbbAbout
-			});
-
-			this.Controls.Add( this.tbIconBar );
-		}
-
-		private void BuildTabbedPanel()
-		{
-			this.tcTabs = new TabControl();
-            this.tcTabs.SuspendLayout();
-            this.tcTabs.SelectedIndexChanged += delegate(object obj, EventArgs args) {
-                if ( tcTabs.SelectedIndex == 1 ) {
-                    this.DoDrawing();
-                }
-				this.FocusOnInput();
-            };
-            this.tcTabs.Dock = DockStyle.Fill;
-			this.tcTabs.Alignment = TabAlignment.Bottom;
-			this.tcTabs.TabPages.Add( new TabPage( "" ) );
-			this.tcTabs.TabPages.Add( new TabPage( "" ) );
-			this.tcTabs.ImageList = new ImageList();
-			this.tcTabs.ImageList.ImageSize = new Size( 16, 16 );
-			this.tcTabs.ImageList.Images.AddRange( new Image[] {
-				this.memoryIconBmp, this.diagramIconBmp
-			});
-			this.tcTabs.TabPages[ 0 ].ImageIndex = 0;
-			this.tcTabs.TabPages[ 1 ].ImageIndex = 1;
-			this.splSymbolTable.Panel2.Controls.Add( this.tcTabs );
-		}
-
-		private void BuildOutput()
-		{
-			this.rtbOutput = new RichTextBox();
-            this.rtbOutput.Font = this.baseFont;
-            this.rtbOutput.ReadOnly = true;
-            this.rtbOutput.Dock = DockStyle.Fill;
-            this.pnlIO.Controls.Add( this.rtbOutput );
-		}
-
-		private void BuildStatusbar()
-		{
-			this.sbStatus = new StatusStrip( );
-			this.lblStatus = new ToolStripStatusLabel( );
-			this.sbStatus.Items.Add( this.lblStatus );
-            this.Controls.Add( sbStatus );
-		}
-
-		private void BuildSettingsPanel()
-		{
-			this.pnlSettings = new TableLayoutPanel();
-			this.pnlSettings.BackColor = Color.White;
-            this.pnlSettings.Dock = DockStyle.Fill;
-			this.pnlSettings.ColumnCount = 1;
-			this.pnlSettings.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
-			this.pnlSettings.SuspendLayout();
-
-			// Button
-			var btClose = new Button();
-			btClose.BackColor = Color.White;
-			btClose.Image = this.backIconBmp;
-			btClose.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-			btClose.Font = new Font( btClose.Font, FontStyle.Bold );
-			btClose.FlatStyle = FlatStyle.Flat;
-			btClose.FlatAppearance.BorderSize = 0;
-			btClose.Click += (sender, e) => this.ChangeSettings();
-			this.pnlSettings.Controls.Add( btClose );
-
-			/*
-			var pnlChks = new TableLayoutPanel();
-			pnlChks.Dock = DockStyle.Top;
-			pnlChks.SuspendLayout();
-			this.pnlSettings.Controls.Add( pnlChks );
-
-			// Checkbox about showing the menu
-			this.chkShowMainMenu = new CheckBox();
-			this.chkShowMainMenu.Dock = DockStyle.Top;
-			this.chkShowMainMenu.Text = StringsL18n.Get( StringsL18n.StringId.CkShowMenu );
-			this.chkShowMainMenu.Checked = this.IsMainMenuShown;
-			pnlChks.Controls.Add( this.chkShowMainMenu );
-			*/
-
-			// Locale
-			var pnlLocales = new Panel();
-			pnlLocales.Dock = DockStyle.Top;
-			this.lblLocales = new Label();
-			this.lblLocales.Text = L18n.Get( L18n.Id.LblLanguage );;
-			this.lblLocales.Dock = DockStyle.Left;
-
-			this.cbLocales = new ComboBox();
-			this.cbLocales.Dock = DockStyle.Fill;
-			this.cbLocales.DropDownStyle = ComboBoxStyle.DropDownList;
-			this.cbLocales.Text = Core.Locale.CurrentLocale.ToString();
-
-			CultureInfo[] locales = CultureInfo.GetCultures( CultureTypes.SpecificCultures );
-			Array.Sort( locales,
-				((CultureInfo x, CultureInfo y) => x.ToString().CompareTo( y.ToString() ) )
-			);
-
-			this.cbLocales.Items.Add( "<local>" );
-			foreach(CultureInfo locale in locales ) {
-				this.cbLocales.Items.Add( locale.NativeName + ": " + locale.ToString() );
-			}
-
-			pnlLocales.Controls.Add( this.cbLocales );
-			pnlLocales.Controls.Add( this.lblLocales );
-			this.pnlSettings.Controls.Add( pnlLocales );
-
-			// Finishing
-			// pnlChks.ResumeLayout( false );
-			this.pnlSettings.ResumeLayout( false );
-			this.pnlSettings.Hide();
-            this.Controls.Add( this.pnlSettings );
-
-			// Sizes
-			this.pnlSettings.MinimumSize = new Size(
-				this.ClientSize.Width,
-				SystemInformation.VirtualScreen.Height
-			);
-			return;
-		}
-
-        private void Build()
-        {
-            // Start
-			this.BuildIcons();
-            this.StartPosition = FormStartPosition.CenterScreen;
-            this.SuspendLayout();
-
-            // Main panels
-            this.pnlIO = new Panel();
-            this.pnlIO.Dock = DockStyle.Bottom;
-            this.pnlMain = new Panel();
-            this.pnlMain.Dock = DockStyle.Fill;
-            this.pnlIO.SuspendLayout();
-            this.pnlMain.SuspendLayout();
-            this.Controls.Add( pnlMain );
-            this.Controls.Add( pnlIO );
-
-            // Split panel for symbol explorer
-			// 1 - symbol table, 2 - tabs
-            this.splSymbolTable = new SplitContainer();
-            this.splSymbolTable.SuspendLayout();
-            this.splSymbolTable.Dock = DockStyle.Fill;
-
-            // Split panel for history
-			// 1 - splSymbolTable (everything else), 2 - history
-            this.splHistory = new SplitContainer();
-            this.splHistory.Dock = DockStyle.Fill;
-            this.splHistory.SuspendLayout();
-            this.splHistory.Panel1.Controls.Add( this.splSymbolTable );
-
-            // Compose it up
-            this.pnlMain.Controls.Add( splHistory );
-
-			this.BuildTabbedPanel();
-            this.BuildHistory();
-            this.BuildMemoryView();
-            this.BuildSymbolTable();
-			this.BuildDrawingTab();
-			this.BuildToolbar();
-			this.BuildOutput();
-            this.BuildInput();
-			this.BuildSettingsPanel();
-			this.BuildAboutPanel();
-			this.BuildStatusbar();
-
-            // End
-			this.Closed += (sender, e) => this.DoQuit();
-			this.Text = AppInfo.Name;
-            this.MinimumSize = new Size( 800, 600 );
-			this.Shown += (o, e) => this.FocusOnInput();
-            this.splHistory.ResumeLayout( false );
-            this.splSymbolTable.ResumeLayout( false );
-            this.tcTabs.ResumeLayout( false );
-            this.pnlIO.ResumeLayout( false );
-            this.pnlMain.ResumeLayout( false );
-            this.ResumeLayout( false );
-            this.UpdateFont( 0 );
-			this.FocusOnInput();
-            
-            return;
-        }
-
 		private void ShowSettings()
 		{
 			// Prepare configuration
@@ -866,8 +293,7 @@ namespace CSim.Gui {
 					using (var sr = new StreamReader( dlg.FileName )) {
 						string line = sr.ReadLine();
 						while ( line != null ) {
-							ArchManager.Execute( this.machine, line );
-							this.AddToHistory( line );
+							this.Execute( line );
 							line = sr.ReadLine();
 						}
 					}
@@ -919,19 +345,14 @@ namespace CSim.Gui {
 			this.edInput.Focus();
 		}
 
-		private void UpdateView(Variable[] vars)
+		private void UpdateView()
 		{
-			this.UpdateMemoryView( vars );
+			this.UpdateMemoryView();
             this.UpdateSymbolTable();
 			this.DoDrawing();
 
 			this.FocusOnInput();
 		}
-
-        private void UpdateView()
-        {
-			this.UpdateView( new Variable[ 0 ] );
-        }
 
         private void UpdateSymbolTable()
         {
@@ -943,7 +364,7 @@ namespace CSim.Gui {
                 string varTypeAddr = vble.Type.Name + " :" + vble.Type.Size
                     + " [" + Literal.ToPrettyNumber( vble.Address ) + ']';
 
-                var vbleNode = new TreeNode( vble.Name.Value );
+                var vbleNode = new TreeNode( vble.Name.Name );
                 var typeNode = new TreeNode( varTypeAddr );
                 var contentsNode = new TreeNode( " = " + vble.LiteralValue );
 
@@ -956,38 +377,23 @@ namespace CSim.Gui {
             return;
         }
 
-        private void UpdateMemoryView(Variable[] vars)
+        private void UpdateMemoryView()
 		{
             var memory = this.machine.Memory.Raw;
 
-			if ( vars.Length == 0 ) {
-				// Row indexes (first cell in each row)
-				for (int i = 0; i < this.grdMemory.RowCount; ++i) {
-					this.grdMemory.Rows[ i ].Cells[ 0 ].Value = Literal.ToHex( i * MaxDataColumns );
-				}
-
-	            // Contents
-	            for(int i = 0; i < memory.Count; ++i) {
-	                int row = i / MaxDataColumns;
-	                int col = ( i % MaxDataColumns ) + 1;
-
-	                this.grdMemory.Rows[ row ].Cells[ col ].Value = Literal.ToHex( memory[ i ] );
-					this.grdMemory.Rows[ row ].Cells[ col ].ToolTipText = memory[ i ].ToString();
-	            }
-			} else {
-				foreach(Variable vble in vars) {
-					if ( !( vble is TempVariable ) ) {
-						for(int i = 0; i < vble.Size; ++i) {
-							int pos = vble.Address + i;
-							int row = pos / MaxDataColumns;
-		                	int col = ( pos % MaxDataColumns ) + 1;
-
-							this.grdMemory.Rows[ row ].Cells[ col ].Value = Literal.ToHex( memory[ pos ] );
-							this.grdMemory.Rows[ row ].Cells[ col ].ToolTipText = memory[ pos ].ToString();
-						}
-					}
-				}
+			// Row indexes (first cell in each row)
+			for (int i = 0; i < this.grdMemory.RowCount; ++i) {
+				this.grdMemory.Rows[ i ].Cells[ 0 ].Value = Literal.ToHex( i * MaxDataColumns );
 			}
+
+            // Contents
+            for(int i = 0; i < memory.Count; ++i) {
+                int row = i / MaxDataColumns;
+                int col = ( i % MaxDataColumns ) + 1;
+
+                this.grdMemory.Rows[ row ].Cells[ col ].Value = Literal.ToHex( memory[ i ] );
+				this.grdMemory.Rows[ row ].Cells[ col ].ToolTipText = memory[ i ].ToString();
+            }
 
 			this.FocusOnInput();
             return;
@@ -1093,6 +499,36 @@ namespace CSim.Gui {
 			}
 		}
 
+		/// <summary>
+		/// Executes a given command.
+		/// </summary>
+		private void Execute(string input)
+		{
+			Variable result = null;
+
+			try {
+				// Do it
+				result = this.machine.Execute( input );
+				this.AddToHistory( input );
+
+				// Update output
+				this.printOutput( string.Format( "{0}({1} [{2}]) = {3}",
+					result.Name.Value,
+					result.Type,
+					Literal.ToPrettyNumber( result.Address ),
+					result.LiteralValue ) );
+			}
+			catch(EngineException exc)
+			{
+				this.SetStatus( exc.Message );
+			}
+			finally {
+				this.UpdateView();
+			}
+
+			return;
+		}
+
 		private void ChangeUILanguage(CultureInfo locale)
 		{
 			L18n.SetLanguage( locale );
@@ -1141,44 +577,6 @@ namespace CSim.Gui {
 		}
 
         private int charWidth = -1;
-        private SplitContainer splSymbolTable;
-        private SplitContainer splHistory;
-        private Font baseFont;
-        private Panel pnlAbout;
-        private Panel pnlIO;
-        private Panel pnlMain;
-		private TableLayoutPanel pnlSettings;
-        private TextBox edInput;
-        private DataGridView grdMemory;
-        private TreeView tvSymbolTable;
-		private StatusStrip sbStatus;
-		private ToolStripStatusLabel lblStatus;
-        private ListBox lbHistory;
-		private RichTextBox rtbOutput;
-        private TabControl tcTabs;
-        private PictureBox pbCanvas;
-        private Bitmap bmDrawArea;
-		private ToolBar tbIconBar;
-		private ComboBox cbLocales;
-		private Label lblLocales;
-
-		private Bitmap appIconBmp;
-		private Bitmap backIconBmp;
-		private Bitmap openIconBmp;
-		private Bitmap saveIconBmp;
-		private Bitmap resetIconBmp;
-		private Bitmap zoomInIconBmp;
-		private Bitmap zoomOutIconBmp;
-		private Bitmap helpIconBmp;
-		private Bitmap aboutIconBmp;
-		private Bitmap memoryIconBmp;
-		private Bitmap diagramIconBmp;
-		private Bitmap hexIconBmp;
-		private Bitmap decIconBmp;
-		private Bitmap zeroIconBmp;
-		private Bitmap randIconBmp;
-		private Bitmap settingsIconBmp;
-
         private Machine machine;
 		private string statusBeforeSettings;
         private SchemaDrawer sdDrawingBoard;

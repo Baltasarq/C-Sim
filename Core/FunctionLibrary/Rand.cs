@@ -23,12 +23,12 @@ namespace CSim.Core.FunctionLibrary {
 		{
 		}
 
-		public override Variable Execute(ReadOnlyCollection<RValue> realParams)
+		public override void Execute(RValue[] realParams)
 		{
 			var toret = new TempVariable( this.Machine.TypeSystem.GetDoubleType() );
-            toret.LiteralValue = new DoubleLiteral( this.Machine, Random.NextDouble() );
+			toret.LiteralValue = new DoubleLiteral( this.Machine, this.Machine.Random.NextDouble() );
 
-			return toret;
+			this.Machine.ExecutionStack.Push( toret );
 		}
 
 		/// <summary>

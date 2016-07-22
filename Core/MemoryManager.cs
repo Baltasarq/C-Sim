@@ -149,9 +149,9 @@ namespace CSim.Core
 		public Literal CreateLiteral(int address, Type type)
 		{
 			Literal toret = null;
-			var ptrType = type as Ptr;
+			var ptrType = type as Vector;
 
-			// Special case: char * is a StringLiteral
+			// Special case: char[] is a StringLiteral
 			if ( ptrType != null
 			  && ptrType.AssociatedType == this.Machine.TypeSystem.GetCharType() )
 			{
