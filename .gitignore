@@ -1,4 +1,7 @@
 *.userprefs
+packages/
+packages.config
+StyleCop*
 
 # Compiled Object files
 *.slo
