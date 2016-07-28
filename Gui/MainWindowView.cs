@@ -28,9 +28,20 @@ namespace CSim.Gui {
 		private void BuildHistoryPanel()
 		{
 			this.lbHistory = new ListBox();
-			this.lbHistory.Font = this.baseFont;
+			this.lbHistory.Font = new Font( FontFamily.GenericMonospace, 8 );
 			this.lbHistory.Dock = DockStyle.Fill;
 			this.splHistory.Panel2.Controls.Add( this.lbHistory );
+
+			this.lbHistory.SelectedIndexChanged += (o, e) => {
+				int i = this.lbHistory.SelectedIndex;
+
+				if ( i >= 0
+				  && !( this.doNotApplySnapshot ) )
+				{
+					this.machine.SnapshotManager.ApplySnapshot( i );
+					this.UpdateView();
+				}
+			};
 		}
 
 		private void BuildMemoryViewPanel()
@@ -161,6 +172,14 @@ namespace CSim.Gui {
 					GetEntryAssembly().
 					GetManifestResourceStream( "CSim.Res.back.png" ) );
 
+				this.playIconBmp = new Bitmap( System.Reflection.Assembly.
+					GetEntryAssembly().
+					GetManifestResourceStream( "CSim.Res.play.png" ) );
+
+				this.stopIconBmp = new Bitmap( System.Reflection.Assembly.
+					GetEntryAssembly().
+					GetManifestResourceStream( "CSim.Res.stop.png" ) );
+
 				this.openIconBmp = new Bitmap( System.Reflection.Assembly.
 					GetEntryAssembly().
 					GetManifestResourceStream( "CSim.Res.open.png" ) );
@@ -250,7 +269,8 @@ namespace CSim.Gui {
 				this.decIconBmp, this.zoomInIconBmp,
 				this.zoomOutIconBmp, this.memoryIconBmp,
 				this.diagramIconBmp, this.helpIconBmp,
-				this.aboutIconBmp, this.settingsIconBmp
+				this.aboutIconBmp, this.settingsIconBmp,
+				this.playIconBmp, this.stopIconBmp
 			} );
 
 			// Toolbar
@@ -313,6 +333,10 @@ namespace CSim.Gui {
 			tbbAbout.ImageIndex = 10;
 			var tbbSettings = new ToolBarButton();
 			tbbSettings.ImageIndex = 11;
+			var tbbPlay = new ToolBarButton();
+			tbbPlay.ImageIndex = 12;
+			this.tbbStop = new ToolBarButton();
+			tbbStop.ImageIndex = 13;
 
 			this.tbIconBar.ButtonClick += (object o, ToolBarButtonClickEventArgs e) => {
 				switch( this.tbIconBar.Buttons.IndexOf( e.Button ) ) {
@@ -328,6 +352,8 @@ namespace CSim.Gui {
 				case 9: this.ShowSettings(); break;
 				case 10: this.DoHelp(); break;
 				case 11: this.DoAbout(); break;
+				case 12: this.DoPlay(); break;
+				case 13: this.DoStop(); break;
 				default: throw new ArgumentException( "unexpected toolbar button: unhandled" );
 				}
 			}; 
@@ -336,9 +362,11 @@ namespace CSim.Gui {
 				tbbReset, tbbOpen, tbbSave,
 				tbbHex, tbbDec, tbbZoomIn,
 				tbbZoomOut, tbbMem, tbbVisual,
-				tbbSettings, tbbHelp, tbbAbout
+				tbbSettings, tbbHelp, tbbAbout,
+				tbbPlay, tbbStop
 			});
 
+			this.tbbStop.Enabled = false;
 			this.Controls.Add( this.tbIconBar );
 		}
 
@@ -554,6 +582,7 @@ namespace CSim.Gui {
 		private PictureBox pbCanvas;
 		private Bitmap bmDrawArea;
 		private ToolBar tbIconBar;
+		private ToolBarButton tbbStop;
 		private ComboBox cbLocales;
 		private Label lblLocales;
 
@@ -573,6 +602,8 @@ namespace CSim.Gui {
 		private Bitmap zeroIconBmp;
 		private Bitmap randIconBmp;
 		private Bitmap settingsIconBmp;
+		private Bitmap playIconBmp;
+		private Bitmap stopIconBmp;
 	}
 }
 

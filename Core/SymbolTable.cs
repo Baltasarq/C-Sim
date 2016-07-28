@@ -61,7 +61,7 @@ namespace CSim.Core {
 			return this.Add( new VectorVariable( id, t, this.Machine, size ) );
 		}
 
-        private Variable Add(Variable v)
+        public Variable Add(Variable v)
 		{
             // Chk
 			if ( this.IsIdOfExistingVariable( v.Name ) ) {
@@ -74,6 +74,18 @@ namespace CSim.Core {
 
             return v;
         }
+
+		internal void AddVariableInPlace(Variable v)
+		{
+			// Chk
+			if ( this.IsIdOfExistingVariable( v.Name ) ) {
+				throw new AlreadyExistingVbleException( v.Name.Name );
+			}
+
+			// Store
+			this.tds.Add( v.Name.Name, v );
+			this.StoreAddressesToFill( v );
+		}
 
 		/// <summary>
 		/// Remove the specified id from the variables list.
@@ -173,13 +185,25 @@ namespace CSim.Core {
                     L18n.Get( L18n.Id.ErrReserving ) + ": " + v.Name );
             }
 
-            // Store the addresses to fill
-            for (int i = 0; i < v.Type.Size; ++i) {
-                this.addresses.Add( addressesToFill[ i ] );
-            }
-
+			this.StoreAddressesToFill( v, addressesToFill );
             return toret;
         }
+
+		private void StoreAddressesToFill(Variable v, int[] addressesToFill = null)
+		{
+			// Create the vector of addresses, if needed
+			if ( addressesToFill == null ) {
+				addressesToFill = new int[ v.Type.Size ];
+				for(int i = 0; i < addressesToFill.Length; ++i) {
+					addressesToFill[ i ] = v.Address + i;
+				}
+			}
+
+			// Store the addresses to fill
+			for (int i = 0; i < v.Type.Size; ++i) {
+				this.addresses.Add( addressesToFill[ i ] );
+			}
+		}
 
 		/// <summary>
 		/// Gets the variables.

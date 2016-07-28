@@ -1,17 +1,14 @@
-// MainWindow.cs
-
-using System;
-using System.Globalization;
-using System.IO;
-using System.Windows.Forms;
-using System.Drawing;
-using System.Collections.ObjectModel;
-
-using CSim.Core;
-using CSim.Core.Variables;
-using CSim.Core.Exceptions;
-
 namespace CSim.Gui {
+	using System;
+	using System.Globalization;
+	using System.IO;
+	using System.Windows.Forms;
+	using System.Drawing;
+	using System.Collections.ObjectModel;
+
+	using CSim.Core;
+	using CSim.Core.Exceptions;
+
     /// <summary>
     /// The main window of the application.
     /// </summary>
@@ -31,6 +28,7 @@ namespace CSim.Gui {
             this.Build();
 			this.SetStatus();
 			currentDir = Environment.GetFolderPath( Environment.SpecialFolder.Desktop );
+			this.doNotApplySnapshot = false;
 
 			 // Prepare environment
 			this.ChangeUILanguage( Core.Locale.CurrentLocale );
@@ -98,8 +96,10 @@ namespace CSim.Gui {
 		/// <param name="input">The entered command, as a string</param>
 		private void AddToHistory(string input)
 		{
+			this.doNotApplySnapshot = true;
 			this.lbHistory.Items.Add( input );
 			this.lbHistory.SelectedIndex = this.lbHistory.Items.Count - 1;
+			this.doNotApplySnapshot = false;
 		}
 
 		/// <summary>
@@ -124,9 +124,58 @@ namespace CSim.Gui {
 
 			this.edInput.Text = "";
 			this.SetStatus();
+			this.GoToFinalSnapshot();
 			this.Execute( input );
 			this.edInput.Items.Add( input );
         }
+
+		private void GoToFinalSnapshot() {
+			int numSnapshots = this.lbHistory.Items.Count - 1;
+
+			if ( numSnapshots > 0 ) {
+				this.lbHistory.SelectedIndex = numSnapshots;
+			}
+
+			return;
+		}
+
+		private void DoStop() {
+			this.GoToFinalSnapshot();
+		}
+
+		/// <summary>
+		/// Waits for an amount of seconds, without blocking the GUI.
+		/// <param name="seconds">The amount of seconds to wait</param>
+		/// </summary>
+		public static void ActiveWait(int seconds)
+		{
+			DateTime t = DateTime.Now;
+			DateTime tf = t.AddSeconds( seconds );
+
+			while ( t < tf )
+			{
+				Application.DoEvents();
+				t = DateTime.Now;
+			}
+		}
+
+		private void DoPlay()
+		{
+			this.tbbStop.Enabled = true;
+
+			if ( this.lbHistory.Items.Count > 0 ) {
+				this.lbHistory.SelectedIndex = 0;
+				ActiveWait( 1 );
+
+				while( this.lbHistory.SelectedIndex < ( this.lbHistory.Items.Count -1 ) ) {
+					this.lbHistory.SelectedIndex += 1;
+					ActiveWait( 1 );
+				}
+			}
+
+			this.tbbStop.Enabled = false;
+			return;
+		}
 
         private void DoSwitchToMemory()
         {
@@ -320,7 +369,12 @@ namespace CSim.Gui {
 			dlg.FileName = Path.GetFullPath( currentDir );
 
 			if ( dlg.ShowDialog() == DialogResult.OK ) {
-				File.WriteAllText( dlg.FileName, this.lbHistory.Text );
+				using( StreamWriter writer = new StreamWriter( dlg.FileName, false ) )
+				{
+					foreach(string s in this.lbHistory.Items) {
+						writer.WriteLine( s );
+					}
+				}
 			}
 
 			currentDir = Path.GetFullPath( dlg.FileName );
@@ -334,9 +388,12 @@ namespace CSim.Gui {
 
         private void DoReset(MemoryManager.ResetType rt)
         {
+			// Reset view
             this.lbHistory.Text = "";
-            this.machine.Memory.Reset( rt );
-            this.machine.Reset();
+			this.lbHistory.Items.Clear();
+
+			// Reset machine
+			this.machine.Reset( rt );
             this.UpdateView();
         }
 
@@ -521,6 +578,7 @@ namespace CSim.Gui {
 			catch(EngineException exc)
 			{
 				this.SetStatus( exc.Message );
+				this.AddToHistory( input );
 			}
 			finally {
 				this.UpdateView();
@@ -563,6 +621,10 @@ namespace CSim.Gui {
 							break;
 					case 11: button.ToolTipText = L18n.Get( L18n.Id.ActAbout );
 							break;
+					case 12: button.ToolTipText = L18n.Get( L18n.Id.ActPlay );
+							break;
+					case 13: button.ToolTipText = L18n.Get( L18n.Id.ActStop );
+							break;
 				default:
 					throw new ArgumentException( "unexpected toolbar button: unhandled" );
 				}
@@ -576,6 +638,7 @@ namespace CSim.Gui {
 			this.lblLocales.Text = L18n.Get( L18n.Id.LblLanguage );
 		}
 
+		private bool doNotApplySnapshot;
         private int charWidth = -1;
         private Machine machine;
 		private string statusBeforeSettings;

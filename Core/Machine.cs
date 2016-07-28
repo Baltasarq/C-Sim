@@ -27,7 +27,6 @@ namespace CSim.Core {
 		public Machine()
 			:this( DefaultWordSize, MemoryManager.DefaultMaxMemory, Endianness.LittleEndian )
 		{
-			this.ExecutionStack = new ExecutionStack();
 		}
 
 		/// <summary>
@@ -47,6 +46,8 @@ namespace CSim.Core {
 			this.tds = new SymbolTable( this );
 			this.stdLib = new StdLib( this );
 			this.SetRandomEngine();
+			this.ExecutionStack = new ExecutionStack();
+			this.SnapshotManager = new SnapshotManager( this );
 		}
 
 		public void SetRandomEngine() {
@@ -104,7 +105,7 @@ namespace CSim.Core {
 			set {
 				this.wordSize = this.CalculateWordSize( value );
 				this.TypeSystem.Reset();
-				this.Reset();
+				this.Reset( MemoryManager.ResetType.Zero );
 			}
         }
 
@@ -192,8 +193,10 @@ namespace CSim.Core {
 		/// Prepares the machine for execution
 		/// from a new, clear status.
 		/// </summary>
-		public void Reset()
+		public void Reset(MemoryManager.ResetType rt)
 		{
+			this.Memory.Reset( rt );
+			this.SnapshotManager.Reset();
 			this.TDS.Reset();
 		}
 
@@ -320,6 +323,9 @@ namespace CSim.Core {
 				}
 
 				toret = (Variable) this.ExecutionStack.Pop();
+
+				// Create snapshot
+				this.SnapshotManager.SaveSnapshot();
 			}
 			finally {
 				this.TDS.Collect();
@@ -333,6 +339,10 @@ namespace CSim.Core {
 		}
 
 		public Random Random {
+			get; private set;
+		}
+
+		public SnapshotManager SnapshotManager {
 			get; private set;
 		}
 

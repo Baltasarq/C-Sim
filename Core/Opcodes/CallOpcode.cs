@@ -54,6 +54,12 @@ namespace CSim.Core.Opcodes {
 				// Take params
 				RValue[] args = new RValue[ f.FormalParams.Count ];
 
+				if ( this.Machine.ExecutionStack.Count < args.Length ) {
+					throw new EngineException(
+						L18n.Get( L18n.Id.ErrMissingArguments ) + ": " + this.Id
+					);
+				}
+
 				for(int i = args.Length - 1; i >= 0; --i) {
 					args[ i ] = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 				}

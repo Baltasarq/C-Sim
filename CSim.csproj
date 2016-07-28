@@ -133,6 +133,12 @@
     <Compile Include="Core\FunctionLibrary\Sin.cs" />
     <Compile Include="Core\FunctionLibrary\Cos.cs" />
     <Compile Include="Core\FunctionLibrary\Tan.cs" />
+    <Compile Include="Core\SnapshotManager.cs" />
+    <Compile Include="Core\Opcodes\AddOpcode.cs" />
+    <Compile Include="Core\Opcodes\SubOpcode.cs" />
+    <Compile Include="Core\Opcodes\MulOpcode.cs" />
+    <Compile Include="Core\Opcodes\DivOpcode.cs" />
+    <Compile Include="Core\Opcodes\ModOpcode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -174,6 +180,8 @@
     <EmbeddedResource Include="Res\zero.png" />
     <EmbeddedResource Include="Res\random.png" />
     <EmbeddedResource Include="Res\back.png" />
+    <EmbeddedResource Include="Res\play.png" />
+    <EmbeddedResource Include="Res\stop.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

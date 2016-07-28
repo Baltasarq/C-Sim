@@ -138,7 +138,12 @@ namespace CSim.Core
         /// The memory, as a vector of char.
         /// </value>
         public ReadOnlyCollection<byte> Raw {
-            get { return new ReadOnlyCollection<byte>( this.raw ); }
+            get {
+				byte[] toret = new byte[ this.raw.Length ];
+
+				Array.Copy( this.raw, toret, this.raw.Length );
+				return new ReadOnlyCollection<byte>( toret );
+			}
         }
 
 		/// <summary>

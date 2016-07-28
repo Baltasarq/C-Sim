@@ -78,6 +78,45 @@ namespace CSim.Core {
 		/// </summary>
 		private Type ParseExpression()
 		{
+			Type toret = ParseIntermediateExpression();
+
+			this.lexer.SkipSpaces();
+			if ( !this.lexer.IsEOL() ) {
+				Opcode opr = null;
+
+				switch( this.lexer.GetCurrentChar() ) {
+				case '+':
+					opr = new AddOpcode( this.Machine );
+					break;
+				case '-':
+					opr = new SubOpcode( this.Machine );
+					break;
+				case '*':
+					opr = new MulOpcode( this.Machine );
+					break;
+				case '/':
+					opr = new DivOpcode( this.Machine );
+					break;
+				case '%':
+					opr = new ModOpcode( this.Machine );
+					break;
+				default:
+					// It is not a expression of this kind
+					goto end;
+				}
+
+				this.lexer.Advance();
+				this.lexer.SkipSpaces();
+				ParseIntermediateExpression();
+				this.opcodes.Add( opr );
+			}
+
+			end:
+			return toret;
+		}
+
+		private Type ParseIntermediateExpression()
+		{
 			Type toret = Any.Get();
 
 			this.lexer.SkipSpaces();
@@ -99,6 +138,7 @@ namespace CSim.Core {
 				this.lexer.Advance();
 				int levels = 1;
 				
+				this.lexer.SkipSpaces();
 				currentChar = this.lexer.GetCurrentChar();
 
 				while ( currentChar == Reserved.OpAccess[ 0 ] ) {
@@ -110,6 +150,20 @@ namespace CSim.Core {
 				this.ParseExpression();
 				this.opcodes.Add( new AccessOpcode( this.Machine, levels ) );
 				toret = this.Machine.TypeSystem.GetPtrType( Any.Get() );
+			}
+			else
+			// Is it '('?
+			if ( currentChar == '(' ) {
+				this.lexer.Advance();
+				this.ParseExpression();
+				
+				this.lexer.SkipSpaces();
+				if ( this.lexer.GetCurrentChar() != ')' ) {
+					throw new ParsingException( ")?" );
+				}
+				
+				this.lexer.Advance();
+				this.lexer.SkipSpaces();
 			}
 			else {
 				ParseTerminal();
@@ -332,7 +386,7 @@ namespace CSim.Core {
 		private void ParseAssign()
 		{
             // Get the id
-			ParseExpression();
+			this.ParseIntermediateExpression();
 
 			// Parse expr after '='
 			lexer.SkipSpaces();
@@ -366,19 +420,20 @@ namespace CSim.Core {
 		{
 			int oldPos;
 			Id id;
-            bool isPtr = false;
+            int ptrLevel = 0;
             bool isRef = false;
 
 			lexer.SkipSpaces();
 
             // Is it a star over there?
-            if ( lexer.GetCurrentChar() == Reserved.OpAccess[ 0 ] ) {
-                isPtr = true;
+            while ( lexer.GetCurrentChar() == Reserved.OpAccess[ 0 ] ) {
+				++ptrLevel;
                 lexer.Advance();
+				lexer.SkipSpaces();
             }
-			else
+
             // Is there an ampersand there?
-                if ( lexer.GetCurrentChar() == Reserved.OpAddressOf[ 0 ] ) {
+            if ( lexer.GetCurrentChar() == Reserved.OpAddressOf[ 0 ] ) {
                 isRef = true;
                 lexer.Advance();
             }
@@ -393,7 +448,7 @@ namespace CSim.Core {
 				                              this.Machine.TypeSystem.GetRefType(
 												this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) ) );
             } else {
-                if ( isPtr ) {
+				if ( ptrLevel > 0 ) {
 					this.opcodes.Add( new CreateOpcode( this.Machine, id,
 					                             this.Machine.TypeSystem.GetPtrType(
 													this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) ) );

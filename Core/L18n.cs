@@ -23,6 +23,8 @@ namespace CSim.Core {
 			ActHelp,
 			ActAbout,
 			ActSettings,
+			ActPlay,
+			ActStop,
 			StReady,
 			StReadingConfig,
 			StWritingConfig,
@@ -60,6 +62,7 @@ namespace CSim.Core {
 			ErrFunctionNotFound,
 			ErrExpectedLiteralNumber,
 			ErrDerreferencedVoid,
+			ErrMissingArguments,
 		};
 
         /// <summary>
@@ -79,6 +82,8 @@ namespace CSim.Core {
 				"Help",
 				"About...",
                 "Settings",
+				"Run",
+				"Stop",
                 "Ready",
                 "Reading configuration",
                 "Writing configuration",
@@ -116,6 +121,7 @@ namespace CSim.Core {
 				"function {0}() was not found",
 				"expected number as in: 0, 0.0 or 0x0",
 				"tried to derreference void *",
+				"not enough arguments in function call",
 			}
 		);
 
@@ -136,6 +142,8 @@ namespace CSim.Core {
 				"Ayuda",
 				"Acerca de...",
                 "Preferencias",
+				"Ejecutar",
+				"Parar",
                 "Preparado",
                 "Leyendo configuración",
                 "Escribiendo configuración",
@@ -173,6 +181,7 @@ namespace CSim.Core {
 				"{0}() no encontrada",
 				"se esperaba un número como: 0, 0.0 o 0x0",
 				"no se puede acceder a void *",
+				"faltan argumentos en llamada a fn.",
 			}
 		);
 
