@@ -33,7 +33,7 @@ namespace CSim.Core.Types.Primitives
 
 		public override Literal CreateLiteral(Machine m, byte[] raw)
 		{
-			return new IntLiteral( m, m.CnvtBytesToInt( raw ) );
+			return new IntLiteral( m, m.Bytes.FromBytesToInt( raw ) );
 		}
     }
 }

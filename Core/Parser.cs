@@ -60,7 +60,7 @@ namespace CSim.Core {
                         this.ParseDelete();
                     }
 					else
-					if ( this.Machine.Api.Match( id ) != null ) {
+					if ( this.Machine.API.Match( id ) != null ) {
 						lexer.Pos = oldPos;
 						this.ParseFunctionCall();
 					} else {
@@ -126,7 +126,7 @@ namespace CSim.Core {
 			char currentChar = this.lexer.GetCurrentChar();
 
 			// Is it 'print(x)'?
-			if ( this.Machine.Api.Match( token ) != null )
+			if ( this.Machine.API.Match( token ) != null )
 			{
 				lexer.Pos = oldPos;
 				this.ParseFunctionCall();
@@ -346,7 +346,6 @@ namespace CSim.Core {
 	
 			if ( lexer.GetToken() == Reserved.OpNew ) {
 				Type type = this.Machine.TypeSystem.GetPrimitiveType( lexer.GetToken() );
-                Id memBlkId = new Id( SymbolTable.GetNextMemoryBlockName() );
 
 				// Match square brackets
 				if ( lexer.GetCurrentChar() == '[' ) {
@@ -365,11 +364,12 @@ namespace CSim.Core {
 				if ( isVector ) {
 					this.opcodes.Add( new CallOpcode( this.Machine, Malloc.Name ) );
 				} else {
+					Id memBlkId = new Id( SymbolTable.GetNextMemoryBlockName() );
 					this.opcodes.Add( new CreateOpcode( this.Machine, memBlkId, type ) );
+					this.opcodes.Add( new AddressOpcode( this.Machine, memBlkId ) );
 				}
 
                 // Make the vble "id" point to it
-				this.opcodes.Add( new AddressOpcode( this.Machine, memBlkId ) );
 				this.opcodes.Add( new AssignOpcode( this.Machine ) );
 			} else {
                 throw new EngineException(
@@ -445,16 +445,19 @@ namespace CSim.Core {
 
             if ( isRef ) {
 				this.opcodes.Add( new CreateOpcode( this.Machine, id,
-				                              this.Machine.TypeSystem.GetRefType(
-												this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) ) );
+	                              	this.Machine.TypeSystem.GetRefType(
+										this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) ) );
             } else {
 				if ( ptrLevel > 0 ) {
-					this.opcodes.Add( new CreateOpcode( this.Machine, id,
-					                             this.Machine.TypeSystem.GetPtrType(
-													this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) ) );
+					this.opcodes.Add(
+						new CreateOpcode( this.Machine, id,
+					    	this.Machine.TypeSystem.GetPtrType(
+								this.Machine.TypeSystem.GetPrimitiveType( typeId ),
+								ptrLevel ) )
+					);
                 } else {
 					this.opcodes.Add( new CreateOpcode( this.Machine, id,
-					                              this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) );
+					                  	this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) );
                 }
             }
 

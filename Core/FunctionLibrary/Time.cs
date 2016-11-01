@@ -28,7 +28,7 @@ namespace CSim.Core.FunctionLibrary {
 			var result = new TempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral(
 				this.Machine,
-				Convert.ToInt32( Math.Ceiling( DateTime.Now.TimeOfDay.TotalSeconds ) ) );
+				Convert.ToInt64( Math.Ceiling( DateTime.Now.TimeOfDay.TotalSeconds ) ) );
 
 			this.Machine.ExecutionStack.Push( result );
 		}

@@ -28,7 +28,7 @@ namespace CSim.Core.Opcodes {
 		public override void Execute()
 		{
 			Variable toret = null;
-			int address = 0;
+			long address = 0;
 			var vble = this.Machine.TDS.LookUp( this.Id.Name );
 
 			if ( vble != null ) {

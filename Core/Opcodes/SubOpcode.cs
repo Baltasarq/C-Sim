@@ -55,10 +55,10 @@
 			}
 
 			// Now yes, do it
-			int sum = ( (int) op2.LiteralValue.Value ) - ( (int) op1.LiteralValue.Value );
+			long subRes = ( (long) op2.LiteralValue.Value ) - ( (long) op1.LiteralValue.Value );
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, sum ) );
+			Variable result = new TempVariable( new IntLiteral( this.Machine, subRes ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

@@ -52,7 +52,7 @@ namespace CSim.Core.FunctionLibrary {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
-			int value = Convert.ToInt32( param.LiteralValue.Value );
+			long value = Convert.ToInt64( param.LiteralValue.Value );
 			Variable result = new TempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral( this.Machine, value );
 			this.Machine.ExecutionStack.Push( result );

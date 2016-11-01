@@ -63,7 +63,7 @@ namespace CSim.Core {
 		/// Gets or sets the address this variable exists in.
 		/// </summary>
 		/// <value>The address, as an int.</value>
-        public int Address {
+        public long Address {
             get; set;
         }
 
@@ -120,7 +120,7 @@ namespace CSim.Core {
 				return this.Memory.CreateLiteral( this.Address, this.Type );
             }
             set {
-                this.Memory.Write( this.Address, value.GetRawValue( this.Machine) );
+                this.Memory.Write( this.Address, value.GetRawValue() );
             }
         }
 

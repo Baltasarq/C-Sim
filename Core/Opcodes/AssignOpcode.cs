@@ -21,14 +21,14 @@ namespace CSim.Core.Opcodes {
 		{
 			// Check rvalue
 			if ( rvalue is TempVariable ) {
-				int address = rvalue.Address;
+				long address = rvalue.Address;
 
 				rvalue = Machine.TDS.LookForAddress( rvalue.Address );
 
 				if ( rvalue == null ) {
 					throw new UnknownVbleException( string.Format(
 								"[{0}]",
-					            Literal.ToPrettyNumber( address ) ) );
+						new IntLiteral( this.Machine, address ).ToPrettyNumber() ) );
 				}
 
 				if ( lvalue.AssociatedType != rvalue.GetTargetType() ) {
@@ -45,7 +45,7 @@ namespace CSim.Core.Opcodes {
 			}
 			else
 			if ( rvaluePtr != null ) {
-				lvalue.PointedVble = Machine.TDS.LookForAddress( rvaluePtr.LiteralValue );
+				lvalue.PointedVble = Machine.TDS.LookForAddress( rvaluePtr.IntValue );
 			}
 			else {
 				lvalue.PointedVble = rvalue;

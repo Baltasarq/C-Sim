@@ -51,7 +51,7 @@ namespace CSim.Core.FunctionLibrary {
 				throw new TypeMismatchException( param.Name.Name );
 			}
 
-			this.Machine.SetRandomEngine( (int) param.LiteralValue.Value );
+			this.Machine.SetRandomEngine( (long) param.LiteralValue.Value );
 			this.Machine.ExecutionStack.Push( new TempVariable( this.Machine.TypeSystem.GetIntType() ) );
 		}
 

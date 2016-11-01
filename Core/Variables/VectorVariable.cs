@@ -8,15 +8,15 @@ namespace CSim.Core.Variables
 {
 	public class VectorVariable: Variable {
 
-		public VectorVariable(Id id, CSim.Core.Type t, Machine m, int count)
-			: base( id, m.TypeSystem.GetVectorType( t ), m )
+		public VectorVariable(Id id, CSim.Core.Type t, Machine m, long count)
+			: base( id, m.TypeSystem.GetPtrType( t ), m )
 		{
 			this.Count = count;
 		}
 
         public virtual CSim.Core.Type AssociatedType {
 			get {
-				return ( (Vector) this.Type ).AssociatedType;
+				return ( (Ptr) this.Type ).AssociatedType;
 			}
 		}
 
@@ -33,7 +33,7 @@ namespace CSim.Core.Variables
 						this.Memory.CreateLiteral( this.Address, this.Type );
             }
             set {
-                this.Memory.Write( this.Address, value.GetRawValue( this.Machine ) );
+                this.Memory.Write( this.Address, value.GetRawValue() );
             }
         }
 
@@ -42,7 +42,7 @@ namespace CSim.Core.Variables
 		/// This size is totally dependent on the type.
 		/// </summary>
 		/// <value>The size, as an int.</value>
-		public int Count {
+		public long Count {
 			get; set;
 		}
 	}

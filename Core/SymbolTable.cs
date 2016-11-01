@@ -17,7 +17,7 @@ namespace CSim.Core {
         {
             this.tds = new Dictionary<string, Variable>();
 			this.machine = m;
-            this.addresses = new List<int>();
+            this.addresses = new List<long>();
         }
 
 		public void Reset()
@@ -46,17 +46,7 @@ namespace CSim.Core {
 			return this.Add( new RefVariable( id, t, this.Machine, -1 ) );
         }
 
-		public Variable AddPtr(string id, CSim.Core.Type t)
-		{
-			return this.AddPtr( new Id( id ), t );
-		}
-
-        public Variable AddPtr(Id id, CSim.Core.Type t)
-        {
-			return this.Add( new PtrVariable( id, t, this.Machine, -1 ) );
-        }
-
-		public Variable AddVector(Id id, CSim.Core.Type t, int size)
+		public Variable AddVector(Id id, CSim.Core.Type t, long size)
 		{
 			return this.Add( new VectorVariable( id, t, this.Machine, size ) );
 		}
@@ -143,19 +133,19 @@ namespace CSim.Core {
         /// <param name='v'>
         /// The variable to reserve memory for.
         /// </param>
-        public int Reserve(Variable v)
+        public long Reserve(Variable v)
         {
             int tries = 100;
             Random randomEngine = new Random();
             int toret = -1;
-            int[] addressesToFill = new int[ v.Type.Size ];
+            long[] addressesToFill = new long[ v.Type.Size ];
 
             while( toret < 0 ) {
                 // Generate memory location
                 do {
-                    toret = randomEngine.Next( 0, this.Memory.Max );
+					toret = randomEngine.Next( 0, this.Memory.Max - this.Machine.WordSize );
 
-                    if ( ( toret + v.Type.Size ) > this.Memory.Max ) {
+                    if ( ( toret + v.Type.Size ) >= this.Memory.Max ) {
                             toret = -1;
                     }
                 } while( toret < 0 );
@@ -189,11 +179,11 @@ namespace CSim.Core {
             return toret;
         }
 
-		private void StoreAddressesToFill(Variable v, int[] addressesToFill = null)
+		private void StoreAddressesToFill(Variable v, long[] addressesToFill = null)
 		{
 			// Create the vector of addresses, if needed
 			if ( addressesToFill == null ) {
-				addressesToFill = new int[ v.Type.Size ];
+				addressesToFill = new long[ v.Type.Size ];
 				for(int i = 0; i < addressesToFill.Length; ++i) {
 					addressesToFill[ i ] = v.Address + i;
 				}
@@ -296,7 +286,7 @@ namespace CSim.Core {
 		/// <param name='address'>
 		/// The address to look for.
 		/// </param>
-		public Variable LookForAddress(int address)
+		public Variable LookForAddress(long address)
 		{
 			Variable toret = null;
 
@@ -318,13 +308,13 @@ namespace CSim.Core {
 		/// <param name="ptrVble">A PtrVariable object.</param>
 		public Variable GetPointedValueAsVariable(PtrVariable ptrVble)
 		{
-			var toret = this.LookForAddress( ptrVble.LiteralValue );
+			Variable toret = this.LookForAddress( ptrVble.IntValue );
 
 			if ( toret == null
 			  || toret.GetTargetType() != ptrVble.AssociatedType )
 			{
 				toret = new TempVariable( ptrVble.AssociatedType );
-				toret.Address = ptrVble.LiteralValue.Value;
+				toret.Address = ptrVble.IntValue.Value;
 				toret.LiteralValue = new IntLiteral( this.machine, ptrVble.Access );
 			}
 
@@ -365,7 +355,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="address">The address of the memory block, as an int.</param>
 		/// <exception cref="IncorrectAddressException">when the memory pointed is not on heap.</exception>
-		public void DeleteBlk(int address)
+		public void DeleteBlk(long address)
 		{
 			Variable pointedVble = this.Machine.TDS.LookForAddress( address );
 
@@ -375,7 +365,7 @@ namespace CSim.Core {
 				} else {
 					throw new IncorrectAddressException(
 						L18n.Get( L18n.Id.ErrMemoryNotInHeap )
-						+ ": " + Literal.ToPrettyNumber( address )
+						+ ": " + pointedVble.LiteralValue.ToPrettyNumber()
 						);
 				}
 			}
@@ -402,7 +392,7 @@ namespace CSim.Core {
 		}
 
 		private Dictionary<string, Variable> tds;
-		private List<int> addresses;
+		private List<long> addresses;
 
         private Machine machine;
         private static int numMemBlock = 0;

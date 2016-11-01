@@ -15,9 +15,8 @@ namespace CSim.Core {
 		public TypeSystem(Machine m)
 		{
 			this.machine = m;
-			this.ptrTypeInstances = new Dictionary<Type, Ptr>();
+			this.ptrTypeInstances = new Dictionary<Type, List<Ptr>>();
 			this.refTypeInstances = new Dictionary<Type, Ref>();
-			this.vectorTypeInstances = new Dictionary<Type, Vector>();
 			this.primitiveTypeInstances = new Dictionary<string, Type>();
 
 			this.Reset();
@@ -31,7 +30,6 @@ namespace CSim.Core {
 		{
 			this.ptrTypeInstances.Clear();
 			this.refTypeInstances.Clear();
-			this.vectorTypeInstances.Clear();
 			this.primitiveTypeInstances.Clear();
 
 			this.primitiveTypeInstances.Add( CSim.Core.Types.Primitives.Char.TypeName,
@@ -111,13 +109,27 @@ namespace CSim.Core {
 		/// </summary>
 		/// <returns>The pointer type, as a <see cref="Ptr"/> object.</returns>
 		/// <param name="t">The regular type to build the pointer on.</param>
-		public Ptr GetPtrType(Type t)
+		/// <param name="inidrectionLevel">The number of indirections.</param>
+		public Ptr GetPtrType(Type t, int indirectionLevel = 1)
 		{
+			List<Ptr> ptrTypes = null;
 			Ptr toret = null;
 
-			if ( !( this.ptrTypeInstances.TryGetValue( t, out toret ) ) ) {
-				toret = new Ptr( t.Name + Ptr.PtrTypeNamePart, t, this.Machine.WordSize );
-				this.ptrTypeInstances.Add( t, toret );
+			if ( !( this.ptrTypeInstances.TryGetValue( t, out ptrTypes ) ) ) {
+				// T *
+				toret = new Ptr( 1, t, this.Machine.WordSize );
+				ptrTypes = new List<Ptr>();
+				this.ptrTypeInstances.Add( t, ptrTypes ); 
+				ptrTypes.Add( toret );
+			}
+				
+			for(int i = ptrTypes.Count; i < indirectionLevel; ++i) {
+				toret = new Ptr( i + 1, t, this.Machine.WordSize );
+				ptrTypes.Add( toret );
+			}
+
+			if ( toret == null ) {
+				toret = ptrTypes[ indirectionLevel - 1 ];
 			}
 
 			return toret;
@@ -133,25 +145,8 @@ namespace CSim.Core {
 			Ref toret = null;
 
 			if ( !( this.refTypeInstances.TryGetValue( t, out toret ) ) ) {
-				toret = new Ref( t.Name + Ref.RefTypeNamePart, t, this.Machine.WordSize );
+				toret = new Ref( t, this.Machine.WordSize );
 				this.refTypeInstances.Add( t, toret );
-			}
-
-			return toret;
-		}
-
-		/// <summary>
-		/// Retrieves a reference type, such as int[]
-		/// </summary>
-		/// <returns>The vector type, as a <see cref="Vector"/> object.</returns>
-		/// <param name="t">The regular type to build the vector on.</param>
-		public Vector GetVectorType(Type t)
-		{
-			Vector toret = null;
-
-			if ( !( this.vectorTypeInstances.TryGetValue( t, out toret ) ) ) {
-				toret = new Vector( t.Name + Vector.TypeName, t, this.Machine.WordSize );
-				this.vectorTypeInstances.Add( t, toret );
 			}
 
 			return toret;
@@ -179,9 +174,8 @@ namespace CSim.Core {
 		}
 
 		private Machine machine;
-		private Dictionary<Type, Ptr> ptrTypeInstances;
+		private Dictionary<Type, List<Ptr>> ptrTypeInstances;
 		private Dictionary<Type, Ref> refTypeInstances;
-		private Dictionary<Type, Vector> vectorTypeInstances;
 		private Dictionary<string, Type> primitiveTypeInstances;
 	}
 }

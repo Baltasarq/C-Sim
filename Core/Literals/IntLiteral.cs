@@ -7,7 +7,7 @@ namespace CSim.Core.Literals {
     /// Literals of type Int.
     /// </summary>
     public class IntLiteral: Literal {
-        public IntLiteral(Machine m, int x)
+        public IntLiteral(Machine m, long x)
 			:base( m, x )
         {
         }
@@ -27,9 +27,9 @@ namespace CSim.Core.Literals {
         /// The value stored, as an integer value.
         /// </summary>
         /// <value>The value.</value>
-        public new int Value {
+        public new long Value {
             get {
-                return (int) base.Value;
+                return (long) base.Value;
             }
         }
 
@@ -37,9 +37,9 @@ namespace CSim.Core.Literals {
         /// Gets the raw value of the literal, as sequence of bytes.
         /// </summary>
         /// <value>The raw value.</value>
-        public override byte[] GetRawValue(Machine m)
+        public override byte[] GetRawValue()
         {
-            return m.CnvtIntToBytes( this.Value );
+			return this.Machine.Bytes.FromIntToBytes( this.Value );
         }
 
 		/// <summary>
@@ -48,7 +48,7 @@ namespace CSim.Core.Literals {
 		/// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Literals.IntLiteral"/>.</returns>
 		public override string ToString()
 		{
-			return Literal.ToPrettyNumber( this.Value );
+			return this.ToPrettyNumber();
 		}
     }
 }

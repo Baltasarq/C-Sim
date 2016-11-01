@@ -38,7 +38,7 @@ namespace CSim.Core.Literals {
         /// Gets the raw value of the literal, as sequence of bytes.
         /// </summary>
         /// <value>The raw value.</value>
-        public override byte[] GetRawValue(Machine m)
+        public override byte[] GetRawValue()
 		{
             return Machine.TextEncoding.GetBytes( this.Value.ToCharArray() );
         }

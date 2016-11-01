@@ -23,7 +23,7 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		public override void Execute()
 		{
-			int access = 0;
+			long access = 0;
 			Variable vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 
 			if ( vble != null ) {
@@ -38,7 +38,7 @@ namespace CSim.Core.Opcodes {
 					if ( vble.Type.IsArithmetic()
 					  || vble is PtrVariable )
 					{
-						access = (int) vble.LiteralValue.Value;
+						access = Convert.ToInt64( vble.LiteralValue.ToDec() );
 						vble = this.Machine.TDS.LookForAddress( access );
 
 						if ( vble == null ) {

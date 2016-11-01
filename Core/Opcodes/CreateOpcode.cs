@@ -3,6 +3,7 @@ namespace CSim.Core.Opcodes {
 	using System;
 
 	using CSim.Core.Types;
+	using CSim.Core.Variables;
 	using CSim.Core.Exceptions;
 
 	public class CreateOpcode: Opcode
@@ -28,7 +29,7 @@ namespace CSim.Core.Opcodes {
 			else
 			if ( ptrType != null ) {
 				this.DoIt = this.CreatePtr;
-				this.Type = ptrType.AssociatedType;
+				this.Type = ptrType;
 			}
 
 			return;
@@ -51,7 +52,8 @@ namespace CSim.Core.Opcodes {
 
 		protected Variable CreatePtr()
 		{
-			return this.Machine.TDS.AddPtr( this.Name, this.Type );
+			return this.Machine.TDS.Add(
+				new PtrVariable( this.Name, this.Type, this.Machine, -1 ) );
 		}
 
 		public Id Name {

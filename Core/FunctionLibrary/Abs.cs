@@ -52,7 +52,7 @@
 
 			result.LiteralValue = new IntLiteral(
 									this.Machine,
-									Math.Abs( Convert.ToInt32( x.LiteralValue.Value ) )
+									Math.Abs( Convert.ToInt64( x.LiteralValue.Value ) )
 			);
 			this.Machine.ExecutionStack.Push( result );
 		}

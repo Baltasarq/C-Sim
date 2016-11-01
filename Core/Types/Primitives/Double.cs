@@ -28,7 +28,7 @@ namespace CSim.Core.Types.Primitives {
 
 		public override Literal CreateLiteral(Machine m, byte[] raw)
 		{
-			return new DoubleLiteral( m, m.CnvtBytesToDouble( raw ) );
+			return new DoubleLiteral( m, m.Bytes.FromBytesToDouble( raw ) );
 		}
     }
 }

@@ -48,7 +48,7 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		public override void Execute()
 		{
-			Function f = this.Machine.Api.Match( this.Id );
+			Function f = this.Machine.API.Match( this.Id );
 
 			if ( f != null ) {
 				// Take params

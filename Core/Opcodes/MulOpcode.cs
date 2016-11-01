@@ -55,10 +55,10 @@
 			}
 
 			// Now yes, do it
-			int sum = ( (int) op1.LiteralValue.Value ) * ( (int) op2.LiteralValue.Value );
+			long product = ( (long) op1.LiteralValue.Value ) * ( (long) op2.LiteralValue.Value );
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, sum ) );
+			Variable result = new TempVariable( new IntLiteral( this.Machine, product ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

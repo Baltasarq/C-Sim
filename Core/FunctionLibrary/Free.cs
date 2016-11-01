@@ -27,16 +27,16 @@ namespace CSim.Core.FunctionLibrary {
 
 		public override void Execute(RValue[] realParams)
 		{
-			int address = this.Machine.Memory.Max;
+			long address = this.Machine.Memory.Max;
 			Variable vble = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
 			var ptrVble = vble as PtrVariable;
 
 			if ( ptrVble != null ) {
-				address = ptrVble.LiteralValue.Value;
+				address = ptrVble.IntValue.Value;
 			}
 			else
 			if ( vble.Type == this.Machine.TypeSystem.GetIntType() ) {
-				address = (int) vble.LiteralValue.Value;
+				address = (long) vble.LiteralValue.Value;
 			}
 			else {
 				throw new TypeMismatchException(

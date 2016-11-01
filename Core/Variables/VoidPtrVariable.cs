@@ -30,7 +30,7 @@ namespace CSim.Core.Variables {
 		/// This is not possible for this type.
 		/// </summary>
 		/// <value>The memory read or written.</value>
-		public override int Access {
+		public override long Access {
 			get {
 				throw new TypeMismatchException( L18n.Get( L18n.Id.ErrDerreferencedVoid ) );
 			}

@@ -61,7 +61,7 @@ namespace CSim.Core
             return;
         }
 
-        public void CheckMemoryPosExists(int pos, int size)
+        public void CheckMemoryPosExists(long pos, int size)
         {
             int maxMemory = this.Max;
             
@@ -70,7 +70,8 @@ namespace CSim.Core
               || ( pos + size ) > maxMemory )
             {
                 throw new ExhaustedMemoryException(
-                    L18n.Get( L18n.Id.ErrAccessingAt ) + " " + Literal.ToHex( pos ) );
+                    L18n.Get( L18n.Id.ErrAccessingAt )
+					+ " " + new IntLiteral( this.machine, pos ).ToHex() );
             }
             
             return;
@@ -81,7 +82,7 @@ namespace CSim.Core
 		/// </summary>
 		/// <param name="pos">The position, as an int.</param>
 		/// <param name="size">The size, as an int.</param>
-        public byte[] Read(int pos, int size)
+        public byte[] Read(long pos, int size)
         {
             var toret = new byte[ size ];
 
@@ -96,7 +97,7 @@ namespace CSim.Core
 		/// </summary>
 		/// <param name="pos">The position, as an int.</param>
 		/// <param name="value">The vector of bytes.</param>
-        public void Write(int pos, byte[] value)
+        public void Write(long pos, byte[] value)
         {
             int size = value.Length;
             this.CheckMemoryPosExists( pos, size );
@@ -118,7 +119,7 @@ namespace CSim.Core
         /// </summary>
         /// <param name="pos">The position to begin to read from.</param>
         /// <returns>The raw secquence of bytes.</returns>
-        public byte[] ReadStringFromMemory(int pos)
+        public byte[] ReadStringFromMemory(long pos)
         {
             var toret = new List<byte>();
 
@@ -151,12 +152,12 @@ namespace CSim.Core
 		/// </summary>
 		/// <param name="address">The address to read from.</param>
 		/// <param name="type">The type, reporting the size.</param>
-		public Literal CreateLiteral(int address, Type type)
+		public Literal CreateLiteral(long address, Type type)
 		{
 			Literal toret = null;
-			var ptrType = type as Vector;
+			var ptrType = type as Ptr;
 
-			// Special case: char[] is a StringLiteral
+			// Special case: char* is a StringLiteral
 			if ( ptrType != null
 			  && ptrType.AssociatedType == this.Machine.TypeSystem.GetCharType() )
 			{

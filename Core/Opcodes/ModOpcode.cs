@@ -31,13 +31,13 @@
 
 			// Check ops
 			if ( op1 == null
-				|| !( op1.Type.IsArithmetic() ) )
+	  		  || !( op1.Type.IsArithmetic() ) )
 			{
 				throw new TypeMismatchException( ": op1" );
 			}
 
 			if ( op2 == null
-				|| !( op2.Type.IsArithmetic() ) )
+			  || !( op2.Type.IsArithmetic() ) )
 			{
 				throw new TypeMismatchException( ": op2" );
 			}
@@ -55,10 +55,16 @@
 			}
 
 			// Now yes, do it
-			int sum = ( (int) op1.LiteralValue.Value ) % ( (int) op2.LiteralValue.Value );
+			long op1Value = Convert.ToInt64( op1.LiteralValue.Value );
+
+			if ( op1Value == 0 ) {
+				throw new EngineException( "/0??" );
+			}
+
+			long modRes = Convert.ToInt64( op2.LiteralValue.Value ) % op1Value;
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, sum ) );
+			Variable result = new TempVariable( new IntLiteral( this.Machine, modRes ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

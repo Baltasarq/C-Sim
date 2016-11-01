@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 using CSim.Core.Types;
 using CSim.Core.Literals;
@@ -16,8 +17,8 @@ namespace CSim.Core {
 
 		public Literal(Machine m, object v)
 		{
-			this.Value = v;
-			this.machine = m;
+			this.val = v;
+			this.Machine = m;
 		}
 
         /// <summary>
@@ -25,7 +26,9 @@ namespace CSim.Core {
         /// </summary>
         /// <value>The value.</value>
         public override object Value {
-			get;
+			get {
+				return this.val;
+			}
         }
 
 		/// <summary>
@@ -33,9 +36,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The machine.</value>
 		public Machine Machine {
-			get {
-				return this.machine;
-			}
+			get; set;
 		}
 
         /// <summary>
@@ -43,7 +44,31 @@ namespace CSim.Core {
 		/// We need the machine to do that, since it handles endianness.
         /// </summary>
         /// <return>The raw value.</return>
-		public abstract byte[] GetRawValue(Machine m);
+		public abstract byte[] GetRawValue();
+
+		public string FromLittleEndianToHex()
+		{
+			StringBuilder toret = new StringBuilder();
+			byte[] bytes = this.GetRawValue();
+
+			foreach(byte bt in bytes) {
+				toret.Insert( 0, bt.ToString( "x" ).PadLeft( 2, '0' ) );
+			}
+
+			return toret.ToString();
+		}
+
+		public string FromBigEndianToHex()
+		{
+			StringBuilder toret = new StringBuilder();
+			byte[] bytes = this.GetRawValue();
+
+			for(int i = bytes.Length -1; i >= 0; --i) {
+				toret.Insert( 0, bytes[ i ].ToString( "x" ).PadLeft( 2, '0' ) );
+			}
+
+			return toret.ToString();			
+		}
 
 		/// <summary>
 		/// Returns the given value as an hex value.
@@ -54,9 +79,17 @@ namespace CSim.Core {
 		/// <param name='value'>
 		/// The value, as an integer.
 		/// </param>
-		public static string ToHex(int value)
+		public string ToHex()
 		{
-			return value.ToString( "x" ).PadLeft( 2, '0' );
+			string toret;
+
+			if ( this.Machine.IsBigEndian ) {
+				toret = FromBigEndianToHex();
+			} else {
+				toret = FromLittleEndianToHex();
+			}
+
+			return toret.ToString();
 		}
 
 		/// <summary>
@@ -65,9 +98,9 @@ namespace CSim.Core {
 		/// <returns>The pretty hex, a a string.</returns>
 		/// <param name="value">The value to convert, as an int.</param>
 		/// <seealso cref="Literal.ToHex"/>
-		public static string ToPrettyHex(int value)
+		public string ToPrettyHex()
 		{
-			return "0x" + ToHex( value );
+			return "0x" + this.ToHex();
 		}
 
 		/// <summary>
@@ -75,9 +108,9 @@ namespace CSim.Core {
 		/// </summary>
 		/// <returns>The value, as a string.</returns>
 		/// <param name="value">The value, as a string.</param>
-		public static string ToDec(int value)
+		public string ToDec()
 		{
-			return value.ToString().PadLeft( 3, '0' );
+			return this.GetValueAsInt().ToString().PadLeft( 4, '0' );
 		}
 
 		/// <summary>
@@ -85,15 +118,15 @@ namespace CSim.Core {
 		/// </summary>
 		/// <returns>The pretty number, as a string.</returns>
 		/// <param name="value">The value, as an int.</param>
-		public static string ToPrettyNumber(int value)
+		public string ToPrettyNumber()
 		{
 			string toret;
 
-			if ( Display == DisplayType.Dec ) {
-				toret = ToDec( value );
+			if ( Literal.Display == DisplayType.Dec ) {
+				toret = this.ToDec();
 			}
 			else {
-				toret = ToPrettyHex( value );
+				toret = this.ToPrettyHex();
 			}
 
 			return toret;
@@ -103,23 +136,23 @@ namespace CSim.Core {
 		/// Gets the value as int, if possible.
 		/// </summary>
 		/// <returns>The value as int.</returns>
-		public int GetValueAsInt() {
-			int toret = 0;
+		public long GetValueAsInt()
+		{
+			long toret = 0;
 
 			if ( this is IntLiteral
 			  || this is CharLiteral
 			  || this is DoubleLiteral )
 			{
-				toret = Convert.ToInt32( this.Value );
-			} else {
-				throw new TypeMismatchException( this.Value.ToString() );
+				toret = Convert.ToInt64( this.Value );
 			}
 
 			return toret;
 		}
 
-		private Machine machine;
 		public static DisplayType Display = DisplayType.Hex;
+
+		private object val;
     }
 }
 

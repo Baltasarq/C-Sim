@@ -43,9 +43,9 @@
 			Variable size = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
 
 			Variable result = this.Machine.TDS.AddVector(
-				new Id( SymbolTable.GetNextMemoryBlockName() ),
-				this.Machine.TypeSystem.GetCharType(),
-				(int) size.LiteralValue.Value
+								new Id( SymbolTable.GetNextMemoryBlockName() ),
+								CSim.Core.Types.Any.Get(),
+								(long) size.LiteralValue.Value
 			);
 
 			this.Machine.ExecutionStack.Push( result );

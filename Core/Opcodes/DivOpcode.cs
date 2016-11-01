@@ -55,16 +55,16 @@
 			}
 
 			// Now yes, do it
-			int op1Value = ( (int) op1.LiteralValue.Value );
+			long op1Value = ( (long) op1.LiteralValue.Value );
 
 			if ( op1Value == 0 ) {
 				throw new EngineException( "/0??" );
 			}
 
-			int sum = ( (int) op1.LiteralValue.Value ) / op1Value;
+			long divRes = ( (long) op2.LiteralValue.Value ) / op1Value;
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, sum ) );
+			Variable result = new TempVariable( new IntLiteral( this.Machine, divRes ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

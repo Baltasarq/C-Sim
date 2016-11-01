@@ -31,22 +31,24 @@
 
 				// If the vble at the right is a reference, dereference it
 				if ( vbleAsPtr != null  ) {
-					vble = this.Machine.TDS.LookForAddress( vbleAsPtr.LiteralValue.Value );
+					vble = this.Machine.TDS.LookForAddress( vbleAsPtr.IntValue.Value );
 				}
 
 				// Chk
-				if ( !( vble.Type is Vector ) ) {
+				var ptrType = vble.Type as Ptr;
+
+				if ( ptrType == null ) {
 					throw new TypeMismatchException( vble.Name.Name );
 				}
 
 				// Find the address
-				int address = vble.Address + ( (int) offset.LiteralValue.Value );
+				long address = vble.Address + ( (long) offset.LiteralValue.Value );
 
 				// Store in the temp vble and end
 				Variable result = new TempVariable(
 					this.Machine.Memory.CreateLiteral(
 						address,
-						( (Vector) vble.Type ).AssociatedType )
+						ptrType.AssociatedType )
 				);
 
 				this.Machine.ExecutionStack.Push( result );

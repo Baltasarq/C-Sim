@@ -279,12 +279,17 @@ namespace CSim.Core {
 						++pos;
 					}
 
-				    if ( token[ pos ] == '0'
+					if ( pos < token.Length
+					  && token[ pos ] == '0'
 					  && char.ToUpper( this.GetCurrentChar() ) == 'X' )
 					{
 						toret = TokenType.HexNumber;
 					} else {
 						toret = TokenType.RealNumber;
+
+						if ( !IsRealNumber( token ) ) {
+							toret = TokenType.Invalid;
+						}
 
 						if ( IsIntNumber( token ) ) {
 							toret = TokenType.IntNumber;

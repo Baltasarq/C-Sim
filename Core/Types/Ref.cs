@@ -13,8 +13,8 @@ namespace CSim.Core.Types
 	{
 		public const string RefTypeNamePart = "&";
 
-        internal Ref(string n, Type associatedType, int wordSize)
-			: base( n, associatedType, wordSize )
+        internal Ref(Type associatedType, int wordSize)
+			: base( associatedType.Name + RefTypeNamePart, associatedType, wordSize )
         {
         }
 

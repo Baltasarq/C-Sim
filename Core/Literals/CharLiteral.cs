@@ -35,15 +35,15 @@ namespace CSim.Core.Literals {
         /// Gets the raw value of the literal, as secquence of bytes.
         /// </summary>
         /// <value>The raw value.</value>
-        public override byte[] GetRawValue(Machine m)
+        public override byte[] GetRawValue()
 		{
-			return m.CnvtCharToBytes( this.Value );
+			return this.Machine.Bytes.FromCharToBytes( this.Value );
         }
 
 		public override string ToString()
 		{
 			char value = this.Value;
-			string toret = string.Format( "({0})", Literal.ToPrettyNumber( value ) );
+			string toret = string.Format( "({0})", this.ToPrettyNumber() );
 
 			if ( !char.IsControl( value ) ) {
 				toret = String.Format( "'{0}' ", char.ToString( value ) ) + toret;

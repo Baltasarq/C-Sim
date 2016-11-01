@@ -11,6 +11,7 @@
     <AssemblyName>CSim</AssemblyName>
     <StartupObject>CSim.Gui.PPal</StartupObject>
     <ApplicationIcon>Res\appIcon.ico</ApplicationIcon>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,7 +36,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Core\" />
-    <Folder Include="Gui\" />
     <Folder Include="Res\" />
     <Folder Include="Core\Types\" />
     <Folder Include="Core\Opcodes\" />
@@ -45,10 +45,9 @@
     <Folder Include="Core\Functions\" />
     <Folder Include="Core\FunctionLibrary\" />
     <Folder Include="Core\Literals\" />
+    <Folder Include="Ui\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gui\MainWindow.cs" />
-    <Compile Include="Gui\PPal.cs" />
     <Compile Include="Core\MemoryManager.cs" />
     <Compile Include="Core\AppInfo.cs" />
     <Compile Include="Core\SymbolTable.cs" />
@@ -67,9 +66,6 @@
     <Compile Include="Core\Reserved.cs" />
     <Compile Include="Core\Types\Ref.cs" />
     <Compile Include="Core\Exceptions\InvalidIdException.cs" />
-    <Compile Include="Gui\SchemaDrawer.cs" />
-    <Compile Include="Gui\GrphBoxedVble.cs" />
-    <Compile Include="Core\Types\Vector.cs" />
     <Compile Include="Core\Types\Primitives\Char.cs" />
     <Compile Include="Core\Types\Primitives\Int.cs" />
     <Compile Include="Core\Types\Primitive.cs" />
@@ -99,7 +95,6 @@
     <Compile Include="Core\Types\Any.cs" />
     <Compile Include="Core\Variables\VoidPtrVariable.cs" />
     <Compile Include="Core\TypeSystem.cs" />
-    <Compile Include="Gui\MainWindowView.cs" />
     <Compile Include="Core\ExecutionStack.cs" />
     <Compile Include="Core\Opcodes\CallOpcode.cs" />
     <Compile Include="Core\Opcodes\AssignOpcode.cs" />
@@ -107,7 +102,6 @@
     <Compile Include="Core\Opcodes\CreateOpcode.cs" />
     <Compile Include="Core\Opcodes\StoreRValue.cs" />
     <Compile Include="Core\FunctionLibrary\SizeOf.cs" />
-    <Compile Include="Core\FunctionLibrary\Print.cs" />
     <Compile Include="Core\Variables\VectorVariable.cs" />
     <Compile Include="Core\Variables\PtrVariable.cs" />
     <Compile Include="Core\Literals\VectorLiteral.cs" />
@@ -139,29 +133,17 @@
     <Compile Include="Core\Opcodes\MulOpcode.cs" />
     <Compile Include="Core\Opcodes\DivOpcode.cs" />
     <Compile Include="Core\Opcodes\ModOpcode.cs" />
+    <Compile Include="Core\FunctionLibrary\Printf.cs" />
+    <Compile Include="Ui\MainWindow.cs" />
+    <Compile Include="Ui\PPal.cs" />
+    <Compile Include="Ui\SchemaDrawer.cs" />
+    <Compile Include="Ui\GrphBoxedVble.cs" />
+    <Compile Include="Ui\MainWindowView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
-    <Reference Include="nunit.framework">
-      <HintPath>packages\NUnit.3.4.1\lib\net35\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.engine">
-      <HintPath>packages\NUnit.Engine.3.4.1\lib\nunit.engine.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.engine.api">
-      <HintPath>packages\NUnit.Engine.3.4.1\lib\nunit.engine.api.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil">
-      <HintPath>packages\NUnit.Engine.3.4.1\lib\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit-agent">
-      <HintPath>packages\NUnit.Engine.3.4.1\lib\nunit-agent.exe</HintPath>
-    </Reference>
-    <Reference Include="nunit-agent-x86">
-      <HintPath>packages\NUnit.Engine.3.4.1\lib\nunit-agent-x86.exe</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Res\appIcon.png" />
@@ -182,8 +164,5 @@
     <EmbeddedResource Include="Res\back.png" />
     <EmbeddedResource Include="Res\play.png" />
     <EmbeddedResource Include="Res\stop.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>
