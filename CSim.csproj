@@ -139,6 +139,7 @@
     <Compile Include="Ui\SchemaDrawer.cs" />
     <Compile Include="Ui\GrphBoxedVble.cs" />
     <Compile Include="Ui\MainWindowView.cs" />
+    <Compile Include="Core\Variables\ArrayElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -15,7 +15,8 @@ namespace CSim.Core.Variables {
 		public TempVariable(Type t)
 			:base( new Id( "aux" ), t, null )
 		{
-			this.SetNameWithoutChecking( EtqTempVariable );
+			this.SetNameWithoutChecking( EtqTempVariable + NumTemps );
+			++NumTemps;
 		}
 
         /// <summary>
@@ -42,6 +43,14 @@ namespace CSim.Core.Variables {
             set {
                 this.value = value;
             }
+		}
+
+		/// <summary>
+		/// Gets or sets the number temp variables.
+		/// </summary>
+		/// <value>The number of temps, as an int.</value>
+		private static int NumTemps {
+			get; set;
 		}
 
         private Literal value;

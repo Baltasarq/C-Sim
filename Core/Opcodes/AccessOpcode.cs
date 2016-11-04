@@ -23,7 +23,6 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		public override void Execute()
 		{
-			long access = 0;
 			Variable vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 
 			if ( vble != null ) {
@@ -34,17 +33,19 @@ namespace CSim.Core.Opcodes {
 					if ( vbleAsRef != null  ) {
 						vble = vbleAsRef.PointedVble;
 					}
-
+					else
 					if ( vble.Type.IsArithmetic()
 					  || vble is PtrVariable )
 					{
-						access = Convert.ToInt64( vble.LiteralValue.ToDec() );
+						Variable vbleOld = vble;
+						long access = Convert.ToInt64( vble.LiteralValue.Value );
 						vble = this.Machine.TDS.LookForAddress( access );
 
 						if ( vble == null ) {
-							throw new UnknownVbleException( "at: " + access );
+								throw new UnknownVbleException( "*" + vbleOld.Name.Name + " == " + access + "??" );
 						}
-					} else {
+					}
+					else {
 						throw new TypeMismatchException( vble.ToString() );
 					}
 				}

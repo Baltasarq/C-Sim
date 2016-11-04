@@ -85,7 +85,7 @@ namespace CSim.Core.Opcodes {
 
 			// Prepare assign parts
 			if ( this.Vble is TempVariable ) {
-				throw new UnknownVbleException( this.Vble.Name.Name );
+				throw new UnknownVbleException( "tmp vble: " + this.Vble.Name.Name );
 			}
 
 			Variable toret = this.Vble;

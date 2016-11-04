@@ -16,7 +16,7 @@
 		}
 
 		/// <summary>
-		/// Returns the a variable, accessing its address with '*'
+		/// Returns the a variable, accessing its address plus offset with '[]'
 		/// </summary>
 		public override void Execute()
 		{
@@ -41,16 +41,18 @@
 					throw new TypeMismatchException( vble.Name.Name );
 				}
 
-				// Find the address
-				long address = vble.Address + ( (long) offset.LiteralValue.Value );
+				if ( !offset.Type.IsArithmetic() ) {
+					throw new TypeMismatchException( offset.LiteralValue.ToString() );
+				}		
 
-				// Store in the temp vble and end
-				Variable result = new TempVariable(
-					this.Machine.Memory.CreateLiteral(
-						address,
-						ptrType.AssociatedType )
-				);
-
+				// Store in the ArrayElement vble and end
+				Variable result = new ArrayElement(
+										vble,
+										ptrType,
+										offset.LiteralValue.GetValueAsInt(),
+					                   	this.Machine );
+				
+				this.Machine.TDS.AddVariableInPlace( result ); 
 				this.Machine.ExecutionStack.Push( result );
 			} else {
 				throw new EngineException( "invalid rvalue" );
