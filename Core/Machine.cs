@@ -322,6 +322,8 @@ namespace CSim.Core {
 			Variable toret = null;
 			var parser = new Parser( input, this );
 
+			this.TDS.CollectArrayElements();
+
 			er.SaveSnapshot();
 			this.ExecutionStack.Clear();
 

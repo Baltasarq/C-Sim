@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>CSim</RootNamespace>
     <AssemblyName>CSim</AssemblyName>
-    <StartupObject>CSim.Gui.PPal</StartupObject>
+    <StartupObject>CSim.Ui.PPal</StartupObject>
     <ApplicationIcon>Res\appIcon.ico</ApplicationIcon>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -23,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
     <ConsolePause>false</ConsolePause>
+    <DocumentationFile>bin\Debug\CSim.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -46,6 +47,7 @@
     <Folder Include="Core\FunctionLibrary\" />
     <Folder Include="Core\Literals\" />
     <Folder Include="Ui\" />
+    <Folder Include="Ui\Drawer\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\MemoryManager.cs" />
@@ -102,7 +104,6 @@
     <Compile Include="Core\Opcodes\CreateOpcode.cs" />
     <Compile Include="Core\Opcodes\StoreRValue.cs" />
     <Compile Include="Core\FunctionLibrary\SizeOf.cs" />
-    <Compile Include="Core\Variables\VectorVariable.cs" />
     <Compile Include="Core\Variables\PtrVariable.cs" />
     <Compile Include="Core\Literals\VectorLiteral.cs" />
     <Compile Include="Core\Opcodes\AccessOpcode.cs" />
@@ -137,9 +138,15 @@
     <Compile Include="Ui\MainWindow.cs" />
     <Compile Include="Ui\PPal.cs" />
     <Compile Include="Ui\SchemaDrawer.cs" />
-    <Compile Include="Ui\GrphBoxedVble.cs" />
     <Compile Include="Ui\MainWindowView.cs" />
     <Compile Include="Core\Variables\ArrayElement.cs" />
+    <Compile Include="Ui\Drawer\FontInfo.cs" />
+    <Compile Include="Ui\Drawer\GrphRows.cs" />
+    <Compile Include="Ui\Drawer\GrphBoxedPrimitive.cs" />
+    <Compile Include="Ui\Drawer\GrphBoxedVariable.cs" />
+    <Compile Include="Ui\Drawer\GrphBoxedArray.cs" />
+    <Compile Include="Core\Variables\ArrayVariable.cs" />
+    <Compile Include="Ui\Drawer\GraphInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -166,4 +173,13 @@
     <EmbeddedResource Include="Res\play.png" />
     <EmbeddedResource Include="Res\stop.png" />
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <DotNetNamingPolicy DirectoryNamespaceAssociation="PrefixedHierarchical" ResourceNamePolicy="FileFormatDefault" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

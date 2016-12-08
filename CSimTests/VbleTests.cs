@@ -8,7 +8,7 @@ namespace CSimTests {
 	[TestFixture]
 	public class VbleTests {
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Init()
 		{
 			this.vm = new Machine();

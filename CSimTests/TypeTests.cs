@@ -1,13 +1,11 @@
-using System;
 using NUnit.Framework;
-
 using CSim.Core;
 
 namespace CSimTests {
 	[TestFixture]
 	public class TypeTests {
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Init()
 		{
 			this.vm = new Machine();
@@ -20,23 +18,23 @@ namespace CSimTests {
 		[Test]
 		public void ByteConversion()
 		{
-			int int_v = 5;
+			long int_v = 5;
 			char char_v = 'a';
 			double double_v = 7.7;
 
-			int res_int_v;
+			long res_int_v;
 			char res_char_v;
 			double res_double_v;
 
 			// Convert to bytes
-			byte[] bytes_int_v = this.vm.CnvtIntToBytes( int_v );
-			byte[] bytes_char_v = this.vm.CnvtCharToBytes( char_v );
-			byte[] bytes_double_v = this.vm.CnvtDoubleToBytes( double_v );
+			byte[] bytes_int_v = this.vm.Bytes.FromIntToBytes( int_v );
+			byte[] bytes_char_v = this.vm.Bytes.FromCharToBytes( char_v );
+			byte[] bytes_double_v = this.vm.Bytes.FromDoubleToBytes( double_v );
 
 			// Convert back to values
-			res_int_v = this.vm.CnvtBytesToInt( bytes_int_v );
-			res_char_v = this.vm.CnvtBytesToChar( bytes_char_v );
-			res_double_v = this.vm.CnvtBytesToDouble( bytes_double_v );
+			res_int_v = this.vm.Bytes.FromBytesToInt( bytes_int_v );
+			res_char_v = this.vm.Bytes.FromBytesToChar( bytes_char_v );
+			res_double_v = this.vm.Bytes.FromBytesToDouble( bytes_double_v );
 
 			// Check the round-trip was succesful
 			Assert.AreEqual( char_v, res_char_v );

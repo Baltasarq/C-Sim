@@ -28,22 +28,22 @@ namespace CSim.Core.Opcodes {
 			if ( vble != null ) {
 				for(int i = 0; i < this.Levels; ++i) {
 					var vbleAsRef = vble as RefVariable;
+					var vbleAsPtr = vble as PtrVariable;
 
 					// If the vble at the right is a reference, dereference it
 					if ( vbleAsRef != null  ) {
 						vble = vbleAsRef.PointedVble;
 					}
 					else
-					if ( vble.Type.IsArithmetic()
-					  || vble is PtrVariable )
-					{
-						Variable vbleOld = vble;
+					if ( vbleAsPtr != null ) {
 						long access = Convert.ToInt64( vble.LiteralValue.Value );
 						vble = this.Machine.TDS.LookForAddress( access );
 
 						if ( vble == null ) {
-								throw new UnknownVbleException( "*" + vbleOld.Name.Name + " == " + access + "??" );
+								throw new UnknownVbleException( "*" + vbleAsPtr.Name.Name + " == " + access + "??" );
 						}
+
+						vble = Coerce( vbleAsPtr.AssociatedType, vble );
 					}
 					else {
 						throw new TypeMismatchException( vble.ToString() );

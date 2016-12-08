@@ -4,12 +4,13 @@ using NUnit.Framework;
 using CSim.Core;
 using CSim.Core.Types;
 using CSim.Core.Types.Primitives;
+using CSim.Core.Variables;
 
 namespace CSimTests {
 	[TestFixture]
 	public class ParserTests {
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Init()
 		{
 			this.machine = new Machine();
@@ -18,13 +19,13 @@ namespace CSimTests {
 			this.char_t = this.machine.TypeSystem.GetCharType();
 			this.double_t = this.machine.TypeSystem.GetDoubleType();
 
-			ArchManager.Execute( this.machine, @"int x;" );
-			ArchManager.Execute( this.machine, @"char ch;" );
-			ArchManager.Execute( this.machine, @"double d;" );
+			this.machine.Execute( @"int x;" );
+			this.machine.Execute( @"char ch;" );
+			this.machine.Execute( @"double d;" );
 
-			ArchManager.Execute( this.machine, @"int * ptrInt;" );
-			ArchManager.Execute( this.machine, @"char * ptrChar;" );
-			ArchManager.Execute( this.machine, @"double * ptrDouble;" );
+			this.machine.Execute( @"int * ptrInt;" );
+			this.machine.Execute( @"char * ptrChar;" );
+			this.machine.Execute( @"double * ptrDouble;" );
 		}
 
 		[Test]
@@ -37,7 +38,7 @@ namespace CSimTests {
 
 			Assert.AreEqual( int_t, vble.Type );
 
-			ArchManager.Execute( this.machine, @"x = 5;" );
+			this.machine.Execute( @"x = 5;" );
 
 			Assert.AreEqual( 5, vble.LiteralValue.Value );
 			Assert.AreEqual( 5, this.machine.Memory.CreateLiteral( vble.Address, vble.Type ).Value );
@@ -53,7 +54,7 @@ namespace CSimTests {
 
 			Assert.AreEqual( char_t, vble.Type );
 
-			ArchManager.Execute( this.machine, @"ch = 'A';" );
+			this.machine.Execute( @"ch = 'A';" );
 
 			Assert.AreEqual( 65, vble.LiteralValue.Value );
 			Assert.AreEqual( 65, this.machine.Memory.CreateLiteral( vble.Address, vble.Type ).Value );
@@ -69,7 +70,7 @@ namespace CSimTests {
 
 			Assert.AreEqual( double_t, vble.Type );
 
-			ArchManager.Execute( this.machine, @"d = 6.5;" );
+			this.machine.Execute( @"d = 6.5;" );
 
 			Assert.AreEqual( 6.5, vble.LiteralValue.Value );
 			Assert.AreEqual( 6.5, this.machine.Memory.CreateLiteral( vble.Address, vble.Type ).Value );
@@ -78,44 +79,64 @@ namespace CSimTests {
 		[Test]
 		public void TestIntPtrAssign()
 		{
-			Variable vble = null;
+			Variable intVble = null;
+			PtrVariable ptrVble = null;
+
+			// Locate variables
+			Assert.DoesNotThrow( () => {
+				ptrVble = (PtrVariable) this.machine.TDS.LookUp( @"ptrInt" ); } );
+			Assert.AreEqual( this.machine.TypeSystem.GetPtrType( this.int_t ), ptrVble.Type );
 
 			Assert.DoesNotThrow( () => {
-				vble = this.machine.TDS.LookUp( @"ptrInt" ); } );
-			Assert.AreEqual( this.machine.TypeSystem.GetPtrType( int_t ), vble.Type );
+				intVble = this.machine.TDS.LookUp( "x" );
+			} );
+			Assert.AreEqual( this.machine.TypeSystem.GetIntType(), intVble.Type );
 
-			ArchManager.Execute( this.machine, @"ptrInt = &x;" );
-			Assert.AreEqual( vble.Address, vble.LiteralValue.Value );
-			Assert.AreEqual( vble.Address, this.machine.Memory.CreateLiteral( vble.Address, vble.Type ).Value );
+			// Assign and test
+			this.machine.Execute( @"ptrInt = &x;" );
+			Assert.AreEqual( ptrVble.IntValue.Value, intVble.Address );
 		}
 
 		[Test]
 		public void TestCharPtrAssign()
 		{
-			Variable vble = null;
+			Variable charVble = null;
+			PtrVariable ptrVble = null;
+
+			// Locate variables
+			Assert.DoesNotThrow( () => {
+				ptrVble = (PtrVariable) this.machine.TDS.LookUp( @"ptrChar" ); } );
+			Assert.AreEqual( this.machine.TypeSystem.GetPtrType( this.char_t ), ptrVble.Type );
 
 			Assert.DoesNotThrow( () => {
-				vble = this.machine.TDS.LookUp( @"ptrChar" ); } );
+				charVble = this.machine.TDS.LookUp( "ch" );
+			} );
+			Assert.AreEqual( this.machine.TypeSystem.GetCharType(), charVble.Type );
 
-			Assert.AreEqual( this.machine.TypeSystem.GetPtrType( char_t ), vble.Type );
-
-			ArchManager.Execute( this.machine, @"ptrChar = &ch;" );
-			Assert.AreEqual( vble.Address, vble.LiteralValue.Value );
-			Assert.AreEqual( vble.Address, this.machine.Memory.CreateLiteral( vble.Address, vble.Type ).Value );
+			// Assign and test
+			this.machine.Execute( @"ptrChar = &ch;" );
+			Assert.AreEqual( ptrVble.IntValue.Value, charVble.Address );
 		}
 
 		[Test]
 		public void TestDoublePtrAssign()
 		{
-			Variable vble = null;
+			Variable doubleVble = null;
+			PtrVariable ptrVble = null;
+
+			// Locate variables
+			Assert.DoesNotThrow( () => {
+				ptrVble = (PtrVariable) this.machine.TDS.LookUp( @"ptrDouble" ); } );
+			Assert.AreEqual( this.machine.TypeSystem.GetPtrType( this.double_t ), ptrVble.Type );
 
 			Assert.DoesNotThrow( () => {
-				vble = this.machine.TDS.LookUp( @"ptrDouble" ); } );
-			Assert.AreEqual( this.machine.TypeSystem.GetPtrType( double_t ), vble.Type );
+				doubleVble = this.machine.TDS.LookUp( "d" );
+			} );
+			Assert.AreEqual( this.machine.TypeSystem.GetDoubleType(), doubleVble.Type );
 
-			ArchManager.Execute( this.machine, @"ptrDouble = &d;" );
-			Assert.AreEqual( vble.Address, vble.LiteralValue.Value );
-			Assert.AreEqual( vble.Address, this.machine.Memory.CreateLiteral( vble.Address, vble.Type ).Value );
+			// Assign and test
+			this.machine.Execute( @"ptrDouble = &d;" );
+			Assert.AreEqual( ptrVble.IntValue.Value, doubleVble.Address );
 		}
 
 		private Machine machine;

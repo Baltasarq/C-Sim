@@ -7,8 +7,8 @@ using CSim.Core.Literals;
 
 namespace CSim.Core.FunctionLibrary {
 	/// <summary>
-	/// This is the print function.
-	/// Signature: void print(x); // x can be anything
+	/// This is the sizeof function.
+	/// Signature: int sizeof(x); // x can be anything
 	/// </summary>
 	public sealed class SizeOf: EmbeddedFunction {
 		/// <summary>
@@ -19,6 +19,7 @@ namespace CSim.Core.FunctionLibrary {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
+		/// <param name="m">The Machine this function will be executed in.</param>
 		/// </summary>
 		private SizeOf(Machine m)
 			: base( m, Name, null, printFormalParams )

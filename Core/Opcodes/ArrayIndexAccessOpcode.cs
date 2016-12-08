@@ -52,7 +52,6 @@
 										offset.LiteralValue.GetValueAsInt(),
 					                   	this.Machine );
 				
-				this.Machine.TDS.AddVariableInPlace( result ); 
 				this.Machine.ExecutionStack.Push( result );
 			} else {
 				throw new EngineException( "invalid rvalue" );

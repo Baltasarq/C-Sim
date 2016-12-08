@@ -48,7 +48,7 @@ namespace CSim.Core {
 
 		public Variable AddVector(Id id, CSim.Core.Type t, long size)
 		{
-			return this.Add( new VectorVariable( id, t, this.Machine, size ) );
+			return this.Add( new ArrayVariable( id, t, this.Machine, size ) );
 		}
 
         public Variable Add(Variable v)
@@ -110,7 +110,7 @@ namespace CSim.Core {
 
 			// Find
 			foreach (Variable v in this.Variables) {
-				RefVariable r = v as RefVariable;
+				var r = v as RefVariable;
 
 				if ( r != null
 				  && !( r.IsSet() ) )
@@ -121,6 +121,26 @@ namespace CSim.Core {
 
 			// Remove
 			foreach(RefVariable r in refs) {
+				this.Remove( r.Name.Name );
+			}
+
+			return;
+		}
+
+		public void CollectArrayElements() {
+			var arrayElements = new List<ArrayElement>();
+
+			// Find
+			foreach (Variable v in this.Variables) {
+				var r = v as ArrayElement;
+
+				if ( r != null ) {
+					arrayElements.Add( r );
+				}
+			}
+
+			// Remove
+			foreach(ArrayElement r in arrayElements) {
 				this.Remove( r.Name.Name );
 			}
 
