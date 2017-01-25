@@ -421,7 +421,7 @@ namespace CSim.Core {
         /// End delimiter.
         /// </param>
         /// <param name='token'>
-        /// The string to decide on the format: <delimiter>literal<delimiter>
+        /// The string to decide on the format: "delimiter literal delimiter"
         /// </param>
         public static bool IsLiteral(char openDelimiter, char endDelimiter, string token)
         {

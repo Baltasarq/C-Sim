@@ -7,9 +7,17 @@
 	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
+	/// <summary>
+	/// The opcode for additions: '+'
+	/// </summary>
 	public class AddOpcode: Opcode {
+		/// <summary>An identifier for this opcode.</summary>
 		public const char OpcodeValue = (char) 0xEA;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.AddOpcode"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this opcode will be executed in.</param>
 		public AddOpcode(Machine m)
 			:base(m)
 		{
@@ -55,7 +63,7 @@
 			}
 
 			// Now yes, do it
-			long sum = ( (long) op1.LiteralValue.Value ) + ( (long) op2.LiteralValue.Value );
+			long sum = Convert.ToInt64( op1.LiteralValue.Value ) + Convert.ToInt64( op2.LiteralValue.Value );
 
 			// Store in the temp vble and end
 			Variable result = new TempVariable( new IntLiteral( this.Machine, sum ) );

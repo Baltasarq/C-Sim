@@ -12,6 +12,11 @@ namespace CSim.Core
     /// </summary>
     public abstract class Type
     {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Type"/> class.
+		/// </summary>
+		/// <param name="n">The name of the type.</param>
+		/// <param name="s">Its size, in bytes</param>
         public Type(string n, int s)
         {
             this.name = n;
@@ -38,62 +43,12 @@ namespace CSim.Core
             get { return this.size; }
         }
 
-		/*
-		/// <summary>
-		/// Gets the type determined by the parameter, or null if it does not exist.
-		/// </summary>
-		/// <param name="typeName">The type name, as a string.</param>
-		/// <returns>the type, as a Type object, if a type with that name exists, null otherwise.</returns>
-		private static Type GetTypeOrNull(string typeName)
-		{
-			Type toret = null;
-
-			foreach(var classInfo in typeof( Type ).Assembly.GetTypes())
-			{
-				if ( classInfo.IsSubclassOf( typeof( Type ) ) ) {
-					FieldInfo classTypeNameField = classInfo.GetField( "TypeName" );
-					string classTypeName;
-
-					if ( classTypeNameField != null ) {
-						classTypeName = (string) classTypeNameField.GetValue( null );
-
-						if ( classTypeName == typeName ) {
-							toret = (Type) classInfo.InvokeMember(
-								"Get",
-								BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
-								null, null, null
-								);
-							break;
-						}
-					}
-				}
-			}
-
-			return toret;
-		}
-
-		/// <summary>
-		/// Gets the Type object associated with that name
-		/// </summary>
-		/// <returns>The type, as a Type object, with that name.</returns>
-		/// <param name="typeName">The type name, as a string.</param>
-		/// <exception cref="UnknownTypeException">If no type with that name exists.</exception>
-        public static Type GetType(string typeName)
-        {
-            Type toret = GetTypeOrNull( typeName );
-
-			if ( toret == null ) {
-				throw new UnknownTypeException( typeName );
-			}
-
-            return toret;
-        }
-	*/
 		/// <summary>
 		/// Creates a literal for this type, given a byte sequence.
 		/// </summary>
 		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
 		/// <param name="raw">The sequence of bytes containing the value in memory.</param>
+		/// <param name="m">The <see cref="Machine"/> to create this literal in.</param>
 		public abstract Literal CreateLiteral(Machine m, byte[] raw);
 
 		/// <summary>
@@ -105,12 +60,21 @@ namespace CSim.Core
 			return string.Format( "[Type: name={0}, size={1}]", this.Name, this.Size );
 		}
 
+		/// <summary>
+		/// Determines whether the type is arithmetic.
+		/// </summary>
+		/// <returns><c>true</c> if this instance is arithmetic; otherwise, <c>false</c>.</returns>
 		public bool IsArithmetic() {
 			return ( this is Core.Types.Primitives.Int
 				  || this is Core.Types.Primitives.Char
 				  || this is Core.Types.Primitives.Double );
 		}
 
+		/// <summary>
+		/// Determines whether this type is any,
+		/// or a "de facto" <see cref=">Any"/>.
+		/// </summary>
+		/// <returns><c>true</c> if this instance is any or similar; otherwise, <c>false</c>.</returns>
 		public bool IsAny() {
 			bool toret = ( this is Any );
 
@@ -126,6 +90,11 @@ namespace CSim.Core
 			return toret;
 		}
 
+		/// <summary>
+		/// Determines whether this instance is compatible with another, given one.
+		/// </summary>
+		/// <returns><c>true</c> if this instance is compatible with the specified other; otherwise, <c>false</c>.</returns>
+		/// <param name="other">The other <see cref="Type"/>.</param>
 		public bool IsCompatibleWith(Type other)
 		{
 			bool toret = ( this.IsAny() || other.IsAny() );
@@ -133,6 +102,11 @@ namespace CSim.Core
 			// Maybe they are just the same
 			if ( !toret ) {
 				toret = ( this == other );
+			}
+
+			// They are both pointers
+			if ( !toret ) {
+				toret = ( this is Ptr && other is Ptr );
 			}
 
 			// One of them is a pointer and the other a numeric value

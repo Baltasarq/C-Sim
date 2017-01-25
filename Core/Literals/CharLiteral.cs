@@ -40,6 +40,26 @@ namespace CSim.Core.Literals {
 			return this.Machine.Bytes.FromCharToBytes( this.Value );
         }
 
+		/// <summary>
+		/// Converts the info to the shortest possible string.
+		/// </summary>
+		/// <returns>The array element, represented as a string.</returns>
+		public override string AsArrayElement()
+		{
+			char value = this.Value;
+			string toret = string.Format( "{0}", this.ToHex() );
+
+			if ( !char.IsControl( value ) ) {
+				toret = String.Format( "{0}", char.ToString( value ) );
+			}
+
+			return toret;
+		}
+
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Literals.CharLiteral"/>.
+		/// </summary>
+		/// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Literals.CharLiteral"/>.</returns>
 		public override string ToString()
 		{
 			char value = this.Value;

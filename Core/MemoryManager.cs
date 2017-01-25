@@ -175,6 +175,21 @@ namespace CSim.Core
 		}
 
 		/// <summary>
+		/// Extracts the values of an array from memory.
+		/// </summary>
+		public byte[][] ExtractArrayElementValues(Core.Type type, long address, long count)
+		{
+			var toret = new byte[ count ][];
+
+			for (int i = 0; i < count; ++i) {
+				toret[ i ] = this.Read( address, type.Size );
+				address += type.Size;
+			}
+
+			return toret;
+		}
+
+		/// <summary>
 		/// Gets the machine owning this memory.
 		/// </summary>
 		/// <value>The machine.</value>

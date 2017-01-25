@@ -14,7 +14,7 @@
 		public const string Name = "malloc";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
 		private Malloc(Machine m)
@@ -38,13 +38,17 @@
 			return instance;
 		}
 
+		/// <summary>
+		/// Execute the function with the specified realParams.
+		/// </summary>
+		/// <param name="realParams">Real parameters, as a primitive argument collection.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			Variable size = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
 
-			Variable result = this.Machine.TDS.AddVector(
+			Variable result = this.Machine.TDS.AddArray(
 								new Id( SymbolTable.GetNextMemoryBlockName() ),
-								CSim.Core.Types.Any.Get(),
+								this.Machine.TypeSystem.GetCharType(),
 								(long) size.LiteralValue.Value
 			);
 

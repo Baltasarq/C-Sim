@@ -9,11 +9,12 @@ namespace CSim.Core.Opcodes {
 	using CSim.Core.Exceptions;
 
 	/// <summary>
-	/// Represents the rol of '&' at the left of a variable.
+	/// Represents the rol of ampersand at the left of a variable.
 	/// i.e., returns the address of that variable in memory.
 	/// Can apply to an id only.
 	/// </summary>
 	public class AddressOpcode: Opcode {
+		/// <summary>The opcode value.</summary>
 		public const char OpcodeValue = (char) 0xE0;
 
 		public AddressOpcode(Machine m, Id id)

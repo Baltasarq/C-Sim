@@ -18,6 +18,7 @@ namespace CSim.Core {
 			this.Name = id;
 			this.type = t;
 			this.Address = -1;
+			this.Size = this.type.Size;
 		}
 
         public Variable(Id id, Type t, Machine m, int address)
@@ -83,9 +84,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The size, as an int.</value>
         public int Size {
-            get {
-                return this.Type.Size;
-            }
+			get; protected set;
         }
 
 		/// <summary>

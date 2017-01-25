@@ -15,6 +15,11 @@ namespace CSim.Core {
 	/// Parses user input.
 	/// </summary>
     public class Parser {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Parser"/> class.
+		/// </summary>
+		/// <param name="input">The user's input.</param>
+		/// <param name="m">The machine the instruction will be parsed for.</param>
         public Parser(string input, Machine m)
 		{
 			// Remove trailing ';'
@@ -533,10 +538,18 @@ namespace CSim.Core {
 			return;
 		}
 
+		/// <summary>
+		/// Gets the input this parser was created for.
+		/// </summary>
+		/// <value>The input, as a string.</value>
 		public string Input {
 			get { return this.lexer.Line; }
 		}
 
+		/// <summary>
+		/// Gets or sets the machine this parser was created for.
+		/// </summary>
+		/// <value>The <see cref="Machine"/> object.</value>
         public Machine Machine {
             get; set;
         }

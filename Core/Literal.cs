@@ -96,7 +96,6 @@ namespace CSim.Core {
 		/// Inserts a '0x' at the beginning of the hex value.
 		/// </summary>
 		/// <returns>The pretty hex, a a string.</returns>
-		/// <param name="value">The value to convert, as an int.</param>
 		/// <seealso cref="Literal.ToHex"/>
 		public string ToPrettyHex()
 		{
@@ -107,17 +106,24 @@ namespace CSim.Core {
 		/// Converts a value to decimal, ocuppying three chars.
 		/// </summary>
 		/// <returns>The value, as a string.</returns>
-		/// <param name="value">The value, as a string.</param>
 		public string ToDec()
 		{
 			return this.GetValueAsInt().ToString().PadLeft( 4, '0' );
 		}
 
 		/// <summary>
+		/// Converts the info to the shortest possible string.
+		/// </summary>
+		/// <returns>The array element, represented as a string.</returns>
+		public virtual string AsArrayElement()
+		{
+			return this.ToDec();
+		}
+
+		/// <summary>
 		/// Converts a value to the pretty representation selected.
 		/// </summary>
 		/// <returns>The pretty number, as a string.</returns>
-		/// <param name="value">The value, as an int.</param>
 		public string ToPrettyNumber()
 		{
 			string toret;

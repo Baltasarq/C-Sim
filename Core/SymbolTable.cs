@@ -10,9 +10,16 @@ namespace CSim.Core {
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 
+	/// <summary>All the variables in the <see cref="Machine"/> reside here.</summary>
     public class SymbolTable {
+		/// <summary>Prefix to use for memory blocks (heap)</summary>
         public const string MemBlockName = "_mblk#";
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.SymbolTable"/> class,
+		/// for a given <see cref="Machine"/>.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this symbol table will be used in.</param>
         public SymbolTable(Machine m)
         {
             this.tds = new Dictionary<string, Variable>();
@@ -20,37 +27,72 @@ namespace CSim.Core {
             this.addresses = new List<long>();
         }
 
+		/// <summary>
+		/// Resets the symbol table: no registered variables.
+		/// Of course, this does not affect memory.
+		/// <seealso cref="MemoryManager"/>
+		/// </summary>
 		public void Reset()
 		{
 			this.tds.Clear();
 			this.addresses.Clear();
 		}
 
+		/// <summary>
+		/// Creates a new variable of a given type.
+		/// </summary>
+		/// <param name="id">The identifier for the variable, as a string.</param>
+		/// <param name="t">The type for this new variable.</param>
 		public Variable Add(string id, CSim.Core.Type t)
 		{
 			return this.Add( new Id( id ), t );
 		}
 
+		/// <summary>
+		/// Creates a new variable of a given type.
+		/// </summary>
+		/// <param name="id">The identifier for the variable, as a string.</param>
+		/// <param name="t">The type for this new variable.</param>
         public Variable Add(Id id, CSim.Core.Type t)
         {
             return this.Add( new Variable( id, t, this.Machine, -1 ) );
         }
 
+		/// <summary>
+		/// Creates a new reference of a given type.
+		/// </summary>
+		/// <param name="id">The identifier for the reference, as a string.</param>
+		/// <param name="t">The type for this new reference.</param>
 		public Variable AddRef(string id, CSim.Core.Type t)
 		{
 			return this.AddRef( new Id( id ), t );
 		}
 
+		/// <summary>
+		/// Creates a new reference of a given type.
+		/// </summary>
+		/// <param name="id">The identifier for the reference, as a string.</param>
+		/// <param name="t">The type for this new reference.</param>
         public Variable AddRef(Id id, CSim.Core.Type t)
         {
 			return this.Add( new RefVariable( id, t, this.Machine, -1 ) );
         }
 
-		public Variable AddVector(Id id, CSim.Core.Type t, long size)
+		/// <summary>
+		/// Creates a new array of a given type for its elements.
+		/// </summary>
+		/// <param name="id">The identifier for the array, as a string.</param>
+		/// <param name="t">The type for the elements of this new array.</param>
+		/// <param name="size">The number of elements for this new array.</param>
+		public Variable AddArray(Id id, CSim.Core.Type t, long size)
 		{
 			return this.Add( new ArrayVariable( id, t, this.Machine, size ) );
 		}
 
+		/// <summary>
+		/// Adds the specified <see cref="Variable"/>, already created.
+		/// </summary>
+		/// <param name="v">The <see cref="Variable"/> to add.</param>
         public Variable Add(Variable v)
 		{
             // Chk
@@ -65,6 +107,10 @@ namespace CSim.Core {
             return v;
         }
 
+		/// <summary>
+		/// Adds the variable, honoring the address registered inside it.
+		/// </summary>
+		/// <param name="v">The <see cref="Variable"/> to add</param>
 		internal void AddVariableInPlace(Variable v)
 		{
 			// Chk
@@ -127,7 +173,12 @@ namespace CSim.Core {
 			return;
 		}
 
-		public void CollectArrayElements() {
+		/// <summary>
+		/// Collects the array elements.
+		/// Part of garbage collection.
+		/// </summary>
+		public void CollectArrayElements()
+		{
 			var arrayElements = new List<ArrayElement>();
 
 			// Find
@@ -148,10 +199,10 @@ namespace CSim.Core {
 		}
 
         /// <summary>
-        /// Reserve memory for the specified v.
+		/// Reserve memory for the specified <see cref="Variable"/> v.
         /// </summary>
         /// <param name='v'>
-        /// The variable to reserve memory for.
+		/// The <see cref="Variable"/> to reserve memory for.
         /// </param>
         public long Reserve(Variable v)
         {
@@ -216,7 +267,7 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Gets the variables.
+		/// Gets all variables.
 		/// </summary>
 		/// <value>
 		/// Returns pointers and variables
@@ -259,7 +310,7 @@ namespace CSim.Core {
 		/// <returns>
 		/// The variable, if found. Core.Exceptions.UnknownVariableException otherwise.
 		/// </returns>
-		/// <param name='id'>
+		/// <param name='idVble'>
 		/// The identifier, as a string.
 		/// </param>
 		/// <exception cref="UnknownVbleException">if the id does not correspond to any variable</exception>
@@ -282,9 +333,9 @@ namespace CSim.Core {
 		/// </summary>
 		/// <returns><c>true</c> if there is a variable with that identifier; otherwise, <c>false</c>.</returns>
 		/// <param name="idVble">The identifier in question, as a string.</param>
-		public bool IsIdOfExistingVariable(Id id)
+		public bool IsIdOfExistingVariable(Id idVble)
 		{
-			return ( this.LookForVariableOfId( id.Name ) != null );
+			return ( this.LookForVariableOfId( idVble.Name ) != null );
 		}
 
         /// <summary>
@@ -393,18 +444,33 @@ namespace CSim.Core {
 			return;
 		}
 
+		/// <summary>
+		/// Gets the name of the next memory block,
+		/// honoring the number of already created ones.
+		/// </summary>
+		/// <returns>The next memory block name, as a string.</returns>
         public static string GetNextMemoryBlockName()
         {
             ++numMemBlock;
             return ( MemBlockName + numMemBlock.ToString() );
         }
 
+		/// <summary>
+		/// A convenience method to get the associated <see cref="MemoryManager"/>.
+		/// <seealso cref="SymbolTable.Machine"/>
+		/// </summary>
+		/// <value>The <see cref="MemoryManager"/>.</value>
 		public MemoryManager Memory {
 			get {
 				return this.machine.Memory;
 			}
 		}
 
+		/// <summary>
+		/// A convenience method to get the associated <see cref="Machine"/>.
+		/// <seealso cref="SymbolTable.Memory"/>
+		/// </summary>
+		/// <value>The <see cref="Machine"/>.</value>
 		public Machine Machine {
 			get {
 				return this.machine;

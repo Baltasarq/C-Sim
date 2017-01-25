@@ -8,9 +8,17 @@ namespace CSim.Core.Opcodes {
 	using CSim.Core.Exceptions;
 	using CSim.Core.Literals;
 
+	/// <summary>
+	/// Assign opcode.
+	/// </summary>
     public class AssignOpcode: Opcode {
+		/// <summary>The opcode id.</summary>
         public static char OpcodeValue = (char) 0xE1;
         
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.AssignOpcode"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this opcode will be executed in.</param>
         public AssignOpcode(Machine m)
             : base( m )
         {
@@ -67,14 +75,17 @@ namespace CSim.Core.Opcodes {
 			return;
 		}
 
+		/// <summary>
+		/// Execute the assignment.
+		/// </summary>
         public override void Execute()
 		{
 			// Take value
 			this.Value = this.Machine.ExecutionStack.Pop();
-
-			// Take id
-			this.Vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 			Variable rvalue = this.Machine.TDS.SolveToVariable( this.Value );
+
+			// Take variable
+			this.Vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 
 			if ( !( rvalue is TempVariable )
 			  && rvalue.Name.Name == this.Vble.Name.Name )
@@ -114,7 +125,7 @@ namespace CSim.Core.Opcodes {
 				if ( this.Value is StrLiteral ) {
 					string s = (string) rvalue.LiteralValue.Value;
 
-					Variable mblock = this.Machine.TDS.AddVector(
+					Variable mblock = this.Machine.TDS.AddArray(
 						new Id( SymbolTable.GetNextMemoryBlockName() ),
 						this.Machine.TypeSystem.GetCharType(),
 						s.Length + 1
@@ -129,6 +140,10 @@ namespace CSim.Core.Opcodes {
 					this.Machine.Memory.Write( mblock.Address + s.Length, new byte[]{ 0 } );
 
 					toret.LiteralValue = new IntLiteral( this.Machine, mblock.Address );
+				}
+				else
+				if ( rvalue is ArrayVariable ) {
+					toret.LiteralValue = new IntLiteral( this.Machine, rvalue.Address );
 				} else {
 					toret.LiteralValue = rvalue.LiteralValue;
 				}
