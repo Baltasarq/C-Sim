@@ -25,7 +25,7 @@ namespace CSim.Core.FunctionLibrary {
 
 		public override void Execute(RValue[] realParams)
 		{
-			var result = new TempVariable( this.Machine.TypeSystem.GetIntType() );
+			var result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral(
 				this.Machine,
 				Convert.ToInt64( Math.Ceiling( DateTime.Now.TimeOfDay.TotalSeconds ) ) );

@@ -29,8 +29,6 @@
 		/// </summary>
 		public override void Execute()
 		{
-			Variable arrayVble = null;
-
 			// Take ptr
 			Variable vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 
@@ -40,36 +38,35 @@
 			if ( vble != null
 			  && offset != null )
 			{
+				long address = 0;
 				var vbleAsPtr = vble as PtrVariable;
+				var vbleAsArray = vble as ArrayVariable;
 
 				// Find the address of the pointed array
-				if ( vbleAsPtr != null  ) {
-					arrayVble = this.Machine.TDS.LookForAddress( vbleAsPtr.IntValue.Value );
+				if ( vbleAsPtr != null ) {
+					address = vbleAsPtr.IntValue.Value;
 				}
-
-				if ( arrayVble != null) {
-					// Chk
-					var ptrType = arrayVble.Type as Ptr;
-
-					if ( ptrType == null ) {
-						throw new TypeMismatchException( vble.Name.Name );
-					}
-
-					if ( !offset.Type.IsArithmetic() ) {
-						throw new TypeMismatchException( offset.LiteralValue.ToString() );
-					}		
-
-					// Store in the ArrayElement vble and end
-					Variable result = new ArrayElement(
-											arrayVble,
-											(Ptr) vbleAsPtr.Type,
-											offset.LiteralValue.GetValueAsInt(),
-						                   	this.Machine );
-			
-					this.Machine.ExecutionStack.Push( result );
+				else
+				if ( vbleAsArray != null ) {
+					address = vbleAsArray.Address;
 				} else {
-					throw new EngineException( vble.Name.Name + " == " + vble.Address + "??" );
+					throw new EngineException( vble.Name + "[x]??" );
 				}
+
+				// Chk
+				if ( !offset.Type.IsArithmetic() ) {
+					throw new TypeMismatchException( offset.LiteralValue.ToString() );
+				}		
+
+				// Store in the ArrayElement vble and end
+				Variable result = new ArrayElement(
+										vble.Name.Name,
+										address,
+										(Ptr) vble.Type,
+										offset.LiteralValue.GetValueAsInt(),
+					                   	this.Machine );
+		
+				this.Machine.ExecutionStack.Push( result );
 			} else {
 				throw new EngineException( "missing or invalid rvalue" );
 			}

@@ -66,7 +66,7 @@
 			long sum = Convert.ToInt64( op1.LiteralValue.Value ) + Convert.ToInt64( op2.LiteralValue.Value );
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, sum ) );
+			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, sum ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

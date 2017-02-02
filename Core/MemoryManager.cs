@@ -15,8 +15,16 @@ namespace CSim.Core
     /// </summary>
     public class MemoryManager
     {
-		/// Supported kinds of Reset
-		public enum ResetType { Random, Zero };
+		/// <summary>
+		/// Supported ways of resetting the memory.
+		/// <seealso cref="Reset()"/>
+		/// </summary>
+		public enum ResetType { 
+			///<summary>Random values</summary>
+			Random,
+			///<summary>Zeroes</summary>
+			Zero
+		};
 
         /// <summary>
         /// The default max memory.
@@ -24,11 +32,20 @@ namespace CSim.Core
         /// </summary>
         public const int DefaultMaxMemory = 512;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.MemoryManager"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this memory manager belongs to.</param>
 		public MemoryManager(Machine m)
 			:this( m, DefaultMaxMemory )
 		{
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.MemoryManager"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this memory manager belongs to.</param>
+		/// <param name="max">The maximum amount of memory, in bytes. It must be rounded to 2^4.</param>
 		public MemoryManager(Machine m, int max)
 		{
 			if ( max < 16
@@ -41,11 +58,18 @@ namespace CSim.Core
 			this.raw = new byte[ max ];
 		}
 
+		/// <summary>
+		/// Resets memory with random values.
+		/// </summary>
 		public void Reset()
 		{
 			this.Reset( ResetType.Random );
 		}
 
+		/// <summary>
+		/// Resets memory with the specified reset type.
+		/// </summary>
+		/// <param name="rt">Rt.</param>
         public void Reset(ResetType rt)
         {
 			var rand = new Random();
@@ -61,7 +85,12 @@ namespace CSim.Core
             return;
         }
 
-        public void CheckMemoryPosExists(long pos, int size)
+		/// <summary>
+		/// Checks a given size in bytes, counting from a given memory position, fits in memory.
+		/// </summary>
+		/// <param name="pos">The position to check.</param>
+		/// <param name="size">The size in bytes to check.</param>
+        public void CheckSizeFits(long pos, int size)
         {
             int maxMemory = this.Max;
             
@@ -86,7 +115,7 @@ namespace CSim.Core
         {
             var toret = new byte[ size ];
 
-			this.CheckMemoryPosExists( pos, size );
+			this.CheckSizeFits( pos, size );
 			Array.Copy( this.raw, pos, toret, 0, size );
 
             return  toret;
@@ -100,7 +129,7 @@ namespace CSim.Core
         public void Write(long pos, byte[] value)
         {
             int size = value.Length;
-            this.CheckMemoryPosExists( pos, size );
+            this.CheckSizeFits( pos, size );
 			Array.Copy( value, 0, this.raw, pos, size );
 
             return;
@@ -124,7 +153,7 @@ namespace CSim.Core
             var toret = new List<byte>();
 
             while( this.raw[ pos ] != 0 ) {
-                this.CheckMemoryPosExists( pos, 1 );
+                this.CheckSizeFits( pos, 1 );
                 toret.Add( this.raw[ pos ] );
                 ++pos;
             }

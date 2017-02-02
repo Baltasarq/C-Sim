@@ -9,9 +9,18 @@ namespace CSim.Core.Opcodes {
 	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
+	/// <summary>
+	/// Access opcode with '*', i.e. int * v = &x; => *x = 5;
+	/// </summary>
 	public class AccessOpcode: Opcode {
+		/// <summary>The opcode id.</summary>
 		public const char OpcodeValue = (char) 0xE0;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.AccessOpcode"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this opcode will be executed in.</param>
+		/// <param name="levels">Number of indirection levels, i.e. **x, *X or ***x</param>
 		public AccessOpcode(Machine m, int levels)
 			:base(m)
 		{
@@ -28,22 +37,18 @@ namespace CSim.Core.Opcodes {
 			if ( vble != null ) {
 				for(int i = 0; i < this.Levels; ++i) {
 					var vbleAsRef = vble as RefVariable;
-					var vbleAsPtr = vble as PtrVariable;
+					var vbleType = vble.Type as Ptr;
 
 					// If the vble at the right is a reference, dereference it
 					if ( vbleAsRef != null  ) {
 						vble = vbleAsRef.PointedVble;
 					}
 					else
-					if ( vbleAsPtr != null ) {
-						long access = Convert.ToInt64( vble.LiteralValue.Value );
-						vble = this.Machine.TDS.LookForAddress( access );
-
-						if ( vble == null ) {
-								throw new UnknownVbleException( "*" + vbleAsPtr.Name.Name + " == " + access + "??" );
-						}
-
-						vble = Coerce( vbleAsPtr.AssociatedType, vble );
+					if ( vbleType != null ) {
+						long address = Convert.ToInt64( vble.LiteralValue.Value );
+						vble = new InPlaceTempVariable( vbleType.DerreferencedType, this.Machine );
+						vble.Address = address;
+						this.Machine.TDS.AddVariableInPlace( vble );
 					}
 					else {
 						throw new TypeMismatchException( vble.ToString() );

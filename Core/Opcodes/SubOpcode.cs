@@ -58,7 +58,7 @@
 			long subRes = ( (long) op2.LiteralValue.Value ) - ( (long) op1.LiteralValue.Value );
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, subRes ) );
+			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, subRes ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

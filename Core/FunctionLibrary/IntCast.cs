@@ -53,7 +53,7 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			long value = Convert.ToInt64( param.LiteralValue.Value );
-			Variable result = new TempVariable( this.Machine.TypeSystem.GetIntType() );
+			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral( this.Machine, value );
 			this.Machine.ExecutionStack.Push( result );
 		}

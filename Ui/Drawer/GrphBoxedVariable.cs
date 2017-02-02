@@ -18,6 +18,8 @@ namespace CSim.Ui.Drawer {
 		{
 			this.vble = v;
 			this.height = this.width = -1;
+			this.BoxX = this.BoxY = 0;
+			this.BoxWidth = this.BoxHeight = 0;
 			this.GraphInfo = grf;
 		}
 
@@ -59,6 +61,48 @@ namespace CSim.Ui.Drawer {
 		/// <value>The y, as a float.</value>
 		public float Y {
 			get; set;
+		}
+
+		/// <summary>
+		/// Gets or sets the box's x coordinate.
+		/// (Not of the whole drawing.)
+		/// This is relative to the position.
+		/// <seealso cref="X"/>
+		/// <seealso cref="Y"/>
+		/// </summary>
+		/// <value>The specific x coordinate of the (inner) box.</value>
+		public float BoxX {
+			get; protected set;
+		}
+
+		/// <summary>
+		/// Gets or sets the box's y coordinate.
+		/// (Not of the whole drawing.)
+		/// This is relative to the position.
+		/// <seealso cref="X"/>
+		/// <seealso cref="Y"/>
+		/// </summary>
+		/// <value>The specific y coordinate of the (inner) box.</value>
+		public float BoxY {
+			get; protected set;
+		}
+
+		/// <summary>
+		/// Gets or sets the box's width.
+		/// (Not of the whole drawing.)
+		/// </summary>
+		/// <value>The box x.</value>
+		public float BoxWidth {
+			get; protected set;
+		}
+
+		/// <summary>
+		/// Gets or sets the box's height.
+		/// (Not of the whole drawing.)
+		/// </summary>
+		/// <value>The box y.</value>
+		public float BoxHeight {
+			get; protected set;
 		}
 
 		/// <summary>
@@ -132,7 +176,11 @@ namespace CSim.Ui.Drawer {
 		/// Draws this instance.
 		/// Should be called after <see cref="CalculateSize"/>.
 		/// </summary>
-		public abstract void Draw();
+		public virtual void Draw()
+		{
+			// Erase the area to draw over
+			this.DrawFilledRectangle( this.GraphInfo.BackGroundColor, this.X, this.Y, this.Width, this.Height );
+		}
 
 		/// <summary>
 		/// Gets the related boxes.
@@ -159,6 +207,24 @@ namespace CSim.Ui.Drawer {
 			this.GraphInfo.Graphics.DrawRectangle(
 										this.GraphInfo.Pen,
 										new Rectangle( (int) x, (int) y, (int) width, (int) height )
+			);
+		}
+
+		/// <summary>
+		/// Draws a filled rectangle.
+		/// </summary>
+		/// <param name="c">The <see cref="System.Drawing.Color"/> to fill the rectangle with.</param>
+		/// <param name="x">The x coordinate.</param>
+		/// <param name="y">The y coordinate.</param>
+		/// <param name="width">The width.</param>
+		/// <param name="height">The height.</param>
+		protected void DrawFilledRectangle(Color c, float x, float y, float width, float height)
+		{
+			var pen = new Pen( new SolidBrush( c ) );
+
+			this.GraphInfo.Graphics.FillRectangle(
+				pen.Brush,
+				new Rectangle( (int) x, (int) y, (int) width, (int) height )
 			);
 		}
 

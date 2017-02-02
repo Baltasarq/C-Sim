@@ -8,7 +8,15 @@ namespace CSim.Core {
     /// Represents the target machine emulated
     /// </summary>
     public class Machine {
+		/// <summary>
+		/// Byte converter.
+		/// Reads or writes bytes for the primitive types.
+		/// </summary>
 		public class ByteConverter {
+			/// <summary>
+			/// Initializes a new instance of the <see cref="ByteConverter"/> class.
+			/// </summary>
+			/// <param name="m">The <see cref="Machine"/> this converter will work for.</param>
 			public ByteConverter(Machine m)
 			{
 				this.Machine = m;
@@ -148,6 +156,10 @@ namespace CSim.Core {
 				return toret;
 			}
 
+			/// <summary>
+			/// Gets the machine for this byte converter.
+			/// </summary>
+			/// <value>The <see cref="Machine"/>.</value>
 			public Machine Machine {
 				get; private set;
 			}
@@ -163,7 +175,10 @@ namespace CSim.Core {
 		/// The Endianness of this machine.
 		/// </summary>
 		public enum Endianness {
-			BigEndian, LittleEndian
+			/// <summary>Big endianness.</summary>
+			BigEndian,
+			/// <summary>Little endianness.</summary>
+			LittleEndian
 		}
 		
 		/// <summary>
@@ -180,6 +195,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="wordSize">The word size, in bytes.</param>
 		/// <param name="maxMemory">Max memory.</param>
+		/// <param name="endianness">The endiannes of the machine.</param>
 		public Machine(int wordSize, int maxMemory, Endianness endianness)
 		{
 			this.endianness = endianness;
@@ -318,9 +334,17 @@ namespace CSim.Core {
 		/// <param name="input">The user's input, as a string.</param>
 		public Variable Execute(string input)
 		{
+			return this.Execute( new Parser( input, this ) );
+		}
+
+		/// <summary>
+		/// Executed the parser input.
+		/// </summary>
+		/// <param name="parser">A <see cref="Parser"/> to parse the input.</param>
+		public Variable Execute(Parser parser)
+		{
 			var er = new SnapshotManager( this );
 			Variable toret = null;
-			var parser = new Parser( input, this );
 
 			this.TDS.CollectArrayElements();
 
@@ -333,7 +357,7 @@ namespace CSim.Core {
 					opcode.Execute();
 				}
 
-				toret = (Variable) this.ExecutionStack.Pop();
+				toret = this.TDS.SolveToVariable( this.ExecutionStack.Pop() );
 
 				// Create snapshot
 				this.SnapshotManager.SaveSnapshot();
@@ -349,14 +373,27 @@ namespace CSim.Core {
 			return toret;
 		}
 
+		/// <summary>
+		/// Gets the execution stack.
+		/// This is the stack used while executing opcodes.
+		/// </summary>
+		/// <value>The execution stack.</value>
 		public ExecutionStack ExecutionStack {
 			get; private set;
 		}
 
+		/// <summary>
+		/// Gets the random engine.
+		/// </summary>
+		/// <value>The random engine, as a <see cref="Random"/> instance.</value>
 		public Random Random {
 			get; private set;
 		}
 
+		/// <summary>
+		/// Gets the snapshot manager.
+		/// </summary>
+		/// <value>The snapshot manager, as a <see cref="SnapshotManager"/> instance.</value>
 		public SnapshotManager SnapshotManager {
 			get; private set;
 		}
@@ -407,6 +444,10 @@ namespace CSim.Core {
 			get; private set;
 		}
 
+		/// <summary>
+		/// Gets the byte converter engine.
+		/// </summary>
+		/// <value>The <see cref="ByteConverter"/>.</value>
 		public ByteConverter Bytes {
 			get; private set;
 		}

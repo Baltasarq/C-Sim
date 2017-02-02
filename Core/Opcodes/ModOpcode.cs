@@ -64,7 +64,7 @@
 			long modRes = Convert.ToInt64( op2.LiteralValue.Value ) % op1Value;
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, modRes ) );
+			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, modRes ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

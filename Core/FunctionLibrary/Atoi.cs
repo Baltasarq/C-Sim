@@ -47,7 +47,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
 			int valueFromStr = Convert.ToInt32( param.LiteralValue.Value );
-			Variable result = new TempVariable( this.Machine.TypeSystem.GetIntType() );
+			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral( this.Machine, valueFromStr );
 
 			this.Machine.ExecutionStack.Push( result );

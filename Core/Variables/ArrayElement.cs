@@ -8,24 +8,26 @@
 	public class ArrayElement: Variable {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Variables.ArrayElement"/> class.
+		/// This one will not be tied to a variable.
 		/// </summary>
-		/// <param name="array">The array variable.</param>
-		/// <param name="ptrType">The type of the array.</param>
-		/// <param name="pos">The postion of the element</param>
-		/// <param name="machine">The machine this variable will belong to.</param>
-		public ArrayElement(Variable array, Ptr ptrType, long pos, Machine machine)
-			:base( new Id( array.Name.Name + "_#" + pos ), ptrType.AssociatedType, machine)
+		/// <param name="id">The identifier, as a string.</param>
+		/// <param name="address">The address of the array.</param>
+		/// <param name="ptrType">Ptr type.</param>
+		/// <param name="pos">Position.</param>
+		/// <param name="machine">Machine.</param>
+		public ArrayElement(string id, long address, Ptr ptrType, long pos, Machine machine)
+			:base( new Id( "_" + id + "_" + pos ), ptrType.DerreferencedType, machine)
 		{
-			this.Variable = array;
 			this.Offset = pos * this.Type.Size;
-			this.Address = this.Variable.Address + this.Offset;
+			this.Address = address + this.Offset;
+			this.Pos = pos;
 		}
 
 		/// <summary>
-		/// Gets the array element as a regular variable.
+		/// Gets the position in the array.
 		/// </summary>
-		/// <value>The element, as a variable.</value>
-		public Variable Variable {
+		/// <value>The position.</value>
+		public long Pos {
 			get; private set;
 		}
 

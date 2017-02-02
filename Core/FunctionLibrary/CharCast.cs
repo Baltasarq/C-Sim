@@ -53,7 +53,7 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			char value = Convert.ToChar( param.LiteralValue.Value );
-			Variable result = new TempVariable( this.Machine.TypeSystem.GetCharType() );
+			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetCharType() );
 			result.LiteralValue = new CharLiteral( this.Machine, value );
 			this.Machine.ExecutionStack.Push( result );
 		}

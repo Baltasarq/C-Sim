@@ -17,6 +17,8 @@ namespace CSim.Ui {
 		public const int VGap = 50;
 		/// <summary>Maximum number of boxes of variables per row.</summary>
 		public const int MaxPerRow = 5;
+		/// <summary>The <see cref="System.Drawing.Color"/> of the background.</summary>
+		public readonly Color BackgroundColor = Color.GhostWhite;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Ui.SchemaDrawer"/> class.
@@ -31,7 +33,7 @@ namespace CSim.Ui {
 			var smallFont = new Font( FontFamily.GenericMonospace, 10 );
 			var pen = new Pen( Brushes.Navy );
 
-			this.GraphInfo = new GraphInfo( null, pen, smallFont, normalFont, HGap, VGap );
+			this.GraphInfo = new GraphInfo( null, pen, BackgroundColor, smallFont, normalFont, HGap, VGap );
         }
 
 		/// <summary>
@@ -127,7 +129,7 @@ namespace CSim.Ui {
 
 		private void Cls()
 		{
-			this.board.Clear( Color.GhostWhite );
+			this.board.Clear( this.GraphInfo.BackGroundColor );
 		}
 
 		/// <summary>
@@ -139,12 +141,16 @@ namespace CSim.Ui {
 			this.InitGraphics( surface );
 			this.Cls();
 
+			// Draw relationships
 			foreach(GrphBoxedVariable box in this.boxes.Values) {
-				box.Draw();
-
 				if ( box.Variable is PtrVariable ) {
 					this.DrawRelationship( box );
 				}
+			}
+
+			// Draw the boxes themselves
+			foreach(GrphBoxedVariable box in this.boxes.Values) {
+				box.Draw();
 			}
 
             return;
@@ -156,26 +162,32 @@ namespace CSim.Ui {
 
 			if ( ptrVble != null ) {
 				long address = ptrVble.IntValue.Value;
-				GrphBoxedVariable pointedVble = null;
+				GrphBoxedVariable pointedBox = null;
 
 				if ( address == 0 ) {
 					this.DrawNullPointer( box );
 				}
 				else
-					if ( this.boxes.TryGetValue( address, out pointedVble ) ) {
-						this.DrawConnection(
-							box.X + ( box.Width / 2 ), box.Y - 5,
-							pointedVble.X + ( pointedVble.Width / 2 ), pointedVble.Y + pointedVble.Height +5
-						);
-					} else {
-						this.GraphInfo.Pen.Color = Color.OrangeRed;
-						var start = new Point( (int) ( box.X + ( box.Width / 2 ) ), (int) ( box.Y - 5 ) );
-						var end = new Point( (int) ( box.X + ( box.Width / 2 ) ), (int) ( box.Y - 25 ) );
+				if ( this.boxes.TryGetValue( address, out pointedBox ) ) {
+				    float delta = 0;
 
-						this.board.DrawLine( this.GraphInfo.Pen, start, end );
-						this.board.DrawLine( this.GraphInfo.Pen, end.X - 10, end.Y, end.X + 10, end.Y );
-						this.GraphInfo.Pen.Color = Color.Black;
+					if ( !( pointedBox is Drawer.GrphBoxedArray ) ) {
+						delta = ( pointedBox.Width / 2 ) - pointedBox.BoxX;
 					}
+
+					this.DrawConnection(
+						box.X + box.BoxX + ( box.BoxWidth / 2 ), box.Y - 5,
+						pointedBox.X + pointedBox.BoxX + delta, pointedBox.Y + pointedBox.Height + 5
+					);
+				} else {
+					this.GraphInfo.Pen.Color = Color.OrangeRed;
+					var start = new Point( (int) ( box.X + box.BoxX + ( box.BoxWidth / 2 ) ), (int) ( box.Y - 5 ) );
+					var end = new Point( (int) ( box.X + box.BoxX + ( box.BoxWidth / 2 ) ), (int) ( box.Y - 25 ) );
+
+					this.board.DrawLine( this.GraphInfo.Pen, start, end );
+					this.board.DrawLine( this.GraphInfo.Pen, end.X - 10, end.Y, end.X + 10, end.Y );
+					this.GraphInfo.Pen.Color = Color.Black;
+				}
 			}
 
 			return;
@@ -186,13 +198,13 @@ namespace CSim.Ui {
 			this.GraphInfo.Pen.Color = Color.DarkGray;
 
 			// Line
-			this.board.DrawLine( this.GraphInfo.Pen, x1, y1, x2, y2 );
+			this.board.DrawLine( this.GraphInfo.Pen, x1, y1, x2, y2 + 20 );
 
 			// Arrow
 			var vertices = new [] { 
-				new Point( (int) ( x2 - 10 ), (int) y2 ),
-				new Point( (int) ( x2 + 10 ), (int) y2 ),
-				new Point( (int) ( x2 + 2.5 ), (int) ( y2 - 20 ) )
+				new Point( (int) ( x2 - 10 ), (int) ( y2 + 20 ) ),
+				new Point( (int) ( x2 + 10 ), (int) ( y2 + 20 ) ),
+				new Point( (int) ( x2 + 5 ), (int) y2 )
 			};
 			this.board.FillPolygon( this.GraphInfo.Pen.Brush, vertices );
 
@@ -201,7 +213,7 @@ namespace CSim.Ui {
 
 		private void DrawNullPointer(GrphBoxedVariable box)
 		{
-			var start = new Point( (int) ( box.X + ( box.Width / 2 ) ), (int) ( box.Y -5 ) );
+			var start = new Point( (int) ( box.X + box.BoxX + ( box.BoxWidth / 2 ) ), (int) ( box.Y -5 ) );
 			var end1 = new Point( start.X, start.Y -20 );
 			var end2 = new Point( end1.X + 20, end1.Y );
 			var end3 = new Point( end2.X, end2.Y + 10 );

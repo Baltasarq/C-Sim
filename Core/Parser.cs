@@ -1,15 +1,13 @@
 
 namespace CSim.Core {
 	using System;
-	using System.Collections;
+	using System.Diagnostics;
 	using System.Collections.Generic;
 	using CSim.Core.Literals;
 
 	using CSim.Core.Opcodes;
 	using CSim.Core.Exceptions;
-	using CSim.Core.Types.Primitives;
 	using CSim.Core.FunctionLibrary;
-	using CSim.Core.Types;
 
 	/// <summary>
 	/// Parses user input.
@@ -29,44 +27,44 @@ namespace CSim.Core {
 				input = input.Remove( input.Length -1 ); 
 			}
 
-			this.lexer = new Lexer( input );
-			this.opcodes = new List<Opcode>();
+			this.Lexer = new Lexer( input );
+			this.Opcodes = new List<Opcode>();
             this.Machine = m;
-			this.tds = this.Machine.TDS;
 		}
 
 		/// <summary>
 		/// Parsing starts here.
 		/// </summary>
-		public Opcode[] Parse()
+		public virtual Opcode[] Parse()
 		{
 			Lexer.TokenType tokenType;
 
-            if ( lexer.GetCurrentChar() == Reserved.OpAccess[ 0 ] ) {
+			if ( this.Lexer.GetCurrentChar() == Reserved.OpAccess[ 0 ] ) {
 	            this.ParseAssign();
             } else {
-                tokenType = this.lexer.GetNextTokenType();
+                tokenType = this.Lexer.GetNextTokenType();
 
     			if ( tokenType == Lexer.TokenType.Id ) {
-    				int oldPos = lexer.Pos;
-    				string id = lexer.GetToken();
+					int oldPos = this.Lexer.Pos;
+					string id = this.Lexer.GetToken();
 
                     if ( this.Machine.TypeSystem.IsPrimitiveType( id ) ) {
                         this.ParseCreation( id );
                     }
                     else
-                    if ( this.tds.IsIdOfExistingVariable( new Id( id ) ) ) {
-                        lexer.Pos = oldPos;
+                    if ( this.Machine.TDS.IsIdOfExistingVariable( new Id( id ) ) )
+					{
+						this.Lexer.Pos = oldPos;
                         this.ParseAssign();
                     }
                     else
                     if ( id == Reserved.OpDelete ) {
-                        lexer.Pos = oldPos;
+						this.Lexer.Pos = oldPos;
                         this.ParseDelete();
                     }
 					else
 					if ( this.Machine.API.Match( id ) != null ) {
-						lexer.Pos = oldPos;
+						this.Lexer.Pos = oldPos;
 						this.ParseFunctionCall();
 					} else {
 						throw new ParsingException( id + "?" );
@@ -74,22 +72,22 @@ namespace CSim.Core {
     			}
             }
 
-            return this.opcodes.ToArray();
+            return this.Opcodes.ToArray();
         }
 
 		/// <summary>
 		/// Parses a complex expression.
 		/// i.e., a * 2
 		/// </summary>
-		private Type ParseExpression()
+		protected void ParseExpression()
 		{
-			Type toret = ParseIntermediateExpression();
+			ParseIntermediateExpression();
 
-			this.lexer.SkipSpaces();
-			if ( !this.lexer.IsEOL() ) {
+			this.Lexer.SkipSpaces();
+			if ( !this.Lexer.IsEOL() ) {
 				Opcode opr = null;
 
-				switch( this.lexer.GetCurrentChar() ) {
+				switch( this.Lexer.GetCurrentChar() ) {
 				case '+':
 					opr = new AddOpcode( this.Machine );
 					break;
@@ -110,125 +108,106 @@ namespace CSim.Core {
 					goto end;
 				}
 
-				this.lexer.Advance();
-				this.lexer.SkipSpaces();
+				this.Lexer.Advance();
+				this.Lexer.SkipSpaces();
 				ParseIntermediateExpression();
-				this.opcodes.Add( opr );
+				this.Opcodes.Add( opr );
 			}
 
 			end:
-			return toret;
+			return;
 		}
 
-		private Type ParseIntermediateExpression()
+		/// <summary>
+		/// Parses an intermediate expression, as in "*x", "(y + 2)" or "print(x)"
+		/// </summary>
+		protected void ParseIntermediateExpression()
 		{
-			Type toret = Any.Get();
-
-			this.lexer.SkipSpaces();
-			int oldPos = lexer.Pos;
-			string token = this.lexer.GetToken();
-			lexer.Pos = oldPos;
-			char currentChar = this.lexer.GetCurrentChar();
+			this.Lexer.SkipSpaces();
+			int oldPos = this.Lexer.Pos;
+			string token = this.Lexer.GetToken();
+			this.Lexer.Pos = oldPos;
+			char currentChar = this.Lexer.GetCurrentChar();
 
 			// Is it 'print(x)'?
 			if ( this.Machine.API.Match( token ) != null )
 			{
-				lexer.Pos = oldPos;
+				this.Lexer.Pos = oldPos;
 				this.ParseFunctionCall();
-				toret = this.Machine.TypeSystem.GetPtrType( Any.Get() );
 			}
 			else
 			// Is it '*x'?
 			if ( currentChar == Reserved.OpAccess[ 0 ] ) {
-				this.lexer.Advance();
-				int levels = 1;
-				
-				this.lexer.SkipSpaces();
-				currentChar = this.lexer.GetCurrentChar();
-
-				while ( currentChar == Reserved.OpAccess[ 0 ] ) {
-					this.lexer.SkipSpaces();
-					this.lexer.Advance();
-					++levels;
-					currentChar = this.lexer.GetCurrentChar();
-				}
-				this.ParseExpression();
-				this.opcodes.Add( new AccessOpcode( this.Machine, levels ) );
-				toret = this.Machine.TypeSystem.GetPtrType( Any.Get() );
+				parseAccessTo();
 			}
 			else
 			// Is it '('?
 			if ( currentChar == '(' ) {
-				this.lexer.Advance();
+				this.Lexer.Advance();
 				this.ParseExpression();
 				
-				this.lexer.SkipSpaces();
-				if ( this.lexer.GetCurrentChar() != ')' ) {
+				this.Lexer.SkipSpaces();
+				if ( this.Lexer.GetCurrentChar() != ')' ) {
 					throw new ParsingException( ")?" );
 				}
 				
-				this.lexer.Advance();
-				this.lexer.SkipSpaces();
+				this.Lexer.Advance();
+				this.Lexer.SkipSpaces();
 			}
 			else {
 				ParseTerminal();
 			}
 
-			return toret;
+			return;
 		}
 
-		private Type ParseTerminal()
+		/// <summary>
+		/// Parses a terminal, as in "x", "5"...
+		/// </summary>
+		protected void ParseTerminal()
 		{
-			Type toret = Any.Get();
-			Lexer.TokenType tokenType = this.lexer.GetNextTokenType();
+			Lexer.TokenType tokenType = this.Lexer.GetNextTokenType();
 
-			this.lexer.SkipSpaces();
-			int oldPos = lexer.Pos;
-			char currentChar = this.lexer.GetCurrentChar();
-			lexer.Pos = oldPos;
+			this.Lexer.SkipSpaces();
+			int oldPos = this.Lexer.Pos;
+			char currentChar = this.Lexer.GetCurrentChar();
+			this.Lexer.Pos = oldPos;
 
 			// Is it '&x'?
 			if ( currentChar == Reserved.OpAddressOf[ 0 ] ) {
-				this.lexer.Advance();
-				this.opcodes.Add( new AddressOpcode( this.Machine, new Id( this.lexer.GetToken() ) ) );
-				toret = this.Machine.TypeSystem.GetPtrType( Any.Get() );
+				parseAddressOf();
 			}
 			else
 			// Is it 'x'?
 			if ( tokenType == Lexer.TokenType.Id ) {
-				string id = this.lexer.GetToken();
+				string id = this.Lexer.GetToken();
 
 				if ( id == Reserved.OpNew ) {
-					this.lexer.Pos = oldPos;
+					this.Lexer.Pos = oldPos;
 					this.ParseNew();
 				} else {
-					this.lexer.SkipSpaces();
-					if ( this.lexer.GetCurrentChar() == '[' ) {
-							this.lexer.Advance();
+					this.Lexer.SkipSpaces();
+					if ( this.Lexer.GetCurrentChar() == '[' ) {
+							this.Lexer.Advance();
 							ParseExpression();
-							this.lexer.SkipSpaces();
+							this.Lexer.SkipSpaces();
 
-							if ( this.lexer.GetCurrentChar() != ']' ) {
+							if ( this.Lexer.GetCurrentChar() != ']' ) {
 								throw new ParsingException( "]?" );
 							}
-							this.lexer.Advance();
-							this.opcodes.Add( new StoreRValue( this.Machine, new Id( id ) ) );
-							this.opcodes.Add( new ArrayIndexAccessOpcode( this.Machine ) );
+							this.Lexer.Advance();
+							this.Opcodes.Add( new StoreRValue( this.Machine, new Id( id ) ) );
+							this.Opcodes.Add( new ArrayIndexAccessOpcode( this.Machine ) );
 					} else {
-						this.opcodes.Add( new StoreRValue( this.Machine, new Id( id ) ) );
+						this.Opcodes.Add( new StoreRValue( this.Machine, new Id( id ) ) );
 					}
 				}
-
-				try {
-					Variable vble = this.Machine.TDS.LookUp( id );
-					toret = vble.Type;
-				} catch(UnknownVbleException) { /* ignored */ }
 			}
 			else
 			// Is it '0x5'?
 			if ( tokenType == Lexer.TokenType.HexNumber ) {
 				int negative = 1;
-				char ch = this.lexer.GetCurrentChar();
+				char ch = this.Lexer.GetCurrentChar();
 
 				if ( ch == '+'
 				  || ch == '-' )
@@ -237,47 +216,42 @@ namespace CSim.Core {
 						negative = -1;
 					}
 
-					this.lexer.Advance();
+					this.Lexer.Advance();
 				}
 
-				this.lexer.Advance(); // pass '0'
-				this.lexer.Advance(); // pass 'x'
-				this.opcodes.Add( new StoreRValue( this.Machine,
+				this.Lexer.Advance(); // pass '0'
+				this.Lexer.Advance(); // pass 'x'
+				this.Opcodes.Add( new StoreRValue( this.Machine,
 							new IntLiteral( this.Machine,
-								            int.Parse( this.lexer.GetHexNumber(),
+								            int.Parse( this.Lexer.GetHexNumber(),
 									                   System.Globalization.NumberStyles.HexNumber ) * negative ) ) );
-				toret = this.Machine.TypeSystem.GetIntType();
 			}
 			else
 			// Is it '5'?
 			if ( tokenType == Lexer.TokenType.IntNumber ) {
-				this.opcodes.Add( new StoreRValue( this.Machine,
-									new IntLiteral( this.Machine, int.Parse( this.lexer.GetNumber() ) ) ) );
-				toret = this.Machine.TypeSystem.GetIntType();
+				this.Opcodes.Add( new StoreRValue( this.Machine,
+									new IntLiteral( this.Machine, int.Parse( this.Lexer.GetNumber() ) ) ) );
 			}
 			// Is it '5.0'?
 			else
 			if ( tokenType == Lexer.TokenType.RealNumber ) {
-				toret = this.Machine.TypeSystem.GetDoubleType();
-				double x = double.Parse( this.lexer.GetToken(),
+				double x = double.Parse( this.Lexer.GetToken(),
 										 System.Globalization.NumberFormatInfo.InvariantInfo );
-				this.opcodes.Add( new StoreRValue( this.Machine,
+				this.Opcodes.Add( new StoreRValue( this.Machine,
 						new DoubleLiteral( this.Machine, x ) ) );
 			}
 			// Is it 'a'?
 			else
 			if ( tokenType == Lexer.TokenType.Char ) {
-				toret = this.Machine.TypeSystem.GetCharType();
-				this.lexer.Advance();
-				this.opcodes.Add( new StoreRValue( this.Machine,
-							new CharLiteral( this.Machine, this.lexer.GetCurrentChar() ) ) );
-				this.lexer.Advance( 2 );
+				this.Lexer.Advance();
+				this.Opcodes.Add( new StoreRValue( this.Machine,
+							new CharLiteral( this.Machine, this.Lexer.GetCurrentChar() ) ) );
+				this.Lexer.Advance( 2 );
 			}
 			// Is it "hola"?
 			else
 			if ( tokenType == Lexer.TokenType.Text ) {
-				toret = this.Machine.TypeSystem.GetPtrType( this.Machine.TypeSystem.GetCharType() );
-				string s = this.lexer.GetStringLiteral();
+				string s = this.Lexer.GetStringLiteral();
 
 				// Remove quotes
 				if ( s[ 0 ] == '"' ) {
@@ -290,30 +264,96 @@ namespace CSim.Core {
 				}
 				
 				// Store string literal
-				this.opcodes.Add( new StoreRValue( this.Machine, new StrLiteral( this.Machine, s ) ) );
+				this.Opcodes.Add( new StoreRValue( this.Machine, new StrLiteral( this.Machine, s ) ) );
 			}
 
-			return toret;
+			return;
+		}
+
+		/// <summary>
+		/// Parses the 'address of' expression.
+		/// It can be as simple as: &amp;s, &amp;x, &amp;ptr.
+		/// It can also be complex: &amp;s[5*foo()]
+		/// </summary>
+		protected void parseAddressOf()
+		{
+			// Pass '&'
+			Debug.Assert( this.Lexer.GetCurrentChar() == Reserved.OpAddressOf[ 0 ] ) ;
+			this.Lexer.Advance();
+			this.Lexer.SkipSpaces();
+
+			// Pass the id
+			var id = new Id( this.Lexer.GetToken() );
+			this.Lexer.SkipSpaces();
+
+			// Is there '['?
+			if ( this.Lexer.GetCurrentChar() == '[' ) {
+				this.Lexer.Advance();
+				this.Lexer.SkipSpaces();
+
+				this.ParseExpression();
+				this.Opcodes.Add( new StoreRValue( this.Machine, id ) );
+				this.Opcodes.Add( new ArrayIndexAccessOpcode( this.Machine ) );
+
+				this.Lexer.SkipSpaces();
+				if ( this.Lexer.GetCurrentChar() == ']' ) {
+					this.Lexer.Advance();
+					this.Lexer.SkipSpaces();
+				} else {
+					throw new ParsingException( "]??" );
+				}
+			} else {
+				this.Opcodes.Add( new StoreRValue( this.Machine, id ) );
+			}
+
+			this.Opcodes.Add( new AddressOfOpcode( this.Machine ) );
+		}
+
+		/// <summary>
+		/// Parses the 'access to' expression.
+		/// It can be as simple as: *ptr, *s...
+		/// But it can also be complex: *v[0], *v[sin()*2]
+		/// </summary>
+		protected void parseAccessTo()
+		{
+			char currentChar = this.Lexer.GetCurrentChar();
+
+			Debug.Assert( currentChar == Reserved.OpAccess[ 0 ] );
+			this.Lexer.Advance();
+			int levels = 1;
+
+			this.Lexer.SkipSpaces();
+			currentChar = this.Lexer.GetCurrentChar();
+
+			while ( currentChar == Reserved.OpAccess[ 0 ] ) {
+				this.Lexer.SkipSpaces();
+				this.Lexer.Advance();
+				++levels;
+				currentChar = this.Lexer.GetCurrentChar();
+			}
+
+			this.ParseExpression();
+			this.Opcodes.Add( new AccessOpcode( this.Machine, levels ) );
 		}
 
 		/// <summary>
 		/// Parses expressions like 'delete ptr',
 		/// where ptr must be a pointer variable.
 		/// </summary>
-        private void ParseDelete()
+		protected void ParseDelete()
         {
-            string token = lexer.GetToken();
+			string token = this.Lexer.GetToken();
 
             if ( token == Reserved.OpDelete ) {
-                lexer.SkipSpaces();
+				this.Lexer.SkipSpaces();
 
-                if ( lexer.GetCurrentChar() == '[' ) {
-                    lexer.Advance();
-                    lexer.SkipSpaces();
+				if ( this.Lexer.GetCurrentChar() == '[' ) {
+					this.Lexer.Advance();
+					this.Lexer.SkipSpaces();
 
-                    if ( lexer.GetCurrentChar() == ']' ) {
-                        lexer.Advance();
-                        lexer.SkipSpaces();
+					if ( this.Lexer.GetCurrentChar() == ']' ) {
+						this.Lexer.Advance();
+						this.Lexer.SkipSpaces();
                     }
                     else {
                         throw new EngineException(
@@ -322,12 +362,12 @@ namespace CSim.Core {
                     }
                 }
 
-                Lexer.TokenType tokenType = lexer.GetNextTokenType();
+				Lexer.TokenType tokenType = this.Lexer.GetNextTokenType();
 
                 if ( tokenType == Lexer.TokenType.Id ) {
-                    token = lexer.GetToken();
+					token = this.Lexer.GetToken();
 					this.ParseExpression();
-					this.opcodes.Add( new CallOpcode( this.Machine, Free.Name ) );
+					this.Opcodes.Add( new CallOpcode( this.Machine, Free.Name ) );
                 } else {
                     throw new EngineException(
                         L18n.Get( L18n.Id.ErrExpected )
@@ -344,38 +384,42 @@ namespace CSim.Core {
             return;
         }
 
-        private void ParseNew()
+		/// <summary>
+		/// Parses the 'new' operator, as in "new int;"
+		/// </summary>
+		protected void ParseNew()
 		{
 			bool isVector = false;
-			lexer.SkipSpaces();
+			Lexer.SkipSpaces();
 	
-			if ( lexer.GetToken() == Reserved.OpNew ) {
-				Type type = this.Machine.TypeSystem.GetPrimitiveType( lexer.GetToken() );
+			if ( Lexer.GetToken() == Reserved.OpNew ) {
+				Type type = this.Machine.TypeSystem.GetPrimitiveType( Lexer.GetToken() );
 
 				// Match square brackets
-				if ( lexer.GetCurrentChar() == '[' ) {
+				if ( Lexer.GetCurrentChar() == '[' ) {
 					isVector = true;
-					lexer.Advance();
-					lexer.SkipSpaces();
+					Lexer.Advance();
+					Lexer.SkipSpaces();
 					this.ParseExpression();
-					lexer.SkipSpaces();
+					Lexer.SkipSpaces();
 
-					if ( lexer.GetCurrentChar() != ']' ) {
+					if ( Lexer.GetCurrentChar() != ']' ) {
 						throw new ParsingException( "]?" );
 					}
 				}
 
                 // Create variable (memory block)
 				if ( isVector ) {
-					this.opcodes.Add( new CallOpcode( this.Machine, Malloc.Name ) );
+					this.Opcodes.Add( new CallOpcode( this.Machine, Malloc.Name ) );
 				} else {
 					Id memBlkId = new Id( SymbolTable.GetNextMemoryBlockName() );
-					this.opcodes.Add( new CreateOpcode( this.Machine, memBlkId, type ) );
-					this.opcodes.Add( new AddressOpcode( this.Machine, memBlkId ) );
+					this.Opcodes.Add( new CreateOpcode( this.Machine, memBlkId, type ) );
+					this.Opcodes.Add( new StoreRValue( this.Machine, memBlkId ) );
+					this.Opcodes.Add( new AddressOfOpcode( this.Machine ) );
 				}
 
                 // Make the vble "id" point to it
-				this.opcodes.Add( new AssignOpcode( this.Machine ) );
+				this.Opcodes.Add( new AssignOpcode( this.Machine ) );
 			} else {
                 throw new EngineException(
                     L18n.Get( L18n.Id.ErrExpected )
@@ -388,22 +432,22 @@ namespace CSim.Core {
 		/// <summary>
 		/// Parses variable assign.
 		/// </summary>
-		private void ParseAssign()
+		protected void ParseAssign()
 		{
             // Get the id
 			this.ParseIntermediateExpression();
 
 			// Parse expr after '='
-			lexer.SkipSpaces();
-			if ( !lexer.IsEOL() ) {
-                if ( lexer.GetCurrentChar() == Reserved.OpAssign[ 0 ] ) {
-					lexer.Advance();
-					lexer.SkipSpaces();
+			Lexer.SkipSpaces();
+			if ( !Lexer.IsEOL() ) {
+                if ( Lexer.GetCurrentChar() == Reserved.OpAssign[ 0 ] ) {
+					Lexer.Advance();
+					Lexer.SkipSpaces();
 
 					ParseExpression();
 
 					// Create assign opcode
-					this.opcodes.Add( new AssignOpcode( this.Machine ) );
+					this.Opcodes.Add( new AssignOpcode( this.Machine ) );
 				} else {
                     throw new EngineException(
                         L18n.Get( L18n.Id.ErrExpected )
@@ -421,56 +465,56 @@ namespace CSim.Core {
 		/// <summary>
 		/// Parses the creation of a variable.
 		/// </summary>
-		private void ParseCreation(string typeId)
+		protected void ParseCreation(string typeId)
 		{
 			int oldPos;
 			Id id;
             int ptrLevel = 0;
             bool isRef = false;
 
-			lexer.SkipSpaces();
+			Lexer.SkipSpaces();
 
             // Is it a star over there?
-            while ( lexer.GetCurrentChar() == Reserved.OpAccess[ 0 ] ) {
+            while ( Lexer.GetCurrentChar() == Reserved.OpAccess[ 0 ] ) {
 				++ptrLevel;
-                lexer.Advance();
-				lexer.SkipSpaces();
+                Lexer.Advance();
+				Lexer.SkipSpaces();
             }
 
             // Is there an ampersand there?
-            if ( lexer.GetCurrentChar() == Reserved.OpAddressOf[ 0 ] ) {
+            if ( Lexer.GetCurrentChar() == Reserved.OpAddressOf[ 0 ] ) {
                 isRef = true;
-                lexer.Advance();
+                Lexer.Advance();
             }
 
             // Get id
-			lexer.SkipSpaces();
-			oldPos = lexer.Pos;
-            id = new Id( lexer.GetToken() );
+			Lexer.SkipSpaces();
+			oldPos = Lexer.Pos;
+            id = new Id( Lexer.GetToken() );
 
             if ( isRef ) {
-				this.opcodes.Add( new CreateOpcode( this.Machine, id,
+				this.Opcodes.Add( new CreateOpcode( this.Machine, id,
 	                              	this.Machine.TypeSystem.GetRefType(
 										this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) ) );
             } else {
 				if ( ptrLevel > 0 ) {
-					this.opcodes.Add(
+					this.Opcodes.Add(
 						new CreateOpcode( this.Machine, id,
 					    	this.Machine.TypeSystem.GetPtrType(
 								this.Machine.TypeSystem.GetPrimitiveType( typeId ),
 								ptrLevel ) )
 					);
                 } else {
-					this.opcodes.Add( new CreateOpcode( this.Machine, id,
+					this.Opcodes.Add( new CreateOpcode( this.Machine, id,
 					                  	this.Machine.TypeSystem.GetPrimitiveType( typeId ) ) );
                 }
             }
 
 			// Check whether there is an assign on creation
-			lexer.SkipSpaces();
-			if ( !lexer.IsEOL() ) {
-                if ( lexer.GetCurrentChar() == Reserved.OpAssign[ 0 ] ) {
-					lexer.Pos = oldPos;
+			Lexer.SkipSpaces();
+			if ( !Lexer.IsEOL() ) {
+                if ( Lexer.GetCurrentChar() == Reserved.OpAssign[ 0 ] ) {
+					Lexer.Pos = oldPos;
 					this.ParseAssign();
 				} else {
                         throw new EngineException(
@@ -489,47 +533,47 @@ namespace CSim.Core {
 		/// <summary>
 		/// Parses a function call in the input.
 		/// </summary>
-		public void ParseFunctionCall()
+		protected void ParseFunctionCall()
 		{
 			string id;
 
-			lexer.SkipSpaces();
-			id = lexer.GetToken().Trim();
+			Lexer.SkipSpaces();
+			id = Lexer.GetToken().Trim();
 
 			if ( id.Length > 0 ) {
-				lexer.SkipSpaces();
+				Lexer.SkipSpaces();
 
-				if ( lexer.GetCurrentChar() == '(' ) {
-                    lexer.Advance();
+				if ( Lexer.GetCurrentChar() == '(' ) {
+                    Lexer.Advance();
 
-                    if ( lexer.GetCurrentChar() != ')' ) {
+                    if ( Lexer.GetCurrentChar() != ')' ) {
                         do {
-        					lexer.SkipSpaces();
+        					Lexer.SkipSpaces();
 							this.ParseExpression();
-                            lexer.SkipSpaces();
+                            Lexer.SkipSpaces();
 
-                            if ( lexer.GetCurrentChar() == ',' ) {
-                                lexer.Advance();
-                                lexer.SkipSpaces();
+                            if ( Lexer.GetCurrentChar() == ',' ) {
+                                Lexer.Advance();
+                                Lexer.SkipSpaces();
                             }
                             else
-                            if ( lexer.GetCurrentChar() != ')' ) {
+                            if ( Lexer.GetCurrentChar() != ')' ) {
                                 throw new ParsingException(
                                     L18n.Get( L18n.Id.ErrExpected )
                                         + ": ',', ')'" 
                                 );
                             }
-                        } while( lexer.GetCurrentChar() != ')'
-                              && !lexer.IsEOL() );
+                        } while( Lexer.GetCurrentChar() != ')'
+                              && !Lexer.IsEOL() );
                     }
 
-                    if ( lexer.GetCurrentChar() != ')' ) {
+                    if ( Lexer.GetCurrentChar() != ')' ) {
                         throw new ParsingException( L18n.Get( L18n.Id.ErrExpectedParametersEnd ) );
                     }
                      
-                    lexer.Advance();
-                    lexer.SkipSpaces();
-                    this.opcodes.Add( new CallOpcode( this.Machine, id ) );
+                    Lexer.Advance();
+                    Lexer.SkipSpaces();
+                    this.Opcodes.Add( new CallOpcode( this.Machine, id ) );
 				} else {
 					throw new ParsingException(L18n.Get(  L18n.Id.ErrExpectedParametersBegin ) );
 				}
@@ -543,7 +587,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The input, as a string.</value>
 		public string Input {
-			get { return this.lexer.Line; }
+			get { return this.Lexer.Line; }
 		}
 
 		/// <summary>
@@ -554,8 +598,21 @@ namespace CSim.Core {
             get; set;
         }
 
-		private Lexer lexer = null;
-		private List<Opcode> opcodes = null;
-		private SymbolTable tds = null;
+		/// <summary>
+		/// Gets the lexer associated to the parser.
+		/// It is created by the parser itself.
+		/// </summary>
+		/// <value>The <see cref="Lexer"/>.</value>
+		public Lexer Lexer {
+			get; protected set;
+		}
+
+		/// <summary>
+		/// Gets or sets the opcodes resulting of the parsing.
+		/// </summary>
+		/// <value>The opcodes, as a <see cref="System.Collections.Generic.List{Opcode}"/>.</value>
+		protected List<Opcode> Opcodes {
+			get; set;
+		}
 	}
 }

@@ -46,7 +46,7 @@
 		{
 			Variable x = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
 			Variable y = this.Machine.TDS.SolveToVariable( realParams[ 1 ] );
-			Variable result = new TempVariable( this.Machine.TypeSystem.GetDoubleType() );
+			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
 
 			if ( !( x.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( x.LiteralValue.ToString() + "?" );

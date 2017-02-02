@@ -7,8 +7,13 @@ namespace CSim.Core {
 	/// Represents identifiers.
 	/// </summary>
 	public class Id: RValue {
+		/// <summary>Maximum length of any id<c>/summary>
 		public const int MaxLength = 64;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Id"/> class.
+		/// </summary>
+		/// <param name="id">The identifier to be, as a string.</param>
 		public Id(string id)
 		{
 			this.Name = id;
@@ -92,6 +97,10 @@ namespace CSim.Core {
 			}
 		}
 
+		/// <summary>
+		/// Gets the id itself.
+		/// </summary>
+		/// <value>The id, as a string.</value>
 		public override object Value {
 			get {
 				return this.Name;
@@ -118,6 +127,10 @@ namespace CSim.Core {
 			this.id = id.Trim();
 		}
 
+		/// <summary>
+		/// Determines whether this instance is a heap identifier.
+		/// </summary>
+		/// <returns><c>true</c> if this instance is heap identifier; otherwise, <c>false</c>.</returns>
 		public bool IsHeapId()
 		{
 			return this.id.StartsWith( SymbolTable.MemBlockName, StringComparison.InvariantCulture );

@@ -52,7 +52,7 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			this.Machine.SetRandomEngine( (long) param.LiteralValue.Value );
-			this.Machine.ExecutionStack.Push( new TempVariable( this.Machine.TypeSystem.GetIntType() ) );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() ) );
 		}
 
 		private static SRand instance = null;

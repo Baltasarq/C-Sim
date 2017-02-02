@@ -25,23 +25,52 @@ namespace CSim.Ui {
 			this.pnlIO.Controls.Add( this.edInput );
 		}
 
+		private void BuildWatchesView()
+		{
+			this.lblWatchesValue = new Label[ NumWatches ];
+			this.edWatchesLabel = new TextBox[ NumWatches ];
+
+			for(int i = 0; i < NumWatches; ++i) {
+				var lblWatch = this.lblWatchesValue[ i ] = new Label { Text = "0", Dock = DockStyle.Right };
+				var edWatch = this.edWatchesLabel[ i ] = new TextBox { Dock = DockStyle.Fill };
+
+				lblWatch.Font = new Font( FontFamily.GenericMonospace, 11 );
+					
+				edWatch.LostFocus += (obj, args) => this.UpdateWatches();
+				lblWatch.Font = new Font( FontFamily.GenericMonospace, 11 );
+			}
+
+			return;
+		}
+
+		private void BuildWatchesPanel()
+		{
+			this.BuildWatchesView();
+			this.gbWatches = new GroupBox { Text = "Watches", Dock = DockStyle.Fill };
+			this.pnlWatches = new TableLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true };
+
+			for(int i = 0; i < NumWatches; ++i) {
+				var panel = new Panel { Dock = DockStyle.Top };
+				panel.Controls.Add( this.edWatchesLabel[ i ] );
+				panel.Controls.Add( this.lblWatchesValue[ i ] );
+				this.pnlWatches.Controls.Add( panel );
+				panel.MaximumSize = new Size( int.MaxValue, this.edWatchesLabel[ i ].Height );
+			}
+
+			this.gbWatches.Controls.Add( this.pnlWatches );
+			this.splWatches.Panel2.Controls.Add( this.gbWatches );
+		}
+
 		private void BuildHistoryPanel()
 		{
 			this.lbHistory = new ListBox();
 			this.lbHistory.Font = new Font( FontFamily.GenericMonospace, 8 );
 			this.lbHistory.Dock = DockStyle.Fill;
-			this.splHistory.Panel2.Controls.Add( this.lbHistory );
+			this.gbHistory = new GroupBox { Text = "History", Dock = DockStyle.Fill };
+			this.gbHistory.Controls.Add( this.lbHistory );
+			this.splWatches.Panel1.Controls.Add( this.gbHistory );
 
-			this.lbHistory.SelectedIndexChanged += (o, e) => {
-				int i = this.lbHistory.SelectedIndex;
-
-				if ( i >= 0
-				  && !( this.doNotApplySnapshot ) )
-				{
-					this.machine.SnapshotManager.ApplySnapshot( i );
-					this.UpdateView();
-				}
-			};
+			this.lbHistory.SelectedIndexChanged += (o, e) => this.OnHistoryIndexChanged();
 		}
 
 		private void BuildMemoryViewPanel()
@@ -116,12 +145,14 @@ namespace CSim.Ui {
 		private void BuildSymbolTable()
 		{
 			// Symbol table
+			this.gbSymbols = new GroupBox { Text = "Symbols", Dock = DockStyle.Fill };
 			this.tvSymbolTable = new TreeView();
 			this.tvSymbolTable.Dock = DockStyle.Fill;
 			this.tvSymbolTable.Font = this.baseFont;
 			this.tvSymbolTable.PathSeparator = ".";
 			this.tvSymbolTable.AfterSelect += (sender, e) => this.DoTreeSelect();
-			this.splSymbolTable.Panel1.Controls.Add( this.tvSymbolTable );
+			this.gbSymbols.Controls.Add( this.tvSymbolTable );
+			this.splSymbolTable.Panel1.Controls.Add( this.gbSymbols );
 			this.splSymbolTable.SplitterDistance = this.CharWidth;
 		}
 
@@ -372,6 +403,7 @@ namespace CSim.Ui {
 
 		private void BuildTabbedPanel()
 		{
+			this.gbMain = new GroupBox { Text = "Memory", Dock = DockStyle.Fill };
 			this.tcTabs = new TabControl();
 			this.tcTabs.SuspendLayout();
 			this.tcTabs.SelectedIndexChanged += delegate(object obj, EventArgs args) {
@@ -391,7 +423,8 @@ namespace CSim.Ui {
 			});
 			this.tcTabs.TabPages[ 0 ].ImageIndex = 0;
 			this.tcTabs.TabPages[ 1 ].ImageIndex = 1;
-			this.splSymbolTable.Panel2.Controls.Add( this.tcTabs );
+			this.gbMain.Controls.Add( this.tcTabs );
+			this.splSymbolTable.Panel2.Controls.Add( this.gbMain );
 		}
 
 		private void BuildOutput()
@@ -562,15 +595,20 @@ namespace CSim.Ui {
 
 			// Split panel for history
 			// 1 - splSymbolTable (everything else), 2 - history
-			this.splHistory = new SplitContainer();
-			this.splHistory.Dock = DockStyle.Fill;
+			this.splHistory = new SplitContainer{ Dock = DockStyle.Fill };
 			this.splHistory.SuspendLayout();
 			this.splHistory.Panel1.Controls.Add( this.splSymbolTable );
+
+			// Split panel for history & watches
+			this.splWatches = new SplitContainer{ Dock = DockStyle.Fill, Orientation = Orientation.Horizontal };
+			this.splWatches.SuspendLayout();
+			this.splHistory.Panel2.Controls.Add( this.splWatches );
 
 			// Compose it up
 			this.pnlMain.Controls.Add( splHistory );
 
 			this.BuildTabbedPanel();
+			this.BuildWatchesPanel();
 			this.BuildHistoryPanel();
 			this.BuildMemoryViewPanel();
 			this.BuildSymbolTable();
@@ -589,6 +627,7 @@ namespace CSim.Ui {
 			this.Shown += (o, e) => this.FocusOnInput();
 			this.splHistory.ResumeLayout( false );
 			this.splSymbolTable.ResumeLayout( false );
+			this.splWatches.ResumeLayout( false );
 			this.tcTabs.ResumeLayout( false );
 			this.pnlIO.ResumeLayout( false );
 			this.pnlMain.ResumeLayout( false );
@@ -602,11 +641,17 @@ namespace CSim.Ui {
 
 		private SplitContainer splSymbolTable;
 		private SplitContainer splHistory;
+		private SplitContainer splWatches;
 		private Font baseFont;
 		private Panel pnlAbout;
 		private Panel pnlIO;
 		private Panel pnlMain;
+		private GroupBox gbSymbols;
+		private GroupBox gbHistory;
+		private GroupBox gbMain;
+		private GroupBox gbWatches;
 		private TableLayoutPanel pnlSettings;
+		private TableLayoutPanel pnlWatches;
 		private ComboBox edInput;
 		private DataGridView grdMemory;
 		private TreeView tvSymbolTable;
@@ -626,6 +671,8 @@ namespace CSim.Ui {
 		private RadioButton rbWS16;
 		private RadioButton rbWS32;
 		private RadioButton rbWS64;
+		private TextBox[] edWatchesLabel;
+		private Label[] lblWatchesValue;
 
 		private Bitmap appIconBmp;
 		private Bitmap backIconBmp;

@@ -53,7 +53,7 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			double value = Convert.ToDouble( param.LiteralValue.Value );
-			Variable result = new TempVariable( this.Machine.TypeSystem.GetDoubleType() );
+			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
 			result.LiteralValue = new DoubleLiteral( this.Machine, Math.Ceiling( value ) );
 			this.Machine.ExecutionStack.Push( result );
 		}

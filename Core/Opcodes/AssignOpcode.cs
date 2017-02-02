@@ -28,7 +28,7 @@ namespace CSim.Core.Opcodes {
 		private void SetRef(RefVariable lvalue, Variable rvalue)
 		{
 			// Check rvalue
-			if ( rvalue is TempVariable ) {
+			if ( rvalue is NoPlaceTempVariable ) {
 				long address = rvalue.Address;
 
 				rvalue = Machine.TDS.LookForAddress( rvalue.Address );
@@ -87,7 +87,7 @@ namespace CSim.Core.Opcodes {
 			// Take variable
 			this.Vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 
-			if ( !( rvalue is TempVariable )
+			if ( !( rvalue is NoPlaceTempVariable )
 			  && rvalue.Name.Name == this.Vble.Name.Name )
 			{
 				// The variable has just been created.
@@ -95,7 +95,7 @@ namespace CSim.Core.Opcodes {
 			}
 
 			// Prepare assign parts
-			if ( this.Vble is TempVariable ) {
+			if ( this.Vble is NoPlaceTempVariable ) {
 				throw new UnknownVbleException( "tmp vble: " + this.Vble.Name.Name );
 			}
 

@@ -45,7 +45,7 @@ namespace CSim.Core.FunctionLibrary {
 		public override void Execute(RValue[] realParams)
 		{
 			Variable vble = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			Variable result = new TempVariable( this.Machine.TypeSystem.GetIntType() );
+			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral( this.Machine, vble.Type.Size );
 			this.Machine.ExecutionStack.Push( result );
 		}

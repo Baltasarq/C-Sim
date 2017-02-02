@@ -5,13 +5,27 @@ namespace CSim.Core {
 	using CSim.Core.Variables;
 	using CSim.Core.Exceptions;
 
+	/// <summary>
+	/// A variable living in the <see cref="Machine"/>.
+	/// </summary>
     public class Variable: RValue {
+		/// <summary>
+		/// Auxiliar constructor
+		/// Initializes a new instance of the <see cref="CSim.Core.Variable"/> class.
+		/// </summary>
+		/// <param name="m">The machine the variable will live in.</param>
 		protected Variable(Machine m)
 		{
 			this.machine = m;
 			this.Address = -1;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Variable"/> class.
+		/// </summary>
+		/// <param name="id">An <see cref="Id"/> for the variable.</param>
+		/// <param name="t">A <see cref="Type"/> for the variable.</param>
+		/// <param name="m">The <see cref="Machine"/> the variable will be in.</param>
 		public Variable(Id id, Type t, Machine m)
 			: this( m )
 		{
@@ -21,6 +35,13 @@ namespace CSim.Core {
 			this.Size = this.type.Size;
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Variable"/> class.
+		/// </summary>
+		/// <param name="id">An <see cref="Id"/> for the variable.</param>
+		/// <param name="t">A <see cref="Type"/> for the variable.</param>
+		/// <param name="m">The <see cref="Machine"/> the variable will be in.</param>
+		/// <param name="address">The address the variable will be sitting in.</param>
         public Variable(Id id, Type t, Machine m, int address)
             : this( id, t, m )
         {

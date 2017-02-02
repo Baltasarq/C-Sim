@@ -50,28 +50,28 @@
 		/// </summary>
 		protected override void CalculateSize()
 		{
-			float lenValueString = 0;
 			this.StrValues = this.ExtractArrayElementValues();
 
 			// Determine values width
 			foreach (string lit in this.StrValues) {
-				lenValueString += ( lit.Length * this.GraphInfo.NormalFont.CharWidth ) + 3;
+				this.BoxWidth += ( lit.Length * this.GraphInfo.NormalFont.CharWidth ) + 5;
 			}
 
 			// Determine other sizes
 			this.StrName = this.Variable.Name.Name;
 			this.StrType = this.Variable.Type
 				+ " :" + this.Variable.Type.Size
-				+ " [0x"
-				+ this.Variable.Address.ToString( "x" ).
-				PadLeft( this.Variable.Machine.WordSize * 2, '0' )
+				+ " ["
+				+ new IntLiteral( this.Variable.Machine, this.Variable.Address ).ToPrettyNumber()
 				+ ']';
 
 			float lenTypeString = this.StrType.Length * this.GraphInfo.SmallFont.CharWidth;
 			float lenNameString = this.StrName.Length * this.GraphInfo.SmallFont.CharWidth;
 
-			this.Width = Math.Max( Math.Max( lenValueString, lenTypeString ), lenNameString );
-			this.Height = this.GraphInfo.NormalFont.CharHeight + ( 2 * this.GraphInfo.SmallFont.CharHeight );
+			this.BoxX = this.GraphInfo.NormalFont.CharWidth * 2;
+			this.BoxY = this.GraphInfo.SmallFont.CharHeight;
+			this.Width = Math.Max( Math.Max( this.BoxWidth, lenTypeString ), lenNameString );
+			this.Height = this.GraphInfo.NormalFont.CharHeight + ( 2 * this.GraphInfo.SmallFont.CharHeight ) + 5;
 		}
 
 		/// <summary>
@@ -79,6 +79,8 @@
 		/// </summary>
 		public override void Draw()
 		{
+			base.Draw();
+
 			// Determine color for the surrounding rectangle
 			Color clRectangle = Color.Black;
 
@@ -93,7 +95,7 @@
 			// Draw value (box caption)
 			this.GraphInfo.Pen.Color = Color.Black;
 			float space = 0;
-			float beginning = this.X + ( this.GraphInfo.NormalFont.CharWidth * 3 ) + 10;
+			float beginning = this.X + ( this.GraphInfo.NormalFont.CharWidth * 3 );
 			for (int i = 0; i < this.StrValues.Length; ++i) {
 				this.DrawText(
 					beginning + space,
@@ -120,7 +122,7 @@
 			this.DrawRectangle(
 				this.X + ( this.GraphInfo.NormalFont.CharWidth * 2 ),
 				this.Y + this.GraphInfo.SmallFont.CharHeight,
-				this.GraphInfo.NormalFont.CharWidth * ( this.StrValue.Length + 5 ),
+				this.BoxWidth,
 				this.GraphInfo.NormalFont.CharHeight + 5 );
 			this.GraphInfo.Pen.Width -= 1;
 		}
@@ -138,6 +140,11 @@
 			return toret;
 		}
 
+		/// <summary>
+		/// Gets or sets the string values corresponding
+		/// to each member of the array.
+		/// </summary>
+		/// <value>The string values, as a string[].</value>
 		public string[] StrValues {
 			get; protected set;
 		}

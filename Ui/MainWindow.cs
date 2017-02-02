@@ -15,6 +15,8 @@ namespace CSim.Ui {
     /// The main window of the application.
     /// </summary>
     public partial class MainWindow: Form {
+		/// <summary>The maximum number of watches.</summary>
+		public const int NumWatches = 10;
 		/// <summary>The step in which fonts are increased or decreased in size.</summary>
         public const int FontStep = 2;
 		/// <summary>The max data columns in memory view.</summary>
@@ -171,6 +173,20 @@ namespace CSim.Ui {
 				Application.DoEvents();
 				t = DateTime.Now;
 			}
+		}
+
+		private void OnHistoryIndexChanged()
+		{
+			int i = this.lbHistory.SelectedIndex;
+
+			if ( i >= 0
+		  	  && !( this.doNotApplySnapshot ) )
+			{
+				this.machine.SnapshotManager.ApplySnapshot( i );
+				this.UpdateView();
+			}
+
+			return;
 		}
 
 		private void DoPlay()
@@ -483,11 +499,39 @@ namespace CSim.Ui {
 		{
 			this.UpdateMemoryView();
             this.UpdateSymbolTable();
+			this.UpdateWatches();
 			this.DoDrawing();
 			this.SetStatus();
 			this.FocusOnInput();
 		}
 
+
+		private void UpdateWatches()
+		{
+			for (int i = 0; i < this.edWatchesLabel.Length; ++i) {
+				Variable result;
+				Label lblWatch = this.lblWatchesValue[ i ];
+				string input = this.edWatchesLabel[ i ].Text.Trim();
+
+				if ( !string.IsNullOrEmpty( input ) ) {
+					try {
+						result = this.machine.Execute( new ExpressionParser( input, this.machine ) );
+
+						// Update output
+						lblWatch.ForeColor = Color.Navy;
+						lblWatch.Text = result.Value.ToString();
+					}
+					catch(EngineException)
+					{
+						lblWatch.ForeColor = Color.DarkRed;
+						lblWatch.Text = "ERROR";
+					}
+				}
+			}
+
+			return;
+		}
+			
         private void UpdateSymbolTable()
         {
             ReadOnlyCollection<Variable> variables = this.machine.TDS.Variables;
@@ -766,12 +810,12 @@ namespace CSim.Ui {
 
 		private static string FromIntToHex(long value, int wordSize = 1)
 		{
-			return value.ToString( "x" ).PadLeft( wordSize * 2, '0' );
+			return Literal.ShortenNumber( value.ToString( "x" ).PadLeft( wordSize * 2, '0' ) );
 		}
 
 		private static string FromIntToPrettyHex(long value, int wordSize = 1)
 		{
-			return @"0x" + FromIntToHex( value, wordSize );
+			return @"0x" + Literal.ShortenNumber( FromIntToHex( value, wordSize ) );
 		}
 
 		private bool doNotApplySnapshot;

@@ -11,11 +11,12 @@ namespace CSim.Ui.Drawer {
 		/// </summary>
 		/// <param name="grf">The graphics to draw on</param>
 		/// <param name="pen">The pen to draw with</param>
+		/// <param name="bgColor">The color for the background</param>
 		/// <param name="fSmall">The small font.</param>
 		/// <param name="fNormal">The normal font.</param>
 		/// <param name="hGap">The horizontal separation.</param>
 		/// <param name="vGap">The vertical separation.</param>
-		public GraphInfo(Graphics grf, Pen pen, Font fSmall, Font fNormal, int hGap, int vGap)
+		public GraphInfo(Graphics grf, Pen pen, Color bgColor, Font fSmall, Font fNormal, int hGap, int vGap)
 		{
 			this.Graphics = grf;
 			this.NormalFont = new FontInfo( fNormal, grf );
@@ -23,6 +24,14 @@ namespace CSim.Ui.Drawer {
 			this.Pen = pen;
 			this.HGap = hGap;
 			this.VGap = vGap;
+		}
+
+		/// <summary>
+		/// Gets or sets the color of the background.
+		/// </summary>
+		/// <value>The <see cref="System.Drawing.Color"/> of the background.</value>
+		public Color BackGroundColor {
+			get; set;
 		}
 
 		/// <summary>

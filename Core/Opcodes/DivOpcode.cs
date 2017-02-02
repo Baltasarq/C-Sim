@@ -64,7 +64,7 @@
 			long divRes = ( (long) op2.LiteralValue.Value ) / op1Value;
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, divRes ) );
+			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, divRes ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

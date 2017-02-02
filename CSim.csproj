@@ -72,7 +72,6 @@
     <Compile Include="Core\Types\Primitives\Int.cs" />
     <Compile Include="Core\Types\Primitive.cs" />
     <Compile Include="Core\Variables\RefVariable.cs" />
-    <Compile Include="Core\Variables\TempVariable.cs" />
     <Compile Include="Core\Locale.cs" />
     <Compile Include="Core\L18n.cs" />
     <Compile Include="Core\Exceptions\InvalidMaxMemoryException.cs" />
@@ -100,7 +99,7 @@
     <Compile Include="Core\ExecutionStack.cs" />
     <Compile Include="Core\Opcodes\CallOpcode.cs" />
     <Compile Include="Core\Opcodes\AssignOpcode.cs" />
-    <Compile Include="Core\Opcodes\AddressOpcode.cs" />
+    <Compile Include="Core\Opcodes\AddressOfOpcode.cs" />
     <Compile Include="Core\Opcodes\CreateOpcode.cs" />
     <Compile Include="Core\Opcodes\StoreRValue.cs" />
     <Compile Include="Core\FunctionLibrary\SizeOf.cs" />
@@ -147,6 +146,10 @@
     <Compile Include="Ui\Drawer\GrphBoxedArray.cs" />
     <Compile Include="Core\Variables\ArrayVariable.cs" />
     <Compile Include="Ui\Drawer\GraphInfo.cs" />
+    <Compile Include="Core\ExpressionParser.cs" />
+    <Compile Include="Core\Variables\InPlaceTempVariable.cs" />
+    <Compile Include="Core\Variables\NoPlaceTempVariable.cs" />
+    <Compile Include="Core\Variables\TempVariable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

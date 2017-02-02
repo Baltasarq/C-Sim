@@ -19,28 +19,28 @@ namespace CSim.Core
 		/// <param name="s">Its size, in bytes</param>
         public Type(string n, int s)
         {
-            this.name = n;
-            this.size = s;
+            this.Name = n;
+            this.Size = s;
         }
 
         /// <summary>
-        /// Gets or sets the name.
+        /// Gets the name.
         /// </summary>
         /// <value>
         /// The name of the type
         /// </value>
         public string Name {
-            get { return this.name; }
+			get; private set;
         }
 
         /// <summary>
-        /// Gets or sets the size
+        /// Gets the size
         /// </summary>
         /// <value>
         /// The size in bytes
         /// </value>
         public int Size {
-            get { return this.size; }
+			get; private set;
         }
 
 		/// <summary>
@@ -122,8 +122,5 @@ namespace CSim.Core
  
 			return toret;
 		}
-
-        private string name;
-        private int size;
     }
 }

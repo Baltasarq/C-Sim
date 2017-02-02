@@ -139,7 +139,32 @@ namespace CSim.Core {
 		/// </summary>
 		public void Collect()
 		{
-			this.RemoveDanglingReferences( );
+			this.RemoveDanglingReferences();
+			this.RemoveTempVariables();
+		}
+
+		/// <summary>
+		/// Removes all the temp variables.
+		/// </summary>
+		private void RemoveTempVariables()
+		{
+			var temps = new List<TempVariable>();
+
+			// Find
+			foreach (Variable v in this.Variables) {
+				var r = v as TempVariable;
+
+				if ( r != null ) {
+					temps.Add( r );
+				}
+			}
+
+			// Remove
+			foreach(TempVariable r in temps) {
+				this.Remove( r.Name.Name );
+			}
+
+			return;
 		}
 
 		/// <summary>
@@ -384,7 +409,7 @@ namespace CSim.Core {
 			if ( toret == null
 			  || toret.GetTargetType() != ptrVble.AssociatedType )
 			{
-				toret = new TempVariable( ptrVble.AssociatedType );
+				toret = new NoPlaceTempVariable( ptrVble.AssociatedType );
 				toret.Address = ptrVble.IntValue.Value;
 				toret.LiteralValue = new IntLiteral( this.machine, ptrVble.Access );
 			}
@@ -406,7 +431,7 @@ namespace CSim.Core {
 
 			if ( lit != null ) {
 				// Plain value
-				toret = new TempVariable( lit );
+				toret = new NoPlaceTempVariable( lit );
 			}
 			else
 			if ( id != null ) {

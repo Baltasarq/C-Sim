@@ -12,9 +12,19 @@ namespace CSim.Core {
     /// </summary>
     public abstract class Literal: RValue {
 
-		// Supported kinds of number display
-		public enum DisplayType { Dec, Hex };
+		/// <summary>Supported kinds of number display</summary>
+		public enum DisplayType {
+			///<summary>Decimal</summary>
+			Dec,
+			/// <summary>Hexadecimal</summary>
+			Hex
+		};
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="CSim.Core.Literal"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this literal is created for.</param>
+		/// <param name="v">The value, as a <see cref="System.Object"/>.</param>
 		public Literal(Machine m, object v)
 		{
 			this.val = v;
@@ -46,7 +56,11 @@ namespace CSim.Core {
         /// <return>The raw value.</return>
 		public abstract byte[] GetRawValue();
 
-		public string FromLittleEndianToHex()
+		/// <summary>
+		/// Converts the current value, in little endian, to hexadecimal.
+		/// </summary>
+		/// <returns>The little endian to hex.</returns>
+		protected string FromLittleEndianToHex()
 		{
 			StringBuilder toret = new StringBuilder();
 			byte[] bytes = this.GetRawValue();
@@ -58,7 +72,11 @@ namespace CSim.Core {
 			return toret.ToString();
 		}
 
-		public string FromBigEndianToHex()
+		/// <summary>
+		/// Converts the current value, in big endian, to hexadecimal.
+		/// </summary>
+		/// <returns>The big endian to hex.</returns>
+		protected string FromBigEndianToHex()
 		{
 			StringBuilder toret = new StringBuilder();
 			byte[] bytes = this.GetRawValue();
@@ -71,14 +89,11 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Returns the given value as an hex value.
+		/// Returns the current value as an hex value.
 		/// </summary>
 		/// <returns>
 		/// The hex value, as a string.
 		/// </returns>
-		/// <param name='value'>
-		/// The value, as an integer.
-		/// </param>
 		public string ToHex()
 		{
 			string toret;
@@ -89,7 +104,7 @@ namespace CSim.Core {
 				toret = FromLittleEndianToHex();
 			}
 
-			return toret.ToString();
+			return ShortenNumber( toret.ToString() );
 		}
 
 		/// <summary>
@@ -108,7 +123,7 @@ namespace CSim.Core {
 		/// <returns>The value, as a string.</returns>
 		public string ToDec()
 		{
-			return this.GetValueAsInt().ToString().PadLeft( 4, '0' );
+			return ShortenNumber( this.GetValueAsInt().ToString().PadLeft( 4, '0' ) );
 		}
 
 		/// <summary>
@@ -130,12 +145,41 @@ namespace CSim.Core {
 
 			if ( Literal.Display == DisplayType.Dec ) {
 				toret = this.ToDec();
-			}
-			else {
+			} else {
 				toret = this.ToPrettyHex();
 			}
 
 			return toret;
+		}
+
+		/// <summary>
+		/// Shorts the given value, removing zeroes at the left.
+		/// </summary>
+		/// <returns>The shortest possible version of the value.</returns>
+		/// <param name="value">The numeric value, decimal or hexadecimal, as string.</param>
+		public static string ShortenNumber(string value)
+		{
+			int zeroes = 0;
+
+			// How many zeroes at the left?
+			value = value.Trim();
+			while( zeroes < value.Length
+				&& value[ zeroes ] == '0' )
+			{
+				++zeroes;
+			}
+
+			// Remove them!
+			value = value.Substring( zeroes );
+
+			// Less than two or four digits?
+			if ( value.Length < 2
+			  || ( value.Length < 4 && value.Length != 2 ) )
+			{
+				value = "0" + value;
+			}					
+
+			return value;
 		}
 
 		/// <summary>
@@ -156,6 +200,10 @@ namespace CSim.Core {
 			return toret;
 		}
 
+		/// <summary>
+		/// The type of display (<see cref="DisplayType"/>),
+		/// to apply to all values while converting them to string.
+		/// </summary>
 		public static DisplayType Display = DisplayType.Hex;
 
 		private object val;

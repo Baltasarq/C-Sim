@@ -48,7 +48,7 @@ namespace CSim.Core.FunctionLibrary {
 
 			this.Machine.TDS.DeleteBlk( address );
 
-			Variable result = new TempVariable( Machine.TypeSystem.GetIntType() );
+			Variable result = new NoPlaceTempVariable( Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral( this.Machine, 0 );
 			this.Machine.ExecutionStack.Push( result );
 		}

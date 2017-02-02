@@ -58,7 +58,7 @@
 			long product = ( (long) op1.LiteralValue.Value ) * ( (long) op2.LiteralValue.Value );
 
 			// Store in the temp vble and end
-			Variable result = new TempVariable( new IntLiteral( this.Machine, product ) );
+			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, product ) );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}
