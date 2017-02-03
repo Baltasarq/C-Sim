@@ -1,9 +1,5 @@
 ﻿namespace CSim.Core.Opcodes {
-	using System;
-
 	using CSim.Core.Variables;
-	using CSim.Core.Types.Primitives;
-	using CSim.Core.Literals;
 	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
@@ -39,16 +35,15 @@
 			  && offset != null )
 			{
 				long address = 0;
-				var vbleAsPtr = vble as PtrVariable;
-				var vbleAsArray = vble as ArrayVariable;
+				var ptrVble = vble.Type as Ptr;
 
 				// Find the address of the pointed array
-				if ( vbleAsPtr != null ) {
-					address = vbleAsPtr.IntValue.Value;
+				if ( ptrVble != null ) {
+					address = vble.LiteralValue.GetValueAsInt();
 				}
 				else
-				if ( vbleAsArray != null ) {
-					address = vbleAsArray.Address;
+				if ( vble is ArrayVariable ) {
+					address = vble.Address;
 				} else {
 					throw new EngineException( vble.Name + "[x]??" );
 				}

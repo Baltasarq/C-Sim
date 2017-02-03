@@ -49,9 +49,10 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Execute the function with the specified realParams.
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
 		/// </summary>
-		/// <param name="realParams">Real parameters, as a primitive argument collection.</param>
+		/// <param name="realParams">The parameters.</param>
 		public abstract void Execute(RValue[] realParams);
 
 		/// <summary>

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.ObjectModel;
-
-using CSim.Core;
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Opcodes;
-using CSim.Core.Literals;
-
+﻿
 namespace CSim.Core.FunctionLibrary {
+	using System;
+
+	using CSim.Core.Functions;
+	using CSim.Core.Variables;
+	using CSim.Core.Literals;
+
 	/// <summary>
 	/// This is the atof function.
 	/// Signature: double atof(char * x);
@@ -19,11 +17,11 @@ namespace CSim.Core.FunctionLibrary {
 		public const string Name = "atof";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="CSim.Core.FunctionLibrary.Atof"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
 		private Atof(Machine m)
-			: base( m, Name, m.TypeSystem.GetDoubleType(), printFormalParams )
+			: base( m, Name, m.TypeSystem.GetDoubleType(), atofFormalParams )
 		{
 		}
 
@@ -33,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		public static Atof Get(Machine m)
 		{
 			if ( instance == null ) {
-				printFormalParams = new Variable[] {
+				atofFormalParams = new Variable[] {
 					new PtrVariable( new Id( @"x" ), m.TypeSystem.GetCharType(), m )
 				};
 
@@ -43,6 +41,11 @@ namespace CSim.Core.FunctionLibrary {
 			return instance;
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
@@ -54,6 +57,6 @@ namespace CSim.Core.FunctionLibrary {
 		}
 
 		private static Atof instance = null;
-		private static Variable[] printFormalParams;
+		private static Variable[] atofFormalParams;
 	}
 }

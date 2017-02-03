@@ -1,12 +1,7 @@
-using System;
-using System.Collections.ObjectModel;
-
-using CSim.Core;
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Opcodes;
 
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Functions;
+
 	/// <summary>
 	/// This is the print function.
 	/// Signature: void print(x); // x can be anything
@@ -18,7 +13,7 @@ namespace CSim.Core.FunctionLibrary {
 		public const string Name = "printf";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="CSim.Core.Functions.EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
 		private Printf(Machine m)
@@ -33,7 +28,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				printFormalParams = new Variable[] {
-					new PtrVariable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
+					new Variable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
 				};
 
 				instance = new Printf( m );

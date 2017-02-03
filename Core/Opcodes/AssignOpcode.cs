@@ -1,7 +1,5 @@
 
 namespace CSim.Core.Opcodes {
-	using System;
-
 	using CSim.Core;
 	using CSim.Core.Types;
 	using CSim.Core.Variables;
@@ -29,46 +27,35 @@ namespace CSim.Core.Opcodes {
 		{
 			// Check rvalue
 			if ( rvalue is NoPlaceTempVariable ) {
-				long address = rvalue.Address;
-
-				rvalue = Machine.TDS.LookForAddress( rvalue.Address );
-
-				if ( rvalue == null ) {
-					throw new UnknownVbleException( string.Format(
-								"[{0}]",
-						new IntLiteral( this.Machine, address ).ToPrettyNumber() ) );
-				}
-
-				if ( lvalue.AssociatedType != rvalue.GetTargetType() ) {
-					throw new TypeMismatchException( lvalue.Type.Name );
-				}
+				throw new UnknownVbleException( string.Format(
+							"[{0}]",
+					new IntLiteral( this.Machine, rvalue.Address ).ToPrettyNumber() ) );
 			}
 
-			var rvalueRef = rvalue as RefVariable;
-			var rvaluePtr = rvalue as PtrVariable;
+			var rvalueTypeAsRef = rvalue.Type as Ref;
 
 			// Assign to variable
-			if ( rvalueRef != null ) {
-				lvalue.PointedVble = rvalueRef.PointedVble;
-			}
-			else
-			if ( rvaluePtr != null ) {
-				lvalue.PointedVble = Machine.TDS.LookForAddress( rvaluePtr.IntValue );
-			}
-			else {
+			if ( rvalueTypeAsRef != null ) {
+				long targetVbleAddress = rvalue.LiteralValue.GetValueAsInt();
+				lvalue.PointedVble = this.Machine.TDS.LookForAddress( targetVbleAddress );
+
+				if ( lvalue.PointedVble == null ) {
+					throw new UnknownVbleException( string.Format(
+						"[{0}]",
+						new IntLiteral( this.Machine, targetVbleAddress ).ToPrettyNumber() ) );
+				}
+			} else {
 				lvalue.PointedVble = rvalue;
 			}
 
 			// Chk
-			if ( lvalue.PointedVble.Address < 0 ) {
-				throw new UnknownVbleException( rvalue.Name.Name );
-			}
+			this.Machine.Memory.CheckSizeFits( lvalue.PointedVble.Address, lvalue.AssociatedType.Size );
 
 			if ( lvalue.PointedVble.Type != rvalue.Type ) {
 				throw new TypeMismatchException(
-					lvalue.PointedVble.Type.ToString()
-					+ " is not "
-					+ rvalue.Type.ToString()
+					lvalue.PointedVble.Type
+					+ " != "
+					+ rvalue.Type
 				);
 			}
 
@@ -96,7 +83,7 @@ namespace CSim.Core.Opcodes {
 
 			// Prepare assign parts
 			if ( this.Vble is NoPlaceTempVariable ) {
-				throw new UnknownVbleException( "tmp vble: " + this.Vble.Name.Name );
+				throw new UnknownVbleException( "temp vble: " + this.Vble.Name.Name + "??" );
 			}
 
 			Variable toret = this.Vble;
@@ -105,8 +92,8 @@ namespace CSim.Core.Opcodes {
 			if ( !toret.Type.IsCompatibleWith( rvalue.Type ) ) {
 				throw new TypeMismatchException(
 						rvalue.Name.Name + ": "
-						+ rvalue.Type.ToString() + " != "
-						+ toret.Type.ToString()
+						+ rvalue.Type + " != "
+						+ toret.Type
 					);
 			}
 
@@ -123,7 +110,7 @@ namespace CSim.Core.Opcodes {
 				}
 			} else {
 				if ( this.Value is StrLiteral ) {
-					string s = (string) rvalue.LiteralValue.Value;
+					var s = (string) rvalue.LiteralValue.Value;
 
 					Variable mblock = this.Machine.TDS.AddArray(
 						new Id( SymbolTable.GetNextMemoryBlockName() ),

@@ -1,12 +1,10 @@
 
 namespace CSim.Core {
 	using System;
-	using System.Collections;
 	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
 
 	using CSim.Core.Exceptions;
-	using CSim.Core.Types;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 
@@ -23,7 +21,7 @@ namespace CSim.Core {
         public SymbolTable(Machine m)
         {
             this.tds = new Dictionary<string, Variable>();
-			this.machine = m;
+			this.Machine = m;
             this.addresses = new List<long>();
         }
 
@@ -134,40 +132,9 @@ namespace CSim.Core {
 			this.tds.Remove( id );
 		}
 
-		/// <summary>
-		/// Cleans spurious references
-		/// </summary>
-		public void Collect()
-		{
-			this.RemoveDanglingReferences();
-			this.RemoveTempVariables();
-		}
 
 		/// <summary>
 		/// Removes all the temp variables.
-		/// </summary>
-		private void RemoveTempVariables()
-		{
-			var temps = new List<TempVariable>();
-
-			// Find
-			foreach (Variable v in this.Variables) {
-				var r = v as TempVariable;
-
-				if ( r != null ) {
-					temps.Add( r );
-				}
-			}
-
-			// Remove
-			foreach(TempVariable r in temps) {
-				this.Remove( r.Name.Name );
-			}
-
-			return;
-		}
-
-		/// <summary>
 		/// Removes dangling references. i.e., references not set.
 		/// References must point to some variable on initialization.
 		/// It does not make sense to have an unset reference, while it
@@ -175,23 +142,28 @@ namespace CSim.Core {
 		/// After execution, this method should be called to remove
 		/// all dangling references.
 		/// </summary>
-		private void RemoveDanglingReferences()
+		public void Collect()
 		{
-			var refs = new List<RefVariable>();
+			var spurious = new List<Variable>();
 
 			// Find
 			foreach (Variable v in this.Variables) {
-				var r = v as RefVariable;
+				var tempVble = v as TempVariable;
+				var refVble = v as RefVariable;
 
-				if ( r != null
-				  && !( r.IsSet() ) )
+				if ( tempVble != null ) {
+					spurious.Add( tempVble );
+				}
+				else
+				if ( refVble != null
+				  && !( refVble.IsSet() ) )
 				{
-					refs.Add( r );
+					spurious.Add( refVble );
 				}
 			}
 
 			// Remove
-			foreach(RefVariable r in refs) {
+			foreach(Variable r in spurious) {
 				this.Remove( r.Name.Name );
 			}
 
@@ -200,7 +172,8 @@ namespace CSim.Core {
 
 		/// <summary>
 		/// Collects the array elements.
-		/// Part of garbage collection.
+		/// It is not part of garbage collection, since array elements
+		/// can be used to draw the diagram.
 		/// </summary>
 		public void CollectArrayElements()
 		{
@@ -232,7 +205,7 @@ namespace CSim.Core {
         public long Reserve(Variable v)
         {
             int tries = 100;
-            Random randomEngine = new Random();
+            var randomEngine = new Random();
             int toret = -1;
             long[] addressesToFill = new long[ v.Type.Size ];
 
@@ -319,9 +292,7 @@ namespace CSim.Core {
 		{
 			Variable toret = null;
 
-            if ( id != null
-              && id.Length > 0 )
-            {
+			if ( !string.IsNullOrEmpty( id ) ) {
                 // Look for vble
                 this.tds.TryGetValue( id, out toret );
             }
@@ -409,9 +380,9 @@ namespace CSim.Core {
 			if ( toret == null
 			  || toret.GetTargetType() != ptrVble.AssociatedType )
 			{
-				toret = new NoPlaceTempVariable( ptrVble.AssociatedType );
+				toret = new InPlaceTempVariable( ptrVble.AssociatedType, this.Machine );
 				toret.Address = ptrVble.IntValue.Value;
-				toret.LiteralValue = new IntLiteral( this.machine, ptrVble.Access );
+				this.Machine.TDS.AddVariableInPlace( toret );
 			}
 
 			return toret;
@@ -477,7 +448,7 @@ namespace CSim.Core {
         public static string GetNextMemoryBlockName()
         {
             ++numMemBlock;
-            return ( MemBlockName + numMemBlock.ToString() );
+            return ( MemBlockName + numMemBlock );
         }
 
 		/// <summary>
@@ -487,7 +458,7 @@ namespace CSim.Core {
 		/// <value>The <see cref="MemoryManager"/>.</value>
 		public MemoryManager Memory {
 			get {
-				return this.machine.Memory;
+				return this.Machine.Memory;
 			}
 		}
 
@@ -497,15 +468,12 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The <see cref="Machine"/>.</value>
 		public Machine Machine {
-			get {
-				return this.machine;
-			}
+			get; private set;
 		}
 
 		private Dictionary<string, Variable> tds;
 		private List<long> addresses;
 
-        private Machine machine;
         private static int numMemBlock = 0;
     }
 }

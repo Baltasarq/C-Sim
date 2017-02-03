@@ -19,11 +19,11 @@ namespace CSim.Core.FunctionLibrary {
 		public const string Name = "atoi";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="CSim.Core.Functions.EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
 		private Atoi(Machine m)
-			: base( m, Name, m.TypeSystem.GetIntType(), printFormalParams )
+			: base( m, Name, m.TypeSystem.GetIntType(), atoiFormalParams )
 		{
 		}
 
@@ -33,7 +33,7 @@ namespace CSim.Core.FunctionLibrary {
 		public static Atoi Get(Machine m)
 		{
 			if ( instance == null ) {
-				printFormalParams = new Variable[] {
+				atoiFormalParams = new Variable[] {
 					new PtrVariable( new Id( @"x" ), m.TypeSystem.GetCharType(), m )
 				};
 
@@ -43,6 +43,11 @@ namespace CSim.Core.FunctionLibrary {
 			return instance;
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
@@ -54,6 +59,6 @@ namespace CSim.Core.FunctionLibrary {
 		}
 
 		private static Atoi instance = null;
-		private static Variable[] printFormalParams;
+		private static Variable[] atoiFormalParams;
 	}
 }

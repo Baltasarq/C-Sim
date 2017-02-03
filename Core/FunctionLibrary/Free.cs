@@ -1,13 +1,12 @@
-using System;
-
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Literals;
-using System.Collections.ObjectModel;
-
-using CSim.Core.Exceptions;
 
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Functions;
+	using CSim.Core.Types;
+	using CSim.Core.Variables;
+	using CSim.Core.Literals;
+
+	using CSim.Core.Exceptions;
+
 	/// <summary>
 	/// An standard function that erases a reserved block.
 	/// </summary>
@@ -29,14 +28,14 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			long address = this.Machine.Memory.Max;
 			Variable vble = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			var ptrVble = vble as PtrVariable;
+			var ptrVbleType = vble.Type as Ptr;
 
-			if ( ptrVble != null ) {
-				address = ptrVble.IntValue.Value;
+			if ( ptrVbleType != null ) {
+				address = vble.LiteralValue.GetValueAsInt();
 			}
 			else
 			if ( vble.Type == this.Machine.TypeSystem.GetIntType() ) {
-				address = (long) vble.LiteralValue.Value;
+				address = vble.LiteralValue.GetValueAsInt();
 			}
 			else {
 				throw new TypeMismatchException(

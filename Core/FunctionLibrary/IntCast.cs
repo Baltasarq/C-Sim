@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.ObjectModel;
-
-using CSim.Core;
-using CSim.Core.Exceptions;
-using CSim.Core.Functions;
-using CSim.Core.Literals;
-using CSim.Core.Variables;
-using CSim.Core.Opcodes;
-
+﻿
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Exceptions;
+	using CSim.Core.Functions;
+	using CSim.Core.Literals;
+	using CSim.Core.Variables;
+
 	/// <summary>
 	/// This is the int cast.
 	/// Signature: int int(x); // x can be anything numeric
@@ -20,7 +16,7 @@ namespace CSim.Core.FunctionLibrary {
 		public const string Name = "int";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="CSim.Core.Functions.EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
 		private IntCast(Machine m)
@@ -35,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				intCastFormalParams = new Variable[] {
-					new PtrVariable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
+					new Variable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
 				};
 
 				instance = new IntCast( m );
@@ -52,7 +48,7 @@ namespace CSim.Core.FunctionLibrary {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
-			long value = Convert.ToInt64( param.LiteralValue.Value );
+			long value = param.LiteralValue.GetValueAsInt();
 			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral( this.Machine, value );
 			this.Machine.ExecutionStack.Push( result );

@@ -17,7 +17,7 @@
 		public const string Name = "abs";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="CSim.Core.Functions.EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
 		private Abs(Machine m)
@@ -41,6 +41,11 @@
 			return instance;
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			Variable x = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );

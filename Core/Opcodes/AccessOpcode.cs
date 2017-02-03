@@ -10,7 +10,7 @@ namespace CSim.Core.Opcodes {
 	using CSim.Core.Exceptions;
 
 	/// <summary>
-	/// Access opcode with '*', i.e. int * v = &x; => *x = 5;
+	/// Access opcode with '*', i.e. int * v = &amp;x; => *x = 5;
 	/// </summary>
 	public class AccessOpcode: Opcode {
 		/// <summary>The opcode id.</summary>

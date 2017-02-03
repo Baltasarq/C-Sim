@@ -1,11 +1,9 @@
-using System;
-
-using CSim.Core;
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Literals;
 
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Functions;
+	using CSim.Core.Variables;
+	using CSim.Core.Literals;
+
 	/// <summary>
 	/// This is the sizeof function.
 	/// Signature: int sizeof(x); // x can be anything
@@ -17,12 +15,12 @@ namespace CSim.Core.FunctionLibrary {
 		public const string Name = "sizeof";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="CSim.Core.Functions.EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// <param name="m">The Machine this function will be executed in.</param>
 		/// </summary>
 		private SizeOf(Machine m)
-			: base( m, Name, null, printFormalParams )
+			: base( m, Name, null, sizeofFormalParams )
 		{
 		}
 
@@ -32,8 +30,8 @@ namespace CSim.Core.FunctionLibrary {
 		public static SizeOf Get(Machine m)
 		{
 			if ( instance == null ) {
-				printFormalParams = new Variable[] {
-					new PtrVariable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
+				sizeofFormalParams = new Variable[] {
+					new Variable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
 				};
 
 				instance = new SizeOf( m );
@@ -51,6 +49,6 @@ namespace CSim.Core.FunctionLibrary {
 		}
 
 		private static SizeOf instance = null;
-		private static Variable[] printFormalParams;
+		private static Variable[] sizeofFormalParams;
 	}
 }
