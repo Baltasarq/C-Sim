@@ -1,12 +1,14 @@
-﻿using System;
-
-using CSim.Core.Types.Primitives;
-
+﻿
 namespace CSim.Core.Literals {
     /// <summary>
     /// Literals of type Int.
     /// </summary>
     public class IntLiteral: Literal {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.IntLiteral"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="x">A given long.</param>
         public IntLiteral(Machine m, long x)
 			:base( m, x )
         {
@@ -52,4 +54,3 @@ namespace CSim.Core.Literals {
 		}
     }
 }
-

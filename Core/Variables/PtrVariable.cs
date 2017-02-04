@@ -4,8 +4,8 @@ using CSim.Core;
 using CSim.Core.Types;
 using CSim.Core.Literals;
 
-namespace CSim.Core.Variables
-{
+namespace CSim.Core.Variables {
+	/// <summary>Ptr <see cref="Variable"/>s.</summary>
 	public class PtrVariable: Variable {
 
 		/// <summary>
@@ -28,12 +28,17 @@ namespace CSim.Core.Variables
 		///  				not just the primitive.</param>
 		/// <param name="m">The machine this variable will live on.</param>
 		/// <param name="address">The address this variable is placed on memory.</param>
-		public PtrVariable(Id id, CSim.Core.Type t, Machine m, int address)
+		public PtrVariable(Id id, CSim.Core.Type t, Machine m, long address)
             : this( id, t, m )
         {
             this.Address = address;
         }
 
+		/// <summary>
+		/// Gets the associated type. If this is "int *",
+		/// then the answer is "int".
+		/// </summary>
+		/// <value>The associated <see cref="Type"/>.</value>
         public virtual CSim.Core.Type AssociatedType {
 			get {
 				return ( (Ptr) this.Type ).AssociatedType;
@@ -57,6 +62,10 @@ namespace CSim.Core.Variables
             }
         }
 
+		/// <summary>
+		/// Gets or sets the value as an int.
+		/// </summary>
+		/// <value>The int value.</value>
 		public IntLiteral IntValue {
 			get {
 				return (IntLiteral) this.LiteralValue;

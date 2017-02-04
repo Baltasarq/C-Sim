@@ -2,7 +2,6 @@
 namespace CSim.Core {
 	using System;
 	using System.Text;
-	using System.Collections.Generic;
 
     /// <summary>
     /// Represents the target machine emulated
@@ -55,19 +54,19 @@ namespace CSim.Core {
 			/// <param name="data">The data, as a vector of bytes.</param>
 			public long FromBytesToInt(byte[] data)
 			{
-				int wordSize = this.Machine.WordSize;
+				int currentWordSize = this.Machine.WordSize;
 				int destLength = data.Length < sizeof(long) ? sizeof(long) : data.Length;
 
 				// Create dest array
 				var bytes = new byte[ destLength ];
 
 				// Create org vector, if needed
-				if ( data.Length != wordSize ) {
-					var newData = new byte[ wordSize ];
+				if ( data.Length != currentWordSize ) {
+					var newData = new byte[ currentWordSize ];
 
 					Array.Copy(
 						data, 0,
-						newData, Math.Max( 0, wordSize - data.Length ),
+						newData, Math.Max( 0, currentWordSize - data.Length ),
 						data.Length );
 
 					data = newData;
@@ -83,7 +82,7 @@ namespace CSim.Core {
 				Array.Copy(
 					data, 0,
 					bytes, 0,//Math.Max( 0, destLength - wordSize ),
-					wordSize );
+					currentWordSize );
 				return BitConverter.ToInt64( bytes, 0 );
 			}
 
@@ -95,20 +94,20 @@ namespace CSim.Core {
 			/// <param name="value">Value to convert, as a primitive int.</param>
 			public byte[] FromIntToBytes(long value)
 			{
-				int wordSize = this.Machine.WordSize;
+				int currentWordSize = this.Machine.WordSize;
 				var toret = BitConverter.GetBytes( value );
 
 				// Limit the byte array to wordsize
-				if ( toret.Length > wordSize ) {
+				if ( toret.Length > currentWordSize ) {
 					var bytes = new byte[ this.Machine.WordSize ];
 
 					if ( !BitConverter.IsLittleEndian ) {
-						Array.Copy( toret, wordSize, bytes, 0, wordSize );
+						Array.Copy( toret, currentWordSize, bytes, 0, currentWordSize );
 						toret = bytes;
 						bytes = new byte[ this.Machine.WordSize ];
 					}
 
-					Array.Copy( toret, 0, bytes, 0, wordSize );
+					Array.Copy( toret, 0, bytes, 0, currentWordSize );
 					toret = bytes;
 				}
 
@@ -270,7 +269,7 @@ namespace CSim.Core {
 		/// </returns>
 		public string GetMemoryWidth()
 		{
-            return this.WordSizeInBits.ToString() + @"bit";
+            return this.WordSizeInBits + @"bit";
 		}
 
         /// <summary>

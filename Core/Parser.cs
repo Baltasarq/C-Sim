@@ -1,3 +1,4 @@
+using CSim.Core.Types;
 
 namespace CSim.Core {
 	using System;
@@ -365,7 +366,6 @@ namespace CSim.Core {
 				Lexer.TokenType tokenType = this.Lexer.GetNextTokenType();
 
                 if ( tokenType == Lexer.TokenType.Id ) {
-					token = this.Lexer.GetToken();
 					this.ParseExpression();
 					this.Opcodes.Add( new CallOpcode( this.Machine, Free.Name ) );
                 } else {
@@ -389,37 +389,44 @@ namespace CSim.Core {
 		/// </summary>
 		protected void ParseNew()
 		{
-			bool isVector = false;
 			Lexer.SkipSpaces();
 	
 			if ( Lexer.GetToken() == Reserved.OpNew ) {
-				Type type = this.Machine.TypeSystem.GetPrimitiveType( Lexer.GetToken() );
+				// Get the type to reserve
+				string strType = this.Lexer.GetToken();
 
-				// Match square brackets
+				char ch = this.Lexer.GetCurrentChar();
+				while( ch == Ref.RefTypeNamePart[ 0 ]
+				    || ch == Ptr.PtrTypeNamePart[ 0 ] )
+				{
+					strType += ch;
+					this.Lexer.Advance();
+					ch = this.Lexer.GetCurrentChar();
+				}
+
+				Type type = this.Machine.TypeSystem.FromStringToType( strType );
+
+				// Match square brackets -- is a vector?
 				if ( Lexer.GetCurrentChar() == '[' ) {
-					isVector = true;
 					Lexer.Advance();
 					Lexer.SkipSpaces();
 					this.ParseExpression();
+					this.Opcodes.Add( new StoreRValue( this.Machine, new IntLiteral( this.Machine, type.Size ) ) );
+					this.Opcodes.Add( new MulOpcode( this.Machine ) );
 					Lexer.SkipSpaces();
 
 					if ( Lexer.GetCurrentChar() != ']' ) {
 						throw new ParsingException( "]?" );
 					}
-				}
 
-                // Create variable (memory block)
-				if ( isVector ) {
 					this.Opcodes.Add( new CallOpcode( this.Machine, Malloc.Name ) );
 				} else {
-					Id memBlkId = new Id( SymbolTable.GetNextMemoryBlockName() );
+					var memBlkId = new Id( SymbolTable.GetNextMemoryBlockName() );
 					this.Opcodes.Add( new CreateOpcode( this.Machine, memBlkId, type ) );
 					this.Opcodes.Add( new StoreRValue( this.Machine, memBlkId ) );
 					this.Opcodes.Add( new AddressOfOpcode( this.Machine ) );
+					this.Opcodes.Add( new AssignOpcode( this.Machine ) );
 				}
-
-                // Make the vble "id" point to it
-				this.Opcodes.Add( new AssignOpcode( this.Machine ) );
 			} else {
                 throw new EngineException(
                     L18n.Get( L18n.Id.ErrExpected )

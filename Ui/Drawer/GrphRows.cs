@@ -1,7 +1,4 @@
-﻿using System.Windows.Forms;
-using CSim.Core;
-using System;
-
+﻿
 namespace CSim.Ui.Drawer {
 	using System.Drawing;
 	using System.Collections.Generic;
@@ -159,7 +156,7 @@ namespace CSim.Ui.Drawer {
 				}
 
 				width += row.Count * this.HGap;
-				toret.Width = Math.Max( toret.Width, width );
+				toret.Width = System.Math.Max( toret.Width, width );
 			}
 
 			return toret;

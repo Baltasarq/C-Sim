@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
-
-using CSim.Core;
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Exceptions;
-using CSim.Core.Opcodes;
-
+﻿
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Functions;
+	using CSim.Core.Variables;
+	using CSim.Core.Exceptions;
+
 	/// <summary>
 	/// This is the srand function.
 	/// Signature: void srand(x); // x can be anything
@@ -19,11 +15,11 @@ namespace CSim.Core.FunctionLibrary {
 		public const string Name = "srand";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
 		private SRand(Machine m)
-			: base( m, Name, null, printFormalParams )
+			: base( m, Name, null, srandFormalParams )
 		{
 		}
 
@@ -33,7 +29,7 @@ namespace CSim.Core.FunctionLibrary {
 		public static SRand Get(Machine m)
 		{
 			if ( instance == null ) {
-				printFormalParams = new Variable[] {
+				srandFormalParams = new Variable[] {
 					new Variable( new Id( @"x" ), m.TypeSystem.GetIntType(), m )
 				};
 
@@ -43,6 +39,11 @@ namespace CSim.Core.FunctionLibrary {
 			return instance;
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
@@ -51,11 +52,11 @@ namespace CSim.Core.FunctionLibrary {
 				throw new TypeMismatchException( param.Name.Name );
 			}
 
-			this.Machine.SetRandomEngine( (long) param.LiteralValue.Value );
+			this.Machine.SetRandomEngine( param.LiteralValue.GetValueAsInt() );
 			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() ) );
 		}
 
 		private static SRand instance = null;
-		private static Variable[] printFormalParams;
+		private static Variable[] srandFormalParams;
 	}
 }

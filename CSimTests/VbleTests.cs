@@ -1,10 +1,10 @@
-using System;
-using NUnit.Framework;
-
-using CSim.Core;
-using CSim.Core.Literals;
 
 namespace CSimTests {
+	using NUnit.Framework;
+
+	using CSim.Core;
+	using CSim.Core.Literals;
+
 	[TestFixture]
 	public class VbleTests {
 

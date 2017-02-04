@@ -1,12 +1,7 @@
-using System;
-using System.Reflection;
 
-using CSim.Core.Exceptions;
-using CSim.Core.Types;
-using CSim.Core.Types.Primitives;
+namespace CSim.Core {
+	using CSim.Core.Types;
 
-namespace CSim.Core
-{
     /// <summary>
     /// Represents all available types, i.e.: int, float, double...
     /// </summary>
@@ -17,7 +12,7 @@ namespace CSim.Core
 		/// </summary>
 		/// <param name="n">The name of the type.</param>
 		/// <param name="s">Its size, in bytes</param>
-        public Type(string n, int s)
+        protected Type(string n, int s)
         {
             this.Name = n;
             this.Size = s;
@@ -72,7 +67,7 @@ namespace CSim.Core
 
 		/// <summary>
 		/// Determines whether this type is any,
-		/// or a "de facto" <see cref=">Any"/>.
+		/// or a "de facto" <see cref="Any"/>.
 		/// </summary>
 		/// <returns><c>true</c> if this instance is any or similar; otherwise, <c>false</c>.</returns>
 		public bool IsAny() {
@@ -80,7 +75,7 @@ namespace CSim.Core
 
 			// "any" type (void*) or pointer to any.
 			if ( !toret ) {
-				Ptr ptr = this as Ptr;
+				var ptr = this as Ptr;
 
 				if ( ptr != null ) {
 					toret = ( ptr.AssociatedType is Any );

@@ -1,7 +1,5 @@
 ﻿
 namespace CSim.Core.FunctionLibrary {
-	using System;
-
 	using CSim.Core.Functions;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
@@ -49,7 +47,7 @@ namespace CSim.Core.FunctionLibrary {
 		public override void Execute(RValue[] realParams)
 		{
 			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			double valueFromStr = Convert.ToDouble( param.LiteralValue.Value );
+			double valueFromStr = System.Convert.ToDouble( param.LiteralValue.Value );
 			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
 			result.LiteralValue = new DoubleLiteral( this.Machine, valueFromStr );
 

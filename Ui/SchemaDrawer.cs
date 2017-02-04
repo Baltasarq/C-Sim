@@ -1,12 +1,13 @@
-using System.Collections.Generic;
-using System.Drawing;
-
-using CSim.Core;
-using CSim.Core.Variables;
-using CSim.Core.Types;
-using CSim.Ui.Drawer;
 
 namespace CSim.Ui {
+	using System.Collections.Generic;
+	using System.Drawing;
+
+	using CSim.Core;
+	using CSim.Core.Variables;
+	using CSim.Core.Types;
+	using CSim.Ui.Drawer;
+
 	/// <summary>
 	/// Draws the schema of the variables present in memory
 	/// </summary>

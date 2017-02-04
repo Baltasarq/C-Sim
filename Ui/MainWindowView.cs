@@ -1,11 +1,13 @@
-﻿using System;
-using System.Globalization;
-using System.Drawing;
-using System.Windows.Forms;
-
-using CSim.Core;
-
+﻿
 namespace CSim.Ui {
+	using System;
+	using System.Globalization;
+	using System.Drawing;
+	using System.Windows.Forms;
+
+	using CSim.Core;
+
+	/// <summary>The main window for the application. This builds the view.</summary>
 	public partial class MainWindow {
 
 		private void BuildInputPanel()
@@ -14,7 +16,7 @@ namespace CSim.Ui {
 			this.edInput = new ComboBox();
 			this.edInput.Dock = DockStyle.Bottom;
 			this.edInput.Font = this.baseFont;
-			this.edInput.KeyDown += delegate(object sender, KeyEventArgs e) {
+			this.edInput.KeyDown += (o, e) => {
 				if ( e.KeyCode == Keys.Enter ) {
 					this.DoInput();
 					e.Handled = true;
@@ -320,7 +322,7 @@ namespace CSim.Ui {
 
 			var mniZero = new MenuItem( "Zero", (o, e) => DoReset() );
 			mniZero.OwnerDraw = true;
-			mniZero.DrawItem += delegate(object sender, DrawItemEventArgs e) {
+			mniZero.DrawItem += (o, e) => {
 				double factor = (double) e.Bounds.Height / this.zeroIconBmp.Height;
 				var rect = new Rectangle( e.Bounds.X, e.Bounds.Y,
 					(int) ( this.zeroIconBmp.Width * factor ),
@@ -330,7 +332,7 @@ namespace CSim.Ui {
 
 			var mniRandom = new MenuItem( "Random", (o, e) => DoReset( MemoryManager.ResetType.Random ) );
 			mniRandom.OwnerDraw = true;
-			mniRandom.DrawItem += delegate(object sender, DrawItemEventArgs e) {
+			mniRandom.DrawItem += (o, e) => {
 				double factor = (double) ( e.Bounds.Height ) / this.randIconBmp.Height;
 				var rect = new Rectangle( e.Bounds.X, e.Bounds.Y,
 					(int) ( this.randIconBmp.Width * factor ),
@@ -339,7 +341,7 @@ namespace CSim.Ui {
 			};
 
 			tbbReset.DropDownMenu = new ContextMenu( new MenuItem[]{
-				mniZero, mniRandom,
+				mniZero, mniRandom
 			});
 
 			var tbbOpen = new ToolBarButton();
@@ -406,7 +408,7 @@ namespace CSim.Ui {
 			this.gbMain = new GroupBox { Text = "Memory", Dock = DockStyle.Fill };
 			this.tcTabs = new TabControl();
 			this.tcTabs.SuspendLayout();
-			this.tcTabs.SelectedIndexChanged += delegate(object obj, EventArgs args) {
+			this.tcTabs.SelectedIndexChanged += (o, e) => {
 				if ( tcTabs.SelectedIndex == 1 ) {
 					this.DoDrawing();
 				}
@@ -468,7 +470,7 @@ namespace CSim.Ui {
 			var pnlLocales = new Panel();
 			pnlLocales.Dock = DockStyle.Top;
 			this.lblLocales = new Label();
-			this.lblLocales.Text = L18n.Get( L18n.Id.LblLanguage );;
+			this.lblLocales.Text = L18n.Get( L18n.Id.LblLanguage );
 			this.lblLocales.Dock = DockStyle.Left;
 
 			this.cbLocales = new ComboBox();
@@ -478,12 +480,12 @@ namespace CSim.Ui {
 
 			CultureInfo[] locales = CultureInfo.GetCultures( CultureTypes.SpecificCultures );
 			Array.Sort( locales,
-				((CultureInfo x, CultureInfo y) => x.ToString().CompareTo( y.ToString() ) )
+			           (CultureInfo x, CultureInfo y) => string.Compare( x.ToString(), y.ToString() )
 			);
 
 			this.cbLocales.Items.Add( "<local>" );
 			foreach(CultureInfo locale in locales ) {
-				this.cbLocales.Items.Add( locale.NativeName + ": " + locale.ToString() );
+				this.cbLocales.Items.Add( locale.NativeName + ": " + locale );
 			}
 
 			pnlLocales.Controls.Add( this.cbLocales );
@@ -498,8 +500,8 @@ namespace CSim.Ui {
 			var pnlEndianness = new TableLayoutPanel();
 			pnlEndianness.SuspendLayout();
 			pnlEndianness.Dock = DockStyle.Fill;
-			this.rbEndianness1 = new RadioButton(){ Text = "Little endian", Dock = DockStyle.Top };
-			this.rbEndianness2 = new RadioButton(){ Text = "Big endian", Dock = DockStyle.Top };
+			this.rbEndianness1 = new RadioButton { Text = "Little endian", Dock = DockStyle.Top };
+			this.rbEndianness2 = new RadioButton { Text = "Big endian", Dock = DockStyle.Top };
 			pnlEndianness.Controls.Add( this.rbEndianness1 );
 			pnlEndianness.Controls.Add( this.rbEndianness2 );
 			gbEndianness.Controls.Add( pnlEndianness );
@@ -516,9 +518,9 @@ namespace CSim.Ui {
 			var pnlWordSize = new TableLayoutPanel();
 			pnlWordSize.SuspendLayout();
 			pnlWordSize.Dock = DockStyle.Fill;
-			this.rbWS16 = new RadioButton(){ Text = "16 bits", Dock = DockStyle.Top };
-			this.rbWS32 = new RadioButton(){ Text = "32 bits", Dock = DockStyle.Top };
-			this.rbWS64 = new RadioButton(){ Text = "64 bits", Dock = DockStyle.Top };
+			this.rbWS16 = new RadioButton { Text = "16 bits", Dock = DockStyle.Top };
+			this.rbWS32 = new RadioButton { Text = "32 bits", Dock = DockStyle.Top };
+			this.rbWS64 = new RadioButton { Text = "64 bits", Dock = DockStyle.Top };
 			pnlWordSize.Controls.Add( this.rbWS16 );
 			pnlWordSize.Controls.Add( this.rbWS32 );
 			pnlWordSize.Controls.Add( this.rbWS64 );

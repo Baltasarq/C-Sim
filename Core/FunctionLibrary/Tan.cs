@@ -40,6 +40,11 @@ namespace CSim.Core.FunctionLibrary {
 			return instance;
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
@@ -48,7 +53,7 @@ namespace CSim.Core.FunctionLibrary {
 				throw new TypeMismatchException( param.LiteralValue + "?" );
 			}
 
-			double x = param.LiteralValue.GetValueAsInt();
+			double x = System.Convert.ToDouble( param.LiteralValue.Value );
 			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
 			result.LiteralValue = new DoubleLiteral( this.Machine, System.Math.Tan( x ) );
 

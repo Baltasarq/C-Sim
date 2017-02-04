@@ -1,11 +1,9 @@
-﻿using System;
-
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Literals;
-using System.Collections.ObjectModel;
-
+﻿
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Functions;
+	using CSim.Core.Variables;
+	using CSim.Core.Literals;
+
 	/// <summary>
 	/// An standard function that returns the time.
 	/// </summary>
@@ -23,12 +21,19 @@ namespace CSim.Core.FunctionLibrary {
 		{
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			var result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral(
 				this.Machine,
-				Convert.ToInt64( Math.Ceiling( DateTime.Now.TimeOfDay.TotalSeconds ) ) );
+				System.Convert.ToInt64(
+					System.Math.Ceiling(
+						System.DateTime.Now.TimeOfDay.TotalSeconds ) ) );
 
 			this.Machine.ExecutionStack.Push( result );
 		}

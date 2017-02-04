@@ -1,10 +1,7 @@
-﻿namespace CSim.Core.Opcodes {
-	using System;
-
+﻿using CSim.Core.Types.Primitives;
+namespace CSim.Core.Opcodes {
 	using CSim.Core.Variables;
-	using CSim.Core.Types.Primitives;
 	using CSim.Core.Literals;
-	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
 	/// <summary>
@@ -41,13 +38,13 @@
 			if ( op1 == null
 			  || !( op1.Type.IsArithmetic() ) )
 			{
-				throw new TypeMismatchException( ": op1" );
+				throw new TypeMismatchException( ": op1: " + op1.Type );
 			}
 
 			if ( op2 == null
 			  || !( op2.Type.IsArithmetic() ) )
 			{
-				throw new TypeMismatchException( ": op2" );
+				throw new TypeMismatchException( ": op2: " + op2.Type );
 			}
 
 			// If the operands are references, dereference it
@@ -63,10 +60,22 @@
 			}
 
 			// Now yes, do it
-			long sum = Convert.ToInt64( op1.LiteralValue.Value ) + Convert.ToInt64( op2.LiteralValue.Value );
+			Literal litResult;
+
+			if ( op1.Type is Core.Types.Primitives.Double
+			  || op2.Type is Core.Types.Primitives.Double )
+			{
+				litResult = new DoubleLiteral( this.Machine,
+				                              System.Convert.ToDouble( op1.LiteralValue.Value )
+				                              + System.Convert.ToDouble( op2.LiteralValue.Value ) );
+			} else {
+				litResult = new IntLiteral( this.Machine,
+				                           op1.LiteralValue.GetValueAsInt()
+				                           + op2.LiteralValue.GetValueAsInt() );
+			}
 
 			// Store in the temp vble and end
-			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, sum ) );
+			Variable result = new NoPlaceTempVariable( litResult );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

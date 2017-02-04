@@ -7,7 +7,7 @@ namespace CSim.Core {
 	/// Represents identifiers.
 	/// </summary>
 	public class Id: RValue {
-		/// <summary>Maximum length of any id<c>/summary>
+		/// <summary>Maximum length of any id.</summary>
 		public const int MaxLength = 64;
 
 		/// <summary>
@@ -121,10 +121,10 @@ namespace CSim.Core {
 		/// Sets the name without checking.
 		/// This is needed internally, not for users.
 		/// </summary>
-		/// <param name="id">The new name, as a string.</param>
-		internal void SetIdWithoutChecks(string id)
+		/// <param name="newId">The new name, as a string.</param>
+		internal void SetIdWithoutChecks(string newId)
 		{
-			this.id = id.Trim();
+			this.id = newId.Trim();
 		}
 
 		/// <summary>

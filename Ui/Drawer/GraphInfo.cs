@@ -1,7 +1,7 @@
-﻿using System;
-using System.Drawing;
-
+﻿
 namespace CSim.Ui.Drawer {
+	using System.Drawing;
+
 	/// <summary>
 	/// Stores all info needed for drawing.
 	/// </summary>
@@ -22,6 +22,7 @@ namespace CSim.Ui.Drawer {
 			this.NormalFont = new FontInfo( fNormal, grf );
 			this.SmallFont = new FontInfo( fSmall, grf );
 			this.Pen = pen;
+			this.BackGroundColor = bgColor;
 			this.HGap = hGap;
 			this.VGap = vGap;
 		}

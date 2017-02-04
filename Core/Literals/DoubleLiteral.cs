@@ -1,13 +1,16 @@
-﻿using System;
-using System.Globalization;
-
-using CSim.Core.Types.Primitives;
-
+﻿
 namespace CSim.Core.Literals {
+	using System.Globalization;
+
     /// <summary>
-    /// Literals of type <see cref="Double"/>.
+    /// Literals of type <see cref="double"/>.
     /// </summary>
     public class DoubleLiteral: Literal {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.DoubleLiteral"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="x">A given double.</param>
         public DoubleLiteral(Machine m, double x)
 			:base( m, x )
         {
@@ -43,6 +46,10 @@ namespace CSim.Core.Literals {
 			return this.Machine.Bytes.FromDoubleToBytes( this.Value );
         }
 
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Literals.DoubleLiteral"/>.
+		/// </summary>
+		/// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Literals.DoubleLiteral"/>.</returns>
 		public override string ToString()
 		{
 			return this.Value.ToString( "N2", CultureInfo.InvariantCulture );

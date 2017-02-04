@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace CSim.Core {
     /// <summary>
     /// RValues can be literals or variables.
@@ -13,6 +12,10 @@ namespace CSim.Core {
             get;
         }
 
+		/// <summary>
+		/// Gets the value of this RValue.
+		/// </summary>
+		/// <value>The value, as an <see cref="System.Object"/>.</value>
 		public abstract object Value {
 			get;
 		}

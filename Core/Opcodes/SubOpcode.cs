@@ -1,15 +1,20 @@
-﻿namespace CSim.Core.Opcodes {
-	using System;
-
+﻿
+namespace CSim.Core.Opcodes {
 	using CSim.Core.Variables;
-	using CSim.Core.Types.Primitives;
 	using CSim.Core.Literals;
-	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
+	/// <summary>
+	/// The Sub opcode, allowing operations such as 5-4.
+	/// </summary>
 	public class SubOpcode: Opcode {
+		/// <summary>The opcode's representing value.</summary>
 		public const char OpcodeValue = (char) 0xEA;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Opcodes.SubOpcode"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this opcode will be executed in.</param>
 		public SubOpcode(Machine m)
 			:base(m)
 		{
@@ -26,20 +31,20 @@
 			}
 
 			// Take ops
-			Variable op1 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 			Variable op2 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			Variable op1 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 
 			// Check ops
 			if ( op1 == null
-				|| !( op1.Type.IsArithmetic() ) )
+			  || !( op1.Type.IsArithmetic() ) )
 			{
-				throw new TypeMismatchException( ": op1" );
+				throw new TypeMismatchException( ": op1: " + op1.Type );
 			}
 
 			if ( op2 == null
-				|| !( op2.Type.IsArithmetic() ) )
+			  || !( op2.Type.IsArithmetic() ) )
 			{
-				throw new TypeMismatchException( ": op2" );
+				throw new TypeMismatchException( ": op2: " + op2.Type );
 			}
 
 			// If the operands are references, dereference it
@@ -55,10 +60,22 @@
 			}
 
 			// Now yes, do it
-			long subRes = ( (long) op2.LiteralValue.Value ) - ( (long) op1.LiteralValue.Value );
+			Literal litResult;
+
+			if ( op1.Type is Core.Types.Primitives.Double
+		      || op2.Type is Core.Types.Primitives.Double )
+			{
+				litResult = new DoubleLiteral( this.Machine,
+				                              System.Convert.ToDouble( op1.LiteralValue.Value )
+				                              - System.Convert.ToDouble( op2.LiteralValue.Value ) );
+			} else {
+				litResult = new IntLiteral( this.Machine,
+				                           op1.LiteralValue.GetValueAsInt()
+				                           - op2.LiteralValue.GetValueAsInt() );
+			}
 
 			// Store in the temp vble and end
-			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, subRes ) );
+			Variable result = new NoPlaceTempVariable( litResult );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

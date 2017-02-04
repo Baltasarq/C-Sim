@@ -1,5 +1,5 @@
-﻿namespace CSim.Core.FunctionLibrary {
-	using System;
+﻿
+namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
 	using CSim.Core;
 
@@ -39,9 +39,10 @@
 		}
 
 		/// <summary>
-		/// Execute the function with the specified realParams.
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
 		/// </summary>
-		/// <param name="realParams">Real parameters, as a primitive argument collection.</param>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			Variable size = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
@@ -49,7 +50,7 @@
 			Variable result = this.Machine.TDS.AddArray(
 								new Id( SymbolTable.GetNextMemoryBlockName() ),
 								this.Machine.TypeSystem.GetCharType(),
-								(long) size.LiteralValue.Value
+								size.LiteralValue.GetValueAsInt()
 			);
 
 			this.Machine.ExecutionStack.Push( result );

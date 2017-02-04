@@ -1,6 +1,5 @@
 ﻿
 namespace CSim.Core {
-	using System;
 	using System.Collections.Generic;
 
 	/// <summary>
@@ -74,4 +73,3 @@ namespace CSim.Core {
 		private List<RValue> stack;
 	}
 }
-

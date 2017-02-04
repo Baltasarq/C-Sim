@@ -1,11 +1,6 @@
-﻿using System;
-
+﻿
 namespace CSim.Core.Opcodes {
-	using System;
-
 	using CSim.Core.Variables;
-	using CSim.Core.Types.Primitives;
-	using CSim.Core.Literals;
 	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
@@ -42,10 +37,12 @@ namespace CSim.Core.Opcodes {
 					// If the vble at the right is a reference, dereference it
 					if ( vbleAsRef != null  ) {
 						vble = vbleAsRef.PointedVble;
+						vbleType = vble.Type as Ptr;
 					}
-					else
+
+					// Access the pointed value
 					if ( vbleType != null ) {
-						long address = Convert.ToInt64( vble.LiteralValue.Value );
+						long address = System.Convert.ToInt64( vble.LiteralValue.Value );
 						vble = new InPlaceTempVariable( vbleType.DerreferencedType, this.Machine );
 						vble.Address = address;
 						this.Machine.TDS.AddVariableInPlace( vble );

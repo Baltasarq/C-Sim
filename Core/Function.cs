@@ -1,8 +1,9 @@
-using System;
-using System.Collections.ObjectModel;
-using System.Text;
 
 namespace CSim.Core {
+	using System;
+	using System.Collections.ObjectModel;
+	using System.Text;
+
 	/// <summary>
 	/// Represents functions which are callable.
 	/// </summary>
@@ -13,6 +14,7 @@ namespace CSim.Core {
 		/// Functions are defined by a return type, an indetifier, and a collection of
 		/// formal parameters. Some functions don't accept any param.
 		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this function will pertain to.</param>
 		/// <param name="id">The identifier of the function, as a string.</param>
 		/// <param name="returnType">The return type, as a CSim.Core.Type.</param>
 		protected Function(Machine m, string id, CSim.Core.Type returnType)
@@ -25,6 +27,7 @@ namespace CSim.Core {
 		/// Functions are defined by a return type, an indetifier, and a collection of
 		/// formal parameters.
 		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this function will pertain to.</param>
 		/// <param name="id">The identifier of the function, as a string.</param>
 		/// <param name="returnType">The return type, as a CSim.Core.Type.</param>
 		/// <param name="formalParams">The formal parameters, as a vector.</param>
@@ -42,10 +45,10 @@ namespace CSim.Core {
 				formalParams = new Variable[]{};
 			}
 
-			this.machine = m;
+			this.Machine = m;
 			this.formalParams = formalParams;
-			this.id = id;
-			this.returnType = returnType;
+			this.Id = id;
+			this.ReturnType = returnType;
 		}
 
 		/// <summary>
@@ -60,9 +63,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The identifier, as a string.</value>
 		public string Id {
-			get {
-				return this.id;
-			}
+			get; private set;
 		}
 
 		/// <summary>
@@ -88,9 +89,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The return type of the function, as a CSim.Core.Type object.</value>
 		public CSim.Core.Type ReturnType {
-			get {
-				return this.returnType;
-			}
+			get; private set;
 		}
 
 		/// <summary>
@@ -98,9 +97,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The machine.</value>
 		public Machine Machine {
-			get {
-				return this.machine;
-			}
+			get; private set;
 		}
 
 		/// <summary>
@@ -122,16 +119,13 @@ namespace CSim.Core {
 			}
 
 			return string.Format( "{0} {1}({2})",
-			                     this.ReturnType.ToString(),
+			                     this.ReturnType,
 			                     this.Id,
-			                     strFormalArgs.ToString()
+			                     strFormalArgs
 			);
 		}
 
 		private Variable[] formalParams;
-		private string id;
-		private CSim.Core.Type returnType;
-		private Machine machine;
 	}
 }
 

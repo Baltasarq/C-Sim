@@ -1,24 +1,20 @@
-using System;
-using System.Reflection;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-
-using CSim.Core.Exceptions;
-using CSim.Core.Functions;
-using CSim.Core.FunctionLibrary;
 
 namespace CSim.Core {
+	using System.Reflection;
+	using System.Collections.ObjectModel;
+	using System.Collections.Generic;
+	using CSim.Core.Functions;
+
 	/// <summary>
 	/// Represents the standard library for the machine.
 	/// </summary>
 	public sealed class StdLib {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.StdLib"/> class.
-		/// This is not intended to be used directly.
 		/// </summary>
 		public StdLib(Machine m)
 		{
-			this.machine = m;
+			this.Machine = m;
 			this.Build();
 		}
 
@@ -66,7 +62,6 @@ namespace CSim.Core {
 		/// Match the function with the specified id and args.
 		/// </summary>
 		/// <param name="id">The identifier of the function, as a string.</param>
-		/// <param name="args">The real arguments, as a collection of Variable.</param>
 		public EmbeddedFunction Match(string id)
 		{
 			EmbeddedFunction toret = null;
@@ -93,12 +88,9 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The machine, as a <see cref="Machine"/> object.</value>
 		public Machine Machine {
-			get {
-				return this.machine;
-			}
+			get; private set;
 		}
 
-		private Machine machine;
 		private List<EmbeddedFunction> fns;
 		private Dictionary<string, EmbeddedFunction> fnslkup;
 	}

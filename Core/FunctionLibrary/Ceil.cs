@@ -1,7 +1,5 @@
 ﻿
 namespace CSim.Core.FunctionLibrary {
-	using System;
-
 	using CSim.Core.Exceptions;
 	using CSim.Core.Functions;
 	using CSim.Core.Literals;
@@ -55,9 +53,9 @@ namespace CSim.Core.FunctionLibrary {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
-			double value = Convert.ToDouble( param.LiteralValue.Value );
+			double value = System.Convert.ToDouble( param.LiteralValue.Value );
 			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
-			result.LiteralValue = new DoubleLiteral( this.Machine, Math.Ceiling( value ) );
+			result.LiteralValue = new DoubleLiteral( this.Machine, System.Math.Ceiling( value ) );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

@@ -1,12 +1,14 @@
-﻿using System;
-
-using CSim.Core.Types;
-
+﻿
 namespace CSim.Core.Literals {
     /// <summary>
     /// Literals of type char*.
     /// </summary>
     public class StrLiteral: Literal {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.StrLiteral"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="x">A given string.</param>
         public StrLiteral(Machine m, string x)
 			:base( m, x )
         {
@@ -43,9 +45,13 @@ namespace CSim.Core.Literals {
             return Machine.TextEncoding.GetBytes( this.Value.ToCharArray() );
         }
 
+		/// <summary>
+		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Literals.StrLiteral"/>.
+		/// </summary>
+		/// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Literals.StrLiteral"/>.</returns>
 		public override string ToString()
 		{
-			return String.Format( "\"{0}\"", this.Value );
+			return string.Format( "\"{0}\"", this.Value );
 		}
     }
 }

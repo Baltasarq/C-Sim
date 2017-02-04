@@ -1,7 +1,8 @@
-using NUnit.Framework;
-using CSim.Core;
 
 namespace CSimTests {
+	using NUnit.Framework;
+	using CSim.Core;
+
 	[TestFixture]
 	public class TypeTests {
 

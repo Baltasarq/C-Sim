@@ -53,7 +53,7 @@ namespace CSim.Core.FunctionLibrary {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
-			char value = System.Convert.ToChar( param.LiteralValue.Value );
+			char value = System.Convert.ToChar( param.LiteralValue.GetValueAsInt() );
 			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetCharType() );
 			result.LiteralValue = new CharLiteral( this.Machine, value );
 			this.Machine.ExecutionStack.Push( result );

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
-
-using CSim.Core;
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Opcodes;
-using CSim.Core.Literals;
-
+﻿
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Functions;
+	using CSim.Core.Variables;
+	using CSim.Core.Literals;
+
 	/// <summary>
 	/// This is the atoi function.
 	/// Signature: int atoi(char * x);
@@ -51,7 +47,7 @@ namespace CSim.Core.FunctionLibrary {
 		public override void Execute(RValue[] realParams)
 		{
 			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			int valueFromStr = Convert.ToInt32( param.LiteralValue.Value );
+			long valueFromStr = System.Convert.ToInt64( param.LiteralValue.Value );
 			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral( this.Machine, valueFromStr );
 

@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿
 namespace CSim.Ui.Drawer {
 	using System.Drawing;
+	using System.Collections.Generic;
 
 	using CSim.Core;
 	using CSim.Core.Variables;

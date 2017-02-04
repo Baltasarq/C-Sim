@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace CSim.Core {
 	/// <summary>
 	/// Expression parser. It parser RValues

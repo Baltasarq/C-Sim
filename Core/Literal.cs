@@ -1,11 +1,9 @@
-﻿using System;
-using System.Text;
-
-using CSim.Core.Types;
-using CSim.Core.Literals;
-using CSim.Core.Exceptions;
-
+﻿
 namespace CSim.Core {
+	using System;
+	using System.Text;
+	using CSim.Core.Literals;
+
     /// <summary>
     /// Literals are rvalues.
     /// This is the parent class for literals of all types.
@@ -25,7 +23,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="m">The <see cref="Machine"/> this literal is created for.</param>
 		/// <param name="v">The value, as a <see cref="System.Object"/>.</param>
-		public Literal(Machine m, object v)
+		protected Literal(Machine m, object v)
 		{
 			this.val = v;
 			this.Machine = m;
@@ -62,7 +60,7 @@ namespace CSim.Core {
 		/// <returns>The little endian to hex.</returns>
 		protected string FromLittleEndianToHex()
 		{
-			StringBuilder toret = new StringBuilder();
+			var toret = new StringBuilder();
 			byte[] bytes = this.GetRawValue();
 
 			foreach(byte bt in bytes) {
@@ -78,7 +76,7 @@ namespace CSim.Core {
 		/// <returns>The big endian to hex.</returns>
 		protected string FromBigEndianToHex()
 		{
-			StringBuilder toret = new StringBuilder();
+			var toret = new StringBuilder();
 			byte[] bytes = this.GetRawValue();
 
 			for(int i = bytes.Length -1; i >= 0; --i) {
@@ -104,7 +102,7 @@ namespace CSim.Core {
 				toret = FromLittleEndianToHex();
 			}
 
-			return ShortenNumber( toret.ToString() );
+			return ShortenNumber( toret );
 		}
 
 		/// <summary>

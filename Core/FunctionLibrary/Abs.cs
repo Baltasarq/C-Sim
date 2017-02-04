@@ -1,5 +1,4 @@
 ﻿namespace CSim.Core.FunctionLibrary {
-	using System;
 	using CSim.Core.Functions;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
@@ -52,12 +51,12 @@
 			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 
 			if ( !( x.Type.IsArithmetic() ) ) {
-				throw new TypeMismatchException( x.LiteralValue.ToString() + "?" );
+				throw new TypeMismatchException( x.LiteralValue + "?" );
 			}
 
 			result.LiteralValue = new IntLiteral(
 									this.Machine,
-									Math.Abs( Convert.ToInt64( x.LiteralValue.Value ) )
+									System.Math.Abs( x.LiteralValue.GetValueAsInt() )
 			);
 			this.Machine.ExecutionStack.Push( result );
 		}

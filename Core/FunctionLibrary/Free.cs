@@ -4,7 +4,6 @@ namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Types;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
-
 	using CSim.Core.Exceptions;
 
 	/// <summary>
@@ -24,6 +23,11 @@ namespace CSim.Core.FunctionLibrary {
 		{
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			long address = this.Machine.Memory.Max;

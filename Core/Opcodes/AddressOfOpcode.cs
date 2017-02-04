@@ -1,12 +1,7 @@
 
 namespace CSim.Core.Opcodes {
-	using System;
-
 	using CSim.Core.Variables;
-	using CSim.Core.Types.Primitives;
 	using CSim.Core.Literals;
-	using CSim.Core.Types;
-	using CSim.Core.Exceptions;
 
 	/// <summary>
 	/// Represents the rol of ampersand at the left of a variable.

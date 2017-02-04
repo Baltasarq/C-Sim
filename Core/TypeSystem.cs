@@ -1,20 +1,24 @@
-using System;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-
-using CSim.Core.Types;
-using CSim.Core.Types.Primitives;
 
 namespace CSim.Core {
+	using System.Collections.ObjectModel;
+	using System.Collections.Generic;
+
+	using CSim.Core.Types;
+	using CSim.Core.Types.Primitives;
+
 	/// <summary>
 	/// Represents the type system.
 	/// All types are retrieved through an object of this
 	/// class, since types are dependent on the architecture (i.e., size).
 	/// </summary>
 	public class TypeSystem {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.TypeSystem"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> for this type system.</param>
 		public TypeSystem(Machine m)
 		{
-			this.machine = m;
+			this.Machine = m;
 			this.ptrTypeInstances = new Dictionary<Type, List<Ptr>>();
 			this.refTypeInstances = new Dictionary<Type, Ref>();
 			this.primitiveTypeInstances = new Dictionary<string, Type>();
@@ -109,7 +113,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <returns>The pointer type, as a <see cref="Ptr"/> object.</returns>
 		/// <param name="t">The regular type to build the pointer on.</param>
-		/// <param name="inidrectionLevel">The number of indirections.</param>
+		/// <param name="indirectionLevel">The number of indirections.</param>
 		public Ptr GetPtrType(Type t, int indirectionLevel = 1)
 		{
 			List<Ptr> ptrTypes = null;
@@ -136,7 +140,7 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Retrieves a reference type, such as int &
+		/// Retrieves a reference type, such as int &amp;
 		/// </summary>
 		/// <returns>The reference type, as a <see cref="Ref"/> object.</returns>
 		/// <param name="t">The regular type to build the reference on.</param>
@@ -147,6 +151,57 @@ namespace CSim.Core {
 			if ( !( this.refTypeInstances.TryGetValue( t, out toret ) ) ) {
 				toret = new Ref( t, this.Machine.WordSize );
 				this.refTypeInstances.Add( t, toret );
+			}
+
+			return toret;
+		}
+
+		/// <summary>
+		/// Returns the type from a textual description.
+		/// </summary>
+		/// <returns>The <see cref="CSim.Core.Type"/>corresponding to the given type.</returns>
+		/// <param name="strType">String type.</param>
+		public Type FromStringToType(string strType)
+		{
+			int numStars = 0;
+			bool isRef = false;
+			Type toret = null;
+
+			strType = strType.Trim();
+			int pos = strType.Length - 1;
+
+			// Determine whether it is a reference or not
+			while ( pos > 0
+			     && strType[ pos ] == Ref.RefTypeNamePart[ 0 ] )
+			{
+				isRef = true;
+				--pos;
+			}
+
+			// Determine the indirection level
+			while( pos > 0
+			    && strType[ pos ] == Ptr.PtrTypeNamePart[ 0 ] )
+			{
+				++numStars;
+				--pos;
+			}
+
+			// Get the primitive type
+			strType = strType.Substring( 0, pos + 1 );
+			Type primitive = this.GetPrimitiveType( strType );
+
+			if ( isRef ) {
+				if ( numStars == 0 ) {
+					toret = this.GetRefType( primitive );
+				} else {
+					toret = this.GetRefType( this.GetPtrType( primitive, numStars ) );
+				}
+			}
+			else
+			if ( numStars > 0 ) {
+				toret = this.GetPtrType( primitive, numStars );
+			} else {
+				toret = primitive;
 			}
 
 			return toret;
@@ -168,12 +223,9 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The machine.</value>
 		public Machine Machine {
-			get {
-				return this.machine;
-			}
+			get; set;
 		}
 
-		private Machine machine;
 		private Dictionary<Type, List<Ptr>> ptrTypeInstances;
 		private Dictionary<Type, Ref> refTypeInstances;
 		private Dictionary<string, Type> primitiveTypeInstances;

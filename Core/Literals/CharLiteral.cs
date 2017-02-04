@@ -5,6 +5,11 @@ namespace CSim.Core.Literals {
     /// Literals of type Char.
     /// </summary>
     public class CharLiteral: Literal {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.CharLiteral"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="ch">A given char.</param>
         public CharLiteral(Machine m, char ch)
 			:base( m, ch )
         {

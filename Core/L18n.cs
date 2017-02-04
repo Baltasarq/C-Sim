@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Collections.ObjectModel;
 
@@ -11,58 +10,110 @@ namespace CSim.Core {
 
         /// Identifies all available strings
 		public enum Id {
+			///<summary>Action: "reset."</summary>
 			ActReset,
+			///<summary>Action: "open."</summary>
 			ActOpen,
+			///<summary>Action: "Save."</summary>
 			ActSave,
+			///<summary>Action: "to hex."</summary>
 			ActInHex,
+			///<summary>Action: "to dec."</summary>
 			ActInDec,
+			///<summary>Action: "zoom in."</summary>
 			ActZoomIn,
+			///<summary>Action: "zoom out."</summary>
 			ActZoomOut,
+			///<summary>Action: "show memory."</summary>
 			ActShowMemory,
+			///<summary>Action: "show diagram."</summary>
 			ActShowDiagram,
+			///<summary>Action: "help."</summary>
 			ActHelp,
+			///<summary>Action: "about."</summary>
 			ActAbout,
+			///<summary>Action: "settings."</summary>
 			ActSettings,
+			///<summary>Action: "play."</summary>
 			ActPlay,
+			///<summary>Action: "stop."</summary>
 			ActStop,
+			///<summary>Status: "ready."</summary>
 			StReady,
+			///<summary>Status: "reading configuration."</summary>
 			StReadingConfig,
+			///<summary>Status: "writing configuration."</summary>
 			StWritingConfig,
+			///<summary>Label "language"</summary>
 			LblLanguage,
+			///<summary>Label "pointer"</summary>
             LblPointer,
+			///<summary>Label "variable"</summary>
             LblVble,
+			///<summary>Label "reference"</summary>
             LblRef,
+			///<summary>Exception: "while parsing."</summary>
 			ExcParsing,
+			///<summary>Exception: "memory exhausted."</summary>
             ExcMemoryExhausted,
+			///<summary>Exception: "duplicated variable."</summary>
             ExcDuplicatedVble,
+			///<summary>Exception: "invalid id."</summary>
             ExcInvalidId,
+			///<summary>Exception: "invalid maximum memory."</summary>
             ExcInvalidMaxMemory,
+			///<summary>Exception: "invalid memory address."</summary>
             ExcInvalidMemory,
+			///<summary>Exception: "type mismatch."</summary>
             ExcTypeMismatch,
+			///<summary>Exception: "unknown type."</summary>
             ExcUnknownType,
+			///<summary>Exception: "unknown variable."</summary>
             ExcUnknownVble,
+			///<summary>Exception: "accessing at address."</summary>
             ErrAccessingAt,
+			///<summary>Exception: "reserving memory."</summary>
             ErrReserving,
+			///<summary>Exception: "char is not allowed."</summary>
             ErrNotAllowedChar,
+			///<summary>Exception: "invalid first char."</summary>
             ErrFirstChar,
+			///<summary>Exception: "expected."</summary>
             ErrExpected,
+			///<summary>Exception: "expected literal or id."</summary>
             ErrExpectedLiteralOrId,
+			///<summary>Exception: "incorrect use of '*'."</summary>
             ErrBadUseStar,
+			///<summary>Exception: "unexpected."</summary>
             ErrUnexpected,
+			///<summary>Exception: "end of line."</summary>
             ErrEOL,
+			///<summary>Exception: "initalizing reference."</summary>
             ErrRefInit,
+			///<summary>Exception: "not a pointer."</summary>
             ErrNotAPointer,
+			///<summary>Exception: "reference is not set."</summary>
             ErrRefNotSet,
+			///<summary>Exception: "trying to set reference more than once."</summary>
             ErrRefDoubleSet,
+			///<summary>Exception: "memory is not in heap."</summary>
             ErrMemoryNotInHeap,
+			///<summary>Exception: "expected beginning of parameters."</summary>
 			ErrExpectedParametersBegin,
+			///<summary>Exception: "expected ending of parameters."</summary>
 			ErrExpectedParametersEnd,
+			///<summary>Exception: "erroneous parameter count."</summary>
 			ErrParamCount,
+			///<summary>Exception: "invalid parameter type."</summary>
 			ErrParamType,
+			///<summary>Exception: "function does not exist."</summary>
 			ErrFunctionNotFound,
+			///<summary>Exception: "expected literal number."</summary>
 			ErrExpectedLiteralNumber,
+			///<summary>Exception: "cannot derreference void*."</summary>
 			ErrDerreferencedVoid,
-			ErrMissingArguments,
+			///<summary>Exception: "missing arguments."</summary>
+			ErrMissingArguments
 		};
 
         /// <summary>
@@ -80,7 +131,7 @@ namespace CSim.Core {
 				"Show memory",
 				"Show diagram",
 				"Help",
-				"About...",
+				"About.",
                 "Settings",
 				"Run",
 				"Stop",
@@ -121,7 +172,7 @@ namespace CSim.Core {
 				"function {0}() was not found",
 				"expected number as in: 0, 0.0 or 0x0",
 				"tried to derreference void *",
-				"not enough arguments in function call",
+				"not enough arguments in function call"
 			}
 		);
 
@@ -157,7 +208,7 @@ namespace CSim.Core {
                 "id incorrecta",
                 "max memoria debe ser > 16 y %16 == 0",
                 "pos. de memoria incorrecta",
-                "error de tipos; se esperaba tipo",
+                "error de tipos; tipo incorrecto",
                 "tipo desconocido",
                 "variable desconocida",
                 "accediendo a la memoria en",
@@ -181,7 +232,7 @@ namespace CSim.Core {
 				"{0}() no encontrada",
 				"se esperaba un número como: 0, 0.0 o 0x0",
 				"no se puede acceder a void *",
-				"faltan argumentos en llamada a fn.",
+				"faltan argumentos en llamada a fn."
 			}
 		);
 
@@ -191,10 +242,10 @@ namespace CSim.Core {
 		private static ReadOnlyCollection<string> strings = StringsEN;
 
         /// <summary>
-        /// Sets the language (i.e., the set of strings to use)
+        /// Sets the language (i."e.", the set of strings to use)
         /// </summary>
-        /// <param name="locale">Locale.</param>
-        /// <see cref="System.Globalization.CultureInfo"/>
+        /// <param name="locale">The <see cref="Locale"/> </param>
+        /// <see cref="CultureInfo"/>
 		public static void SetLanguage(CultureInfo locale)
 		{
 			if ( locale.TwoLetterISOLanguageName.ToUpper() == "ES" ) {
@@ -211,12 +262,11 @@ namespace CSim.Core {
         /// <summary>
         /// Returns a localized string, given its id.
         /// </summary>
-        /// <param name="id">The id for the string to get</param>
-        /// <see cref="CSim.Core.L18n.Id"/>
+		/// <param name="id">The <see cref="Id"/> for the string to get</param>
 		public static string Get(Id id)
 		{
 			string toret = null;
-			int numId = (int) id;
+			var numId = (int) id;
 
 			if ( numId < strings.Count ) {
 				toret = strings[ numId ];

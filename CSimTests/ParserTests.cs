@@ -1,12 +1,10 @@
-using System;
-using NUnit.Framework;
-
-using CSim.Core;
-using CSim.Core.Types;
-using CSim.Core.Types.Primitives;
-using CSim.Core.Variables;
 
 namespace CSimTests {
+	using NUnit.Framework;
+
+	using CSim.Core;
+	using CSim.Core.Variables;
+
 	[TestFixture]
 	public class ParserTests {
 

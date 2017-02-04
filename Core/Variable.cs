@@ -1,10 +1,6 @@
 
 namespace CSim.Core {
-	using System;
-
-	using CSim.Core.Variables;
-	using CSim.Core.Exceptions;
-
+	
 	/// <summary>
 	/// A variable living in the <see cref="Machine"/>.
 	/// </summary>
@@ -16,7 +12,7 @@ namespace CSim.Core {
 		/// <param name="m">The machine the variable will live in.</param>
 		protected Variable(Machine m)
 		{
-			this.machine = m;
+			this.Machine = m;
 			this.Address = -1;
 		}
 
@@ -42,7 +38,7 @@ namespace CSim.Core {
 		/// <param name="t">A <see cref="Type"/> for the variable.</param>
 		/// <param name="m">The <see cref="Machine"/> the variable will be in.</param>
 		/// <param name="address">The address the variable will be sitting in.</param>
-        public Variable(Id id, Type t, Machine m, int address)
+        public Variable(Id id, Type t, Machine m, long address)
             : this( id, t, m )
         {
             this.Address = address;
@@ -53,12 +49,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The name, as a string.</value>
         public Id Name {
-            get {
-				return this.id;
-			}
-            set {
-				this.id = value;
-            }
+			get; set;
         }
 
 		/// <summary>
@@ -68,7 +59,7 @@ namespace CSim.Core {
 		/// <param name="n">The new name, as a string.</param>
 		protected void SetNameWithoutChecking(string n)
 		{
-            this.id.SetIdWithoutChecks( n );
+            this.Name.SetIdWithoutChecks( n );
 		}
 
 		/// <summary>
@@ -127,7 +118,7 @@ namespace CSim.Core {
         /// </summary>
         /// <value><c>true</c> if this instance is in heap; otherwise, <c>false</c>.</value>
 		public bool IsInHeap {
-			get { return id.IsHeapId(); }
+			get { return this.Name.IsHeapId(); }
 		}
 
         /// <summary>
@@ -144,6 +135,10 @@ namespace CSim.Core {
             }
         }
 
+		/// <summary>
+		/// Gets the value of the variable.
+		/// </summary>
+		/// <value>The value, as a <see cref="System.Object"/>.</value>
 		public override object Value {
 			get {
 				return this.LiteralValue;
@@ -156,7 +151,7 @@ namespace CSim.Core {
         /// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.</returns>
         public override string ToString()
         {
-            return this.Type.ToString() + " " + this.Name.Name;
+            return this.Type + " " + this.Name.Name;
         }
 
         /// <summary>
@@ -174,16 +169,9 @@ namespace CSim.Core {
 		/// </summary>
 		/// <value>The machine.</value>
 		public Machine Machine {
-			get {
-				return this.machine;
-			}
+			get; private set;
 		}
 
-        /// <summary>
-        /// The name for this variable.
-        /// </summary>
-        private Id id;
-		private Machine machine;
 		private Type type;
     }
 }

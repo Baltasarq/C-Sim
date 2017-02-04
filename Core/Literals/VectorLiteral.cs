@@ -1,5 +1,4 @@
 ﻿namespace CSim.Core.Literals {
-	using System;
 	using System.Text;
 
 	using CSim.Core.Types;
@@ -8,6 +7,12 @@
 	/// Literals of type Int.
 	/// </summary>
 	public class VectorLiteral: Literal {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.VectorLiteral"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="t">A <see cref="Primitive"/> <see cref="Variable"/>.</param>
+		/// <param name="x">The sequence of values to store in the literal.</param>
 		public VectorLiteral(Machine m, Primitive t, object[] x)
 			:base( m, x )
 		{
@@ -42,7 +47,7 @@
 		public override byte[] GetRawValue()
 		{
 			byte[] result = new byte[ this.Value.Length * this.VectorType.AssociatedType.Size ];
-			Buffer.BlockCopy( this.Value, 0, result, 0, result.Length );
+			System.Buffer.BlockCopy( this.Value, 0, result, 0, result.Length );
 			return result;
 		}
 
@@ -52,7 +57,7 @@
 		/// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Literals.IntLiteral"/>.</returns>
 		public override string ToString()
 		{
-			StringBuilder toret = new StringBuilder();
+			var toret = new StringBuilder();
 			object[] v = this.Value;
 			string separator = "";
 
@@ -65,6 +70,10 @@
 			return toret.ToString();
 		}
 
+		/// <summary>
+		/// Gets or sets the type of the vector.
+		/// </summary>
+		/// <value>The <see cref="CSim.Core.Type"/> of the vector.</value>
 		public CSim.Core.Types.Ptr VectorType {
 			get; set;
 		}

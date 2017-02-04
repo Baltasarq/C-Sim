@@ -31,6 +31,12 @@ namespace CSim.Core.Types.Primitives
 			return this.Name;
 		}
 
+		/// <summary>
+		/// Creates the corresponding literal.
+		/// </summary>
+		/// <returns>The <see cref="Literal"/>.</returns>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="raw">The raw bytes needed to build the literal.</param>
 		public override Literal CreateLiteral(Machine m, byte[] raw)
 		{
 			return new IntLiteral( m, m.Bytes.FromBytesToInt( raw ) );

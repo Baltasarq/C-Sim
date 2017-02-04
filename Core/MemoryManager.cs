@@ -1,15 +1,13 @@
 // MemoryManager.cs
+namespace CSim.Core {
+	using System;
+	using System.Collections.ObjectModel;
+	using System.Collections.Generic;
 
-using System;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
+	using CSim.Core.Exceptions;
+	using CSim.Core.Types;
+	using CSim.Core.Literals;
 
-using CSim.Core.Exceptions;
-using CSim.Core.Types;
-using CSim.Core.Literals;
-
-namespace CSim.Core
-{
     /// <summary>
     /// Represents system memory.
     /// </summary>
@@ -54,7 +52,7 @@ namespace CSim.Core
 				throw new InvalidMaxMemoryException( max.ToString() );
 			}
 
-			this.machine = m;
+			this.Machine = m;
 			this.raw = new byte[ max ];
 		}
 
@@ -78,7 +76,7 @@ namespace CSim.Core
 				if ( rt == ResetType.Random ) {
                     this.raw[ i ] = (byte) ( rand.Next() % byte.MaxValue );
 				} else {
-					this.raw[ i ] = (byte) 0;
+					this.raw[ i ] = 0;
 				}
             }
 
@@ -100,7 +98,7 @@ namespace CSim.Core
             {
                 throw new ExhaustedMemoryException(
                     L18n.Get( L18n.Id.ErrAccessingAt )
-					+ " " + new IntLiteral( this.machine, pos ).ToHex() );
+					+ " " + new IntLiteral( this.Machine, pos ).ToHex() );
             }
             
             return;
@@ -223,13 +221,10 @@ namespace CSim.Core
 		/// </summary>
 		/// <value>The machine.</value>
 		public Machine Machine {
-			get {
-				return this.machine;
-			}
+			get; private set;
 		}
 
         private byte[] raw;
-		private Machine machine;
     }
 }
 

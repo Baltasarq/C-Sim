@@ -1,11 +1,9 @@
-using System;
-
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Literals;
-using System.Collections.ObjectModel;
 
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Functions;
+	using CSim.Core.Variables;
+	using CSim.Core.Literals;
+
 	/// <summary>
 	/// An standard function that returns a random number.
 	/// </summary>
@@ -23,6 +21,11 @@ namespace CSim.Core.FunctionLibrary {
 		{
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			var toret = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
@@ -43,8 +46,11 @@ namespace CSim.Core.FunctionLibrary {
 			return instance;
 		}
 
-		private static Rand instance = null;
-        public static Random Random = new Random();
+		/// <summary>
+		/// The random engine to use in the Rand <see cref="Opcode"/>.
+		/// </summary>
+        public static System.Random Random = new System.Random();
+		private static Rand instance;
 	}
 }
 

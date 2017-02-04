@@ -2,10 +2,8 @@
 	using System;
 	using System.Drawing;
 	using System.Collections.Generic;
-	using System.Windows.Forms.Design;
 
 	using CSim.Core;
-	using CSim.Core.Types;
 	using CSim.Core.Literals;
 	using CSim.Core.Variables;
 

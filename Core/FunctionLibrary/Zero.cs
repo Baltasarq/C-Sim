@@ -1,11 +1,9 @@
-using System;
-
-using CSim.Core.Functions;
-using CSim.Core.Variables;
-using CSim.Core.Literals;
-using System.Collections.ObjectModel;
 
 namespace CSim.Core.FunctionLibrary {
+	using CSim.Core.Functions;
+	using CSim.Core.Variables;
+	using CSim.Core.Literals;
+
 	/// <summary>
 	/// An standard function that always returns zero.
 	/// </summary>
@@ -23,6 +21,11 @@ namespace CSim.Core.FunctionLibrary {
 		{
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			var result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );

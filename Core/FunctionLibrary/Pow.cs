@@ -1,5 +1,5 @@
-﻿namespace CSim.Core.FunctionLibrary {
-	using System;
+﻿
+namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
@@ -17,11 +17,11 @@
 		public const string Name = "pow";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.EmbeddedFunction"/> class.
+		/// Initializes a new instance of the <see cref="EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
 		private Pow(Machine m)
-			: base( m, Name, m.TypeSystem.GetIntType(), absFormalParams )
+			: base( m, Name, m.TypeSystem.GetIntType(), powFormalParams )
 		{
 		}
 
@@ -31,7 +31,7 @@
 		public static Pow Get(Machine m)
 		{
 			if ( instance == null ) {
-				absFormalParams = new Variable[] {
+				powFormalParams = new Variable[] {
 					new Variable( new Id( @"x" ), m.TypeSystem.GetDoubleType(), m ),
 					new Variable( new Id( @"y" ), m.TypeSystem.GetDoubleType(), m )
 				};
@@ -42,6 +42,11 @@
 			return instance;
 		}
 
+		/// <summary>
+		/// Execute this <see cref="Function"/> with
+		/// the specified parameters (<see cref="RValue"/>'s).
+		/// </summary>
+		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
 			Variable x = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
@@ -49,23 +54,23 @@
 			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
 
 			if ( !( x.Type.IsArithmetic() ) ) {
-				throw new TypeMismatchException( x.LiteralValue.ToString() + "?" );
+				throw new TypeMismatchException( x.LiteralValue + "?" );
 			}
 
 			if ( !( y.Type.IsArithmetic() ) ) {
-				throw new TypeMismatchException( y.LiteralValue.ToString() + "?" );
+				throw new TypeMismatchException( y.LiteralValue + "?" );
 			}
 
 			result.LiteralValue = new DoubleLiteral(
 				this.Machine,
-				Convert.ToDouble(
-					Math.Pow( 	Convert.ToDouble( x.LiteralValue.Value ),
-								Convert.ToDouble( y.LiteralValue.Value ) ) )
+				System.Convert.ToDouble(
+					System.Math.Pow( System.Convert.ToDouble( x.LiteralValue.Value ),
+									 System.Convert.ToDouble( y.LiteralValue.Value ) ) )
 			);
 			this.Machine.ExecutionStack.Push( result );
 		}
 
 		private static Pow instance = null;
-		private static Variable[] absFormalParams;
+		private static Variable[] powFormalParams;
 	}
 }

@@ -1,22 +1,26 @@
 ﻿namespace CSim.Core.Opcodes {
-	using System;
-
 	using CSim.Core.Variables;
-	using CSim.Core.Types.Primitives;
 	using CSim.Core.Literals;
-	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
+	/// <summary>
+	/// Mod opcode, allowing operations like 10%3.
+	/// </summary>
 	public class ModOpcode: Opcode {
+		/// <summary>The opcode's representing value./// </summary>
 		public const char OpcodeValue = (char) 0xEA;
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Opcodes.ModOpcode"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/> this opcode will be executed in.</param>
 		public ModOpcode(Machine m)
 			:base(m)
 		{
 		}
 
 		/// <summary>
-		/// Returns the result of a - b
+		/// Returns the result of a % b
 		/// </summary>
 		public override void Execute()
 		{
@@ -26,20 +30,20 @@
 			}
 
 			// Take ops
-			Variable op1 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 			Variable op2 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			Variable op1 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 
 			// Check ops
 			if ( op1 == null
-	  		  || !( op1.Type.IsArithmetic() ) )
+	  	      || !( op1.Type.IsArithmetic() ) )
 			{
-				throw new TypeMismatchException( ": op1" );
+				throw new TypeMismatchException( ": op1: " + op1.Type );
 			}
 
 			if ( op2 == null
-			  || !( op2.Type.IsArithmetic() ) )
+	   	      || !( op2.Type.IsArithmetic() ) )
 			{
-				throw new TypeMismatchException( ": op2" );
+				throw new TypeMismatchException( ": op2: " + op2.Type );
 			}
 
 			// If the operands are references, dereference it
@@ -55,13 +59,13 @@
 			}
 
 			// Now yes, do it
-			long op1Value = Convert.ToInt64( op1.LiteralValue.Value );
+			long op2Value = op2.LiteralValue.GetValueAsInt();
 
-			if ( op1Value == 0 ) {
+			if ( op2Value == 0 ) {
 				throw new EngineException( "/0??" );
 			}
 
-			long modRes = Convert.ToInt64( op2.LiteralValue.Value ) % op1Value;
+			long modRes = System.Convert.ToInt64( op1.LiteralValue.GetValueAsInt() ) % op2Value;
 
 			// Store in the temp vble and end
 			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, modRes ) );

@@ -10,6 +10,9 @@ namespace CSim.Core.Opcodes {
 	/// Represents function calls.
 	/// </summary>
 	public class CallOpcode: Opcode {
+		/// <summary>
+		/// The opcode's representing value.
+		/// </summary>
 		public static char OpcodeValue = (char) 0xE2;
 
 		/// <summary>
@@ -17,8 +20,8 @@ namespace CSim.Core.Opcodes {
 		/// and a list of typed parameters.
 		/// These are represented by local variables.
 		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="id">The identifier of the function to call, as a string.</param>
-        /// <param name="realParams">The parameters to pass to the function to call, as a vector.</param>
 		public CallOpcode(Machine m, string id)
             : base( m )
 		{
