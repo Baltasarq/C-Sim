@@ -74,13 +74,6 @@ namespace CSim.Core.Opcodes {
 			// Take variable
 			this.Vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
 
-			if ( !( rvalue is NoPlaceTempVariable )
-			  && rvalue.Name.Name == this.Vble.Name.Name )
-			{
-				// The variable has just been created.
-				this.Value = this.Machine.ExecutionStack.Pop();
-			}
-
 			// Prepare assign parts
 			if ( this.Vble is NoPlaceTempVariable ) {
 				throw new UnknownVbleException( "temp vble: " + this.Vble.Name.Name + "??" );

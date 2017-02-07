@@ -1,11 +1,11 @@
-using CSim.Core.Types;
 
 namespace CSim.Core {
 	using System;
 	using System.Diagnostics;
 	using System.Collections.Generic;
-	using CSim.Core.Literals;
 
+	using CSim.Core.Types;
+	using CSim.Core.Literals;
 	using CSim.Core.Opcodes;
 	using CSim.Core.Exceptions;
 	using CSim.Core.FunctionLibrary;
@@ -406,7 +406,7 @@ namespace CSim.Core {
 
 				Type type = this.Machine.TypeSystem.FromStringToType( strType );
 
-				// Match square brackets -- is a vector?
+				// Match square brackets -- is it a vector?
 				if ( Lexer.GetCurrentChar() == '[' ) {
 					Lexer.Advance();
 					Lexer.SkipSpaces();
@@ -423,9 +423,21 @@ namespace CSim.Core {
 				} else {
 					var memBlkId = new Id( SymbolTable.GetNextMemoryBlockName() );
 					this.Opcodes.Add( new CreateOpcode( this.Machine, memBlkId, type ) );
-					this.Opcodes.Add( new StoreRValue( this.Machine, memBlkId ) );
-					this.Opcodes.Add( new AddressOfOpcode( this.Machine ) );
-					this.Opcodes.Add( new AssignOpcode( this.Machine ) );
+                    this.Opcodes.Add( new AddressOfOpcode( this.Machine ) );
+					
+					// Match brackets -- init?
+					if ( Lexer.GetCurrentChar () == '(' ) {
+						Lexer.Advance();
+						Lexer.SkipSpaces();
+                        this.Opcodes.Add( new AssignOpcode( this.Machine ) );
+                        this.Opcodes.Add( new StoreRValue( this.Machine, memBlkId ) );
+						this.ParseExpression();
+						Lexer.SkipSpaces();
+
+						if ( Lexer.GetCurrentChar() != ')' ) {
+							throw new ParsingException( ")?" );
+						}
+					}
 				}
 			} else {
                 throw new EngineException(
