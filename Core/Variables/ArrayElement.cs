@@ -14,9 +14,8 @@
 		/// <param name="address">The address of the array.</param>
 		/// <param name="ptrType">Ptr type.</param>
 		/// <param name="pos">Position.</param>
-		/// <param name="machine">Machine.</param>
-		public ArrayElement(string id, long address, Ptr ptrType, long pos, Machine machine)
-			:base( new Id( "_" + id + "_" + pos ), ptrType.DerreferencedType, machine)
+		public ArrayElement(string id, long address, Ptr ptrType, long pos)
+			:base( new Id( ptrType.Machine, "_" + id + "_" + pos ), ptrType.DerreferencedType)
 		{
 			this.Offset = pos * this.Type.Size;
 			this.Address = address + this.Offset;

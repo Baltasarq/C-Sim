@@ -12,8 +12,10 @@ namespace CSim.Core.Types.Primitives {
         /// <summary>
         /// Initializes a new instance of the <see cref="CSim.Core.Types.Primitives.Int"/> class.
         /// It's size is guaranteed to be the same for the width of the system.
+        /// <param name="m">The <see cref="Machine"/> this will be used in.</param>
         /// </summary>
-        internal Double(int wordSize): base( TypeName, wordSize * 2 )
+        private Double(Machine m)
+            :base( m, TypeName, m.WordSize * 2 )
         {
         }
 
@@ -30,11 +32,27 @@ namespace CSim.Core.Types.Primitives {
 		/// Creates the corresponding literal.
 		/// </summary>
 		/// <returns>The <see cref="Literal"/>.</returns>
-		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="raw">The raw bytes needed to build the literal.</param>
-		public override Literal CreateLiteral(Machine m, byte[] raw)
+		public override Literal CreateLiteral(byte[] raw)
 		{
-			return new DoubleLiteral( m, m.Bytes.FromBytesToDouble( raw ) );
+			return new DoubleLiteral( this.Machine, this.Machine.Bytes.FromBytesToDouble( raw ) );
 		}
+
+        /// <summary>
+        /// Gets the only instance for this <see cref="AType"/>.
+        /// </summary>
+        /// <returns>The <see cref="AType"/>.</returns>
+        /// <param name="m">The <see cref="Machine"/> this type will be used in.</param>
+        public static Double Get(Machine m)
+        {
+            if ( instance == null ) {
+                instance = new Double( m );
+            }
+
+            return instance;
+        }
+
+        /// <summary>The only instance for this type.</summary>
+        protected static Double instance;
     }
 }

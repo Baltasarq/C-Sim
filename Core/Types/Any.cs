@@ -1,22 +1,18 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 
-using CSim.Core.Literals;
-using CSim.Core.Exceptions;
+namespace CSim.Core.Types {
+	using CSim.Core.Literals;
+	using CSim.Core.Variables;
 
-namespace CSim.Core.Types
-{
 	/// <summary>
 	/// Infinite union of all types.
 	/// </summary>
-	public class Any: Type
+	public class Any: AType
 	{
 		/// <summary>The name of the type.</summary>
 		public const string TypeName = "any";
 
-		internal Any()
-			: base( TypeName, 1 )
+		private Any(Machine m)
+			: base( m, TypeName, 1 )
 		{
 		}
 
@@ -30,26 +26,43 @@ namespace CSim.Core.Types
 		}
 
 		/// <summary>
+		/// Creates a corresponding variable.
+		/// </summary>
+		/// <returns>A <see cref="Variable"/> with this <see cref="AType"/>.</returns>
+		/// <param name="strId">The identifier for the variable.</param>
+		public override Variable CreateVariable(string strId)
+		{
+			return new VoidPtrVariable( new Id( this.Machine, strId ) );
+		}
+
+		/// <summary>
 		/// Creates a literal for this type, given a byte sequence.
 		/// The particularity here is that this type is Any, so the more agnostic type is char.
 		/// </summary>
 		/// <returns>A <see cref="CharLiteral"/>.</returns>
 		/// <param name="raw">The sequence of bytes containing the value in memory. Only the fist one matters.</param>
-		/// <param name="m">The machine to create the literal for.</param>
-		public override Literal CreateLiteral(Machine m, byte[] raw)
+		public override Literal CreateLiteral(byte[] raw)
 		{
-			return new CharLiteral( m, (char) raw[0] );
+			return new CharLiteral( this.Machine, (char) raw[0] );
 		}
 
 		/// <summary>
-		/// Gets the Any type. This type does not depend in any form from the machine's structure.
+		/// Gets the Any type. This type does not depend
+        /// in any form from the machine's structure.
+        /// <returns>The <see cref="AType"/>.</returns>
+        /// <param name="m">The <see cref="Machine"/> this type will live in.</param>
 		/// </summary>
-		public static Any Get()
+		public static Any Get(Machine m)
 		{
-			return instance;
-		}
+            if ( instance == null ) {
+                instance = new Any( m );
+            }
 
-		private static Any instance = new Any();
+            return (Any) instance;
+        }
+
+        /// <summary>The only instance for this type.</summary>
+        protected static AType instance;
 	}
 }
 

@@ -448,35 +448,37 @@ namespace CSim.Ui {
 
 		private void BuildSettingsPanel()
 		{
-			this.pnlSettings = new TableLayoutPanel();
-			this.pnlSettings.BackColor = Color.White;
-			this.pnlSettings.Dock = DockStyle.Fill;
-			this.pnlSettings.ColumnCount = 1;
-			this.pnlSettings.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
+            this.pnlSettings = new TableLayoutPanel {
+                BackColor = Color.White,
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                GrowStyle = TableLayoutPanelGrowStyle.AddRows
+            };
 			this.pnlSettings.SuspendLayout();
 
-			// Button
-			var btClose = new Button();
-			btClose.BackColor = Color.White;
-			btClose.Image = this.backIconBmp;
-			btClose.Anchor = AnchorStyles.Left | AnchorStyles.Top;
-			btClose.Font = new Font( btClose.Font, FontStyle.Bold );
-			btClose.FlatStyle = FlatStyle.Flat;
-			btClose.FlatAppearance.BorderSize = 0;
-			btClose.Click += (sender, e) => this.ChangeSettings();
+            // Button
+            var btClose = new Button {
+                BackColor = Color.White,
+                Image = this.backIconBmp,
+                Anchor = AnchorStyles.Left | AnchorStyles.Top,
+                Font = new Font( Font, FontStyle.Bold ),
+                FlatStyle = FlatStyle.Flat
+            };
+            btClose.FlatAppearance.BorderSize = 0;
+			btClose.Click += (sender, e) => this.ApplySettings();
 			this.pnlSettings.Controls.Add( btClose );
 
-			// Locale
-			var pnlLocales = new Panel();
-			pnlLocales.Dock = DockStyle.Top;
-			this.lblLocales = new Label();
-			this.lblLocales.Text = L18n.Get( L18n.Id.LblLanguage );
-			this.lblLocales.Dock = DockStyle.Left;
-
-			this.cbLocales = new ComboBox();
-			this.cbLocales.Dock = DockStyle.Fill;
-			this.cbLocales.DropDownStyle = ComboBoxStyle.DropDownList;
-			this.cbLocales.Text = Core.Locale.CurrentLocale.ToString();
+            // Locale
+            var pnlLocales = new Panel { Dock = DockStyle.Top };
+            this.lblLocales = new Label {
+                Text = L18n.Get( L18n.Id.LblLanguage ),
+                Dock = DockStyle.Left
+            };
+            this.cbLocales = new ComboBox {
+                Dock = DockStyle.Fill,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Text = Core.Locale.CurrentLocale.ToString()
+            };
 
 			CultureInfo[] locales = CultureInfo.GetCultures( CultureTypes.SpecificCultures );
 			Array.Sort( locales,
@@ -493,13 +495,10 @@ namespace CSim.Ui {
 			this.pnlSettings.Controls.Add( pnlLocales );
 
 			// Endianness
-			var gbEndianness = new GroupBox();
+			var gbEndianness = new GroupBox { Text = "Alignment", Dock = DockStyle.Top };
 			gbEndianness.SuspendLayout();
-			gbEndianness.Text = "Endianness";
-			gbEndianness.Dock = DockStyle.Top;
-			var pnlEndianness = new TableLayoutPanel();
+            var pnlEndianness = new TableLayoutPanel { Dock = DockStyle.Fill };
 			pnlEndianness.SuspendLayout();
-			pnlEndianness.Dock = DockStyle.Fill;
 			this.rbEndianness1 = new RadioButton { Text = "Little endian", Dock = DockStyle.Top };
 			this.rbEndianness2 = new RadioButton { Text = "Big endian", Dock = DockStyle.Top };
 			pnlEndianness.Controls.Add( this.rbEndianness1 );
@@ -509,15 +508,24 @@ namespace CSim.Ui {
 			gbEndianness.ResumeLayout( false );
 			this.pnlSettings.Controls.Add( gbEndianness );
 
+            // Alignment
+            var gbAlignment = new GroupBox { Text = "Alignment", Dock = DockStyle.Top };
+            var pnlAlignment = new TableLayoutPanel { Dock = DockStyle.Fill };
+            gbAlignment.SuspendLayout();
+            pnlAlignment.SuspendLayout();
+            this.chkAlign = new CheckBox { Text = "Align variables in memory", Dock = DockStyle.Top };
+            pnlAlignment.Controls.Add( this.chkAlign );
+            pnlAlignment.ResumeLayout( false );
+            gbAlignment.ResumeLayout( false );
+            gbAlignment.Controls.Add( pnlAlignment );
+            this.pnlSettings.Controls.Add( gbAlignment );
 
-			// Memory width
-			var gbWordSize = new GroupBox();
+
+            // Memory width
+            var gbWordSize = new GroupBox { Text = "Word size", Dock = DockStyle.Top };
+            var pnlWordSize = new TableLayoutPanel { Dock = DockStyle.Fill };
 			gbWordSize.SuspendLayout();
-			gbWordSize.Text = "Word size";
-			gbWordSize.Dock = DockStyle.Top;
-			var pnlWordSize = new TableLayoutPanel();
 			pnlWordSize.SuspendLayout();
-			pnlWordSize.Dock = DockStyle.Fill;
 			this.rbWS16 = new RadioButton { Text = "16 bits", Dock = DockStyle.Top };
 			this.rbWS32 = new RadioButton { Text = "32 bits", Dock = DockStyle.Top };
 			this.rbWS64 = new RadioButton { Text = "64 bits", Dock = DockStyle.Top };
@@ -668,6 +676,7 @@ namespace CSim.Ui {
 		private ToolBarButton tbbStop;
 		private ComboBox cbLocales;
 		private Label lblLocales;
+        private CheckBox chkAlign;
 		private RadioButton rbEndianness1;
 		private RadioButton rbEndianness2;
 		private RadioButton rbWS16;

@@ -20,21 +20,18 @@ namespace CSim.Core {
 
 		private void BuildFunctionList()
 		{
-			var asm = typeof( Type ).Assembly;
+			var asm = typeof( AType ).Assembly;
 			this.fns = new List<EmbeddedFunction>();
 
 			foreach(System.Type t in asm.GetTypes()) {
 				if ( t.IsClass
-				  && t.FullName.Contains( "FunctionLibrary" ) )
+                  && t.IsSubclassOf( typeof( EmbeddedFunction ) ) )
 				{
-					this.fns.Add(
-						(EmbeddedFunction)
-						t.InvokeMember( "Get",
-					               	    BindingFlags.Public
-					               			| BindingFlags.InvokeMethod
-					               			| BindingFlags.Static,
-					                    null, null, new object[] { this.Machine } )
-					);
+                    MethodInfo mthInfo = t.GetMethod( "Get" );
+
+                    if ( mthInfo != null ) {
+    					this.fns.Add( (EmbeddedFunction) mthInfo.Invoke( null, new object[] { this.Machine } ) );
+                    }
 				}
 			}
 

@@ -16,8 +16,8 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="m">The <see cref="Machine"/> this function will pertain to.</param>
 		/// <param name="id">The identifier of the function, as a string.</param>
-		/// <param name="returnType">The return type, as a CSim.Core.Type.</param>
-		protected Function(Machine m, string id, CSim.Core.Type returnType)
+        /// <param name="returnType">The return type, as a <see cref="AType"/>.</param>
+		protected Function(Machine m, string id, AType returnType)
 			:this( m, id, returnType, null )
 		{
 		}
@@ -29,9 +29,9 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="m">The <see cref="Machine"/> this function will pertain to.</param>
 		/// <param name="id">The identifier of the function, as a string.</param>
-		/// <param name="returnType">The return type, as a CSim.Core.Type.</param>
+        /// <param name="returnType">The return type, as a <see cref="AType"/>.</param>
 		/// <param name="formalParams">The formal parameters, as a vector.</param>
-        protected Function(Machine m, string id, CSim.Core.Type returnType, Variable[] formalParams)
+        protected Function(Machine m, string id, AType returnType, Variable[] formalParams)
 		{
             if ( id != null ) {
                 id = id.Trim();
@@ -88,7 +88,7 @@ namespace CSim.Core {
 		/// Gets the return type of the function.
 		/// </summary>
 		/// <value>The return type of the function, as a CSim.Core.Type object.</value>
-		public CSim.Core.Type ReturnType {
+		public AType ReturnType {
 			get; private set;
 		}
 

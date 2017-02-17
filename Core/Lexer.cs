@@ -1,6 +1,8 @@
 
 namespace CSim.Core {
 	using System;
+    using Exceptions;
+    using Types;
 
 	/// <summary>
 	/// The lexer.
@@ -67,12 +69,13 @@ namespace CSim.Core {
 		/// <summary>
 		/// Skips the following spaces in the input
 		/// </summary>
-        public void SkipSpaces()
+        /// <param name="advanceDelta">Positions to advance after each space.</param>
+        public void SkipSpaces(int advanceDelta = 1)
         {
             while( !this.IsEOL()
                 && char.IsWhiteSpace( Line[ this.Pos ] ) )
             {
-                this.Advance();
+                this.Advance( advanceDelta );
             }
             
             return;
@@ -281,6 +284,39 @@ namespace CSim.Core {
             
             SkipSpaces();
 			return this.CurrentToken;
+        }
+
+        /// <summary>
+        /// Reads a type literal from standard input.
+        /// </summary>
+        /// <returns>The type literal, as a string.</returns>
+        public string GetTypeLiteral()
+        {
+            char ch;
+            string toret;
+
+            // Read the base type
+            this.SkipSpaces();
+            toret = this.GetToken();
+
+            // Chk
+            if ( !Primitive.IsPrimitive( toret ) ) {
+                throw new ParsingException( toret + "?" );
+            }
+
+            // Read stars and ampersands
+            this.SkipSpaces();
+            ch = this.GetCurrentChar();
+            while( ch == Types.Ref.RefTypeNamePart[ 0 ]
+                || ch == Types.Ptr.PtrTypeNamePart[ 0 ] )
+            {
+                toret += ch;
+                this.Advance();
+                this.SkipSpaces();
+                ch = this.GetCurrentChar();
+            }
+
+            return toret;
         }
         
 		/// <summary>
@@ -524,7 +560,8 @@ namespace CSim.Core {
         /// <param name='token'>
         /// A string containing "true", "false", or any other value.
         /// </param>
-        public static bool IsBool(string token) {
+        public static bool IsBool(string token)
+        {
 			return ( BooleanLiterals.IndexOf( " " + token + " ", StringComparison.InvariantCulture ) > -1 );
         }
 

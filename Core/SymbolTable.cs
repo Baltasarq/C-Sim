@@ -6,7 +6,7 @@ namespace CSim.Core {
 
 	using CSim.Core.Exceptions;
 	using CSim.Core.Variables;
-	using CSim.Core.Literals;
+	using CSim.Core.Types;
 
 	/// <summary>All the variables in the <see cref="Machine"/> reside here.</summary>
     public class SymbolTable {
@@ -20,8 +20,9 @@ namespace CSim.Core {
 		/// <param name="m">The <see cref="Machine"/> this symbol table will be used in.</param>
         public SymbolTable(Machine m)
         {
-            this.tds = new Dictionary<string, Variable>();
-			this.Machine = m;
+            this.Machine = m;
+            this.tdsIds = new Dictionary<string, Variable>();
+            this.tdsAddresses = new Dictionary<long, Variable>();
             this.addresses = new List<long>();
         }
 
@@ -32,66 +33,75 @@ namespace CSim.Core {
 		/// </summary>
 		public void Reset()
 		{
-			this.tds.Clear();
+			this.tdsIds.Clear();
+            this.tdsAddresses.Clear();
 			this.addresses.Clear();
 		}
 
-		/// <summary>
-		/// Creates a new variable of a given type.
-		/// </summary>
-		/// <param name="id">The identifier for the variable, as a string.</param>
-		/// <param name="t">The type for this new variable.</param>
-		public Variable Add(string id, CSim.Core.Type t)
-		{
-			return this.Add( new Id( id ), t );
-		}
-
-		/// <summary>
-		/// Creates a new variable of a given type.
-		/// </summary>
-		/// <param name="id">The identifier for the variable, as a string.</param>
-		/// <param name="t">The type for this new variable.</param>
-        public Variable Add(Id id, CSim.Core.Type t)
+        /// <summary>
+        /// Creates the addresses to fill array,
+        /// containing the total of needed addresses for
+        /// a given <see cref="Variable"/>.
+        /// For example, an int variable starting at 100, with
+        /// wordSize == 4 (32bit), will be: [100, 101, 102, 103].
+        /// </summary>
+        /// <returns>The addresses to fill, as an array.</returns>
+        /// <param name="address">The address in which the variable could sit.</param>
+        /// <param name="size">The size needed by the <see cref="Variable"/>.</param>
+        private long[] CreateAddressesToFill(long address, int size)
         {
-            return this.Add( new Variable( id, t, this.Machine, -1 ) );
+            long[] toret = new long[ size ];
+
+            // Create addresses to fill
+            for (int i = 0; i < size; ++i) {
+                toret[ i ] = address + i;
+            }
+
+            return toret;
         }
 
-		/// <summary>
-		/// Creates a new reference of a given type.
-		/// </summary>
-		/// <param name="id">The identifier for the reference, as a string.</param>
-		/// <param name="t">The type for this new reference.</param>
-		public Variable AddRef(string id, CSim.Core.Type t)
-		{
-			return this.AddRef( new Id( id ), t );
-		}
-
-		/// <summary>
-		/// Creates a new reference of a given type.
-		/// </summary>
-		/// <param name="id">The identifier for the reference, as a string.</param>
-		/// <param name="t">The type for this new reference.</param>
-        public Variable AddRef(Id id, CSim.Core.Type t)
+        /// <summary>
+        /// Stores the addresses occupied by the variable
+        /// in the list of occupied addresses.
+        /// </summary>
+        /// <param name="v">V.</param>
+        private void StoreAddressesToFill(Variable v)
         {
-			return this.Add( new RefVariable( id, t, this.Machine, -1 ) );
+            long[] addressesToOccupy = this.CreateAddressesToFill( v.Address, v.Size );
+
+            // Store the addresses to fill
+            for (int i = 0; i < addressesToOccupy.Length; ++i) {
+                this.addresses.Add( addressesToOccupy[ i ] );
+            }
         }
 
-		/// <summary>
-		/// Creates a new array of a given type for its elements.
-		/// </summary>
-		/// <param name="id">The identifier for the array, as a string.</param>
-		/// <param name="t">The type for the elements of this new array.</param>
-		/// <param name="size">The number of elements for this new array.</param>
-		public Variable AddArray(Id id, CSim.Core.Type t, long size)
-		{
-			return this.Add( new ArrayVariable( id, t, this.Machine, size ) );
-		}
+        /// <summary>
+        /// Registers the specified variable.
+        /// </summary>
+        /// <param name="v">The <see cref="Variable"/> to register.</param>
+        private void Register(Variable v)
+        {
+            this.tdsIds.Add( v.Name.Name, v );
+            this.tdsAddresses.Add( v.Address, v );
+            this.StoreAddressesToFill( v );
+        }
+
+        /// <summary>
+        /// Adds the variable, honoring the address registered inside it.
+        /// </summary>
+        /// <param name="v">The <see cref="Variable"/> to add</param>
+        public void AddVariableInPlace(Variable v)
+        {
+            this.Add( v, true );
+        }
 
 		/// <summary>
 		/// Adds the specified <see cref="Variable"/>, already created.
 		/// </summary>
 		/// <param name="v">The <see cref="Variable"/> to add.</param>
-        public Variable Add(Variable v)
+        /// <param name="inPlace">Determines whether to honor the address stored in
+        /// the given <see cref="Variable"/>.</param>
+        public void Add(Variable v, bool inPlace = false)
 		{
             // Chk
 			if ( this.IsIdOfExistingVariable( v.Name ) ) {
@@ -99,27 +109,12 @@ namespace CSim.Core {
 			}
 
             // Store
-            v.Address = this.Reserve( v );
-            this.tds.Add( v.Name.Name, v );
+            if ( !inPlace ) {
+                v.Address = this.Reserve( v );
+            }
 
-            return v;
+            this.Register( v );
         }
-
-		/// <summary>
-		/// Adds the variable, honoring the address registered inside it.
-		/// </summary>
-		/// <param name="v">The <see cref="Variable"/> to add</param>
-		internal void AddVariableInPlace(Variable v)
-		{
-			// Chk
-			if ( this.IsIdOfExistingVariable( v.Name ) ) {
-				throw new AlreadyExistingVbleException( v.Name.Name );
-			}
-
-			// Store
-			this.tds.Add( v.Name.Name, v );
-			this.StoreAddressesToFill( v );
-		}
 
 		/// <summary>
 		/// Remove the specified id from the variables list.
@@ -129,9 +124,27 @@ namespace CSim.Core {
 		/// </param>
 		public void Remove(string id)
 		{
-			this.tds.Remove( id );
-		}
+            Variable vbleToRemove;
 
+            if ( this.tdsIds.TryGetValue( id, out vbleToRemove ) ) {
+			    this.tdsIds.Remove( id );
+                this.tdsAddresses.Remove( vbleToRemove.Address );
+
+                // Remove affected addresses
+                int i = 0;
+                while( i < this.addresses.Count ) {
+                    if ( vbleToRemove.IsStoredIn( this.addresses[ i ] ) ) {
+                        this.addresses.RemoveAt( i );
+                    } else {
+                        ++i;
+                    }
+                }
+            } else {
+                throw new UnknownVbleException( id );
+            }
+
+            return;
+		}
 
 		/// <summary>
 		/// Removes all the temp variables.
@@ -197,6 +210,27 @@ namespace CSim.Core {
 		}
 
         /// <summary>
+        /// Determines whether the given location in memory is free or not,
+        /// considering the initial position and the needed size.
+        /// </summary>
+        /// <returns><c>true</c>, if location is free, <c>false</c> otherwise.</returns>
+        /// <param name="address">The starting address.</param>
+        /// <param name="size">The needed size.</param>
+        private bool IsLocationFree(long address, int size)
+        {
+            long[] addressesToOccupy = this.CreateAddressesToFill( address, size );
+            int i = 0;
+
+            for (; i < addressesToOccupy.Length; ++i) {
+                if ( this.addresses.Contains( addressesToOccupy[ i ] ) ) {
+                    break;
+                }
+            }
+
+            return ( i >= addressesToOccupy.Length );
+        }
+
+        /// <summary>
 		/// Reserve memory for the specified <see cref="Variable"/> v.
         /// </summary>
         /// <param name='v'>
@@ -204,39 +238,62 @@ namespace CSim.Core {
         /// </param>
         public long Reserve(Variable v)
         {
+            long toret;
+
+            if ( this.AlignVbles ) {
+                toret = this.AlignedReserve( v );
+            } else {
+                toret = this.AleaReserve( v );
+            }
+
+            return toret;
+        }
+
+        private long AlignedReserve(Variable v)
+        {
+            int toret = -1;
+            int address = this.Machine.WordSize;
+
+            while( address < this.Memory.Max ) {
+                if ( this.LookForAddress( address ) == null
+                  && this.IsLocationFree( address, v.Size ) )
+                {
+                    toret = address;
+                    break;
+                }
+
+                address += v.Size;
+            }
+
+            // Re-check
+            if ( toret < 0 ) {
+                throw new ExhaustedMemoryException(
+                    L18n.Get( L18n.Id.ErrReserving ) + ": " + v.Name );
+            }
+
+            return toret;
+        }
+
+        private long AleaReserve(Variable v)
+        {
             int tries = 100;
             var randomEngine = new Random();
             int toret = -1;
-            long[] addressesToFill = new long[ v.Type.Size ];
 
-            while( toret < 0 ) {
-                // Generate memory location
-                do {
-					toret = randomEngine.Next( 0, this.Memory.Max - this.Machine.WordSize );
+            // Generate memory location
+            do {
+				toret = randomEngine.Next( 0, this.Memory.Max - this.Machine.WordSize );
 
-                    if ( ( toret + v.Type.Size ) >= this.Memory.Max ) {
-                            toret = -1;
-                    }
-                } while( toret < 0 );
-
-                // Create addresses to fill
-                for (int i = 0; i < v.Type.Size; ++i) {
-                    addressesToFill[ i ] = toret + i;
-                }
-
-                // Check against occupied addresses
-                for (int i = 0; i < v.Type.Size; ++i) {
-                    if ( this.addresses.Contains( addressesToFill[ i ] ) ) {
-                        toret = -1;
+                if ( ( toret + v.Size ) >= this.Memory.Max
+                  || !this.IsLocationFree( toret, v.Size ) )
+                {   
+                    toret = -1;
+                    --tries;
+                    if ( tries < 0 ) {
                         break;
                     }
                 }
-
-                --tries;
-                if ( tries < 0 ) {
-                    break;
-                }
-            }
+            } while( toret < 0 );
 
             // Re-check
             if ( toret < 0 ) {
@@ -244,25 +301,8 @@ namespace CSim.Core {
                     L18n.Get( L18n.Id.ErrReserving ) + ": " + v.Name );
             }
 
-			this.StoreAddressesToFill( v, addressesToFill );
             return toret;
         }
-
-		private void StoreAddressesToFill(Variable v, long[] addressesToFill = null)
-		{
-			// Create the vector of addresses, if needed
-			if ( addressesToFill == null ) {
-				addressesToFill = new long[ v.Type.Size ];
-				for(int i = 0; i < addressesToFill.Length; ++i) {
-					addressesToFill[ i ] = v.Address + i;
-				}
-			}
-
-			// Store the addresses to fill
-			for (int i = 0; i < v.Type.Size; ++i) {
-				this.addresses.Add( addressesToFill[ i ] );
-			}
-		}
 
 		/// <summary>
 		/// Gets all variables.
@@ -272,9 +312,9 @@ namespace CSim.Core {
 		/// </value>
         public ReadOnlyCollection<Variable> Variables {
             get {
-                var toret = new Variable[ this.tds.Count ];
+                var toret = new Variable[ this.tdsIds.Count ];
 
-                this.tds.Values.CopyTo( toret, 0 );
+                this.tdsIds.Values.CopyTo( toret, 0 );
                 return new ReadOnlyCollection<Variable>( toret );
             }
         }
@@ -294,7 +334,7 @@ namespace CSim.Core {
 
 			if ( !string.IsNullOrEmpty( id ) ) {
                 // Look for vble
-                this.tds.TryGetValue( id, out toret );
+                this.tdsIds.TryGetValue( id, out toret );
             }
 
 			return toret;
@@ -334,16 +374,6 @@ namespace CSim.Core {
 			return ( this.LookForVariableOfId( idVble.Name ) != null );
 		}
 
-        /// <summary>
-        /// Looks for address, given an int literal.
-        /// </summary>
-        /// <returns>The address to look for.</returns>
-        /// <param name="intLit">The literal holding the integer.</param>
-        public Variable LookForAddress(IntLiteral intLit)
-        {
-            return this.LookForAddress( intLit.Value );
-        }
-
 		/// <summary>
 		/// Looks for a variable, given its address.
 		/// </summary>
@@ -355,14 +385,12 @@ namespace CSim.Core {
 		/// </param>
 		public Variable LookForAddress(long address)
 		{
-			Variable toret = null;
+            Variable toret;
 
-			foreach(Variable vble in this.Variables) {
-				if ( vble.Address == address ) {
-					toret = vble;
-					break;
-				}
-			}
+            if ( !this.tdsAddresses.TryGetValue( address, out toret ) )
+            {
+                toret = null;
+            }
 
 			return toret;
 		}
@@ -375,43 +403,29 @@ namespace CSim.Core {
 		/// <param name="ptrVble">A PtrVariable object.</param>
 		public Variable GetPointedValueAsVariable(PtrVariable ptrVble)
 		{
-			Variable toret = this.LookForAddress( ptrVble.IntValue );
+            long address = ptrVble.IntValue.GetValueAsLongInt();
+            AType requiredType = ptrVble.AssociatedType;
+            Variable toret = this.LookForAddress( address );
 
-			if ( toret == null
-			  || toret.GetTargetType() != ptrVble.AssociatedType )
-			{
-				toret = new InPlaceTempVariable( ptrVble.AssociatedType, this.Machine );
-				toret.Address = ptrVble.IntValue.Value;
+            if ( toret != null ) {
+                // Determine whether the required type is the same one
+                AType targetType = toret.Type;
+                var ptrType = targetType as Ptr;
+
+                if ( ptrType != null ) {
+                    targetType = ptrType.AssociatedType;
+                }
+
+                if ( requiredType != targetType ) {
+                    toret = null;
+                }
+            }
+
+            if ( toret == null ) {
+                toret = new InPlaceTempVariable( requiredType );
+				toret.Address = address;
 				this.Machine.TDS.AddVariableInPlace( toret );
-			}
-
-			return toret;
-		}
-
-		/// <summary>
-		/// Solves the rvalue to a variable.
-		/// </summary>
-		/// <returns>A variable, being a TempVariable or a true one.</returns>
-		/// <param name="rvalue">The rvalue to be solved.</param>
-		public Variable SolveToVariable(RValue rvalue)
-		{
-			Variable toret = null;
-			var lit = rvalue as Literal;
-			var id = rvalue as Id;
-			var vble = rvalue as Variable;
-
-			if ( lit != null ) {
-				// Plain value
-				toret = new NoPlaceTempVariable( lit );
-			}
-			else
-			if ( id != null ) {
-				toret = this.LookUp( id.Name );
-			}
-			else
-			if ( vble != null ) {
-				toret = vble;
-			}
+            }
 
 			return toret;
 		}
@@ -451,6 +465,46 @@ namespace CSim.Core {
             return ( MemBlockName + numMemBlock );
         }
 
+        /// <summary>
+        /// Switchs the endianess of all variables in this machine.
+        /// The machine's endianness (<see cref="Machine.Endian"/>
+        /// is assumed to have already changed.
+        /// </summary>
+        public void SwitchEndianness()
+        {
+            foreach (Variable vble in this.Variables) {
+                var arrayVble = vble as ArrayVariable;
+
+                if ( arrayVble != null ) {
+                    long address = arrayVble.Address;
+                    var elementSize = arrayVble.Type.Size;
+                    var endAddress = address + arrayVble.Size;
+
+                    // Reverse each element
+                    for(; address < endAddress; address += elementSize) {
+                        this.Memory.SwitchEndianness( address, elementSize );
+                    }
+                } else {
+                    this.Memory.SwitchEndianness( vble.Address, vble.Type.Size );
+                }
+            }
+
+            return;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="T:CSim.Core.Machine"/> aligns vbles.
+        /// </summary>
+        /// <value><c>true</c> if aligns vbles; otherwise, <c>false</c>.</value>
+        public bool AlignVbles {
+            get {
+                return this.Machine.AlignVbles;
+            }
+            set {
+                this.Machine.AlignVbles = value;
+            }
+        }
+
 		/// <summary>
 		/// A convenience method to get the associated <see cref="MemoryManager"/>.
 		/// <seealso cref="SymbolTable.Machine"/>
@@ -471,7 +525,8 @@ namespace CSim.Core {
 			get; private set;
 		}
 
-		private Dictionary<string, Variable> tds;
+		private Dictionary<string, Variable> tdsIds;
+        private Dictionary<long, Variable> tdsAddresses;
 		private List<long> addresses;
 
         private static int numMemBlock = 0;

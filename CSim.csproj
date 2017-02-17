@@ -54,7 +54,7 @@
     <Compile Include="Core\AppInfo.cs" />
     <Compile Include="Core\SymbolTable.cs" />
     <Compile Include="Core\Variable.cs" />
-    <Compile Include="Core\Type.cs" />
+    <Compile Include="Core\AType.cs" />
     <Compile Include="Core\Opcode.cs" />
     <Compile Include="Core\Lexer.cs" />
     <Compile Include="Core\Exceptions\UnknownTypeException.cs" />
@@ -104,7 +104,7 @@
     <Compile Include="Core\Opcodes\StoreRValue.cs" />
     <Compile Include="Core\FunctionLibrary\SizeOf.cs" />
     <Compile Include="Core\Variables\PtrVariable.cs" />
-    <Compile Include="Core\Literals\VectorLiteral.cs" />
+    <Compile Include="Core\Literals\ArrayLiteral.cs" />
     <Compile Include="Core\Opcodes\AccessOpcode.cs" />
     <Compile Include="Core\FunctionLibrary\Abs.cs" />
     <Compile Include="Core\Opcodes\ArrayIndexAccessOpcode.cs" />
@@ -150,6 +150,12 @@
     <Compile Include="Core\Variables\InPlaceTempVariable.cs" />
     <Compile Include="Core\Variables\NoPlaceTempVariable.cs" />
     <Compile Include="Core\Variables\TempVariable.cs" />
+    <Compile Include="Core\FunctionLibrary\TypedMalloc.cs" />
+    <Compile Include="Core\Variables\TypeVariable.cs" />
+    <Compile Include="Core\Types\TypeType.cs" />
+    <Compile Include="Core\Literals\TypeLiteral.cs" />
+    <Compile Include="Core\FunctionLibrary\TypeOf.cs" />
+    <Compile Include="Core\ByteConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

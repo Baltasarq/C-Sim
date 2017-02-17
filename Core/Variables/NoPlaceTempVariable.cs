@@ -1,4 +1,3 @@
-using System;
 
 namespace CSim.Core.Variables {
 	/// <summary>
@@ -10,30 +9,39 @@ namespace CSim.Core.Variables {
         /// Creates a new temporal variable, given a type.
         /// </summary>
         /// <param name="t">The Type object t from which to create the temp.</param>
-		public NoPlaceTempVariable(Type t)
-			:base( t, null )
+		public NoPlaceTempVariable(AType t)
+			:base( t )
 		{
 		}
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CSim.Core.Variables.TempVariable"/> class,
+        /// Initializes a new instance of the <see cref="NoPlaceTempVariable"/> class,
         /// from a Literal object.
         /// </summary>
-        /// <param name="v">V.</param>
+        /// <param name="v">The literal that will give its value to the <see cref="Variable"/>.</param>
 		public NoPlaceTempVariable(Literal v)
-			:base( v.Type, v.Machine )
+            :base( v.Type )
         {
-			this.LiteralValue = v;
+			this.litValue = v;
         }
 
         /// <summary>
         /// Gets or sets the value associated to this temp variable.
         /// Note that it does not have a place in memory.
+        /// It is completely implemented to avoid a virtual call in ctor.
         /// </summary>
         /// <value>The value, as a literal object.</value>
 		public override Literal LiteralValue {
-			get; set;
+            get {
+                return this.litValue;
+            }
+            set {
+                this.litValue = value;
+            }
 		}
+
+        // This is used to avoid a virtual call in ctor.
+        private Literal litValue;
 	}
 }
 

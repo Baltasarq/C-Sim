@@ -12,8 +12,8 @@ namespace CSim.Core.Functions {
 		/// </summary>
 		/// <param name="m">The <see cref="Machine"/> this function will live in.</param>
 		/// <param name="id">The identifier of the function, as a string.</param>
-		/// <param name="returnType">The return type, as a CSim.Core.Type.</param>
-		protected UserFunction(Machine m, string id, CSim.Core.Type returnType)
+        /// <param name="returnType">The return <see cref="AType"/>.</param>
+		protected UserFunction(Machine m, string id, AType returnType)
 			: base( m, id, returnType, null )
 		{
 		}
@@ -25,9 +25,9 @@ namespace CSim.Core.Functions {
 		/// </summary>
 		/// <param name="m">The <see cref="Machine"/> this function will live in.</param>
 		/// <param name="id">The identifier of the function, as a string.</param>
-		/// <param name="returnType">The return type, as a CSim.Core.Type.</param>
+        /// <param name="returnType">The return type, as a <see cref="AType"/>.</param>
 		/// <param name="formalParams">The formal parameters, as a vector.</param>
-		protected UserFunction(Machine m, string id, CSim.Core.Type returnType, Variable[] formalParams)
+		protected UserFunction(Machine m, string id, AType returnType, Variable[] formalParams)
 			: base( m, id, returnType, formalParams )
 		{
 		}

@@ -1,21 +1,42 @@
 
 namespace CSim.Core {
-	using CSim.Core.Types;
+	using Types;
 
     /// <summary>
     /// Represents all available types, i.e.: int, float, double...
     /// </summary>
-    public abstract class Type
-    {
+    public abstract class AType: RValue {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Core.Type"/> class.
+		/// Initializes a new instance of the <see cref="AType"/> class.
 		/// </summary>
 		/// <param name="n">The name of the type.</param>
 		/// <param name="s">Its size, in bytes</param>
-        protected Type(string n, int s)
+        /// <param name="m">The machine this RValue will be evaluated for.</param>
+        protected AType(Machine m, string n, int s)
+            :base( m )
         {
             this.Name = n;
             this.Size = s;
+        }
+
+        /// <summary>
+        /// Gets the type of this <see cref="AType"/>.
+        /// </summary>
+        /// <returns>Itself.</returns>
+        public override AType Type {
+            get {
+                return this;
+            }
+        }
+
+        /// <summary>
+        /// Gets the "value" of this Type.
+        /// </summary>
+        /// <value>The size of the type.</value>
+        public override object Value {
+            get {
+                return this.Size;
+            }
         }
 
         /// <summary>
@@ -39,21 +60,28 @@ namespace CSim.Core {
         }
 
 		/// <summary>
+		/// Creates a corresponding variable.
+		/// </summary>
+		/// <returns>A <see cref="Variable"/> with this <see cref="AType"/>.</returns>
+		/// <param name="strId">The identifier for the variable.</param>
+		public abstract Variable CreateVariable(string strId);
+
+		/// <summary>
 		/// Creates a literal for this type, given a byte sequence.
 		/// </summary>
 		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
 		/// <param name="raw">The sequence of bytes containing the value in memory.</param>
-		/// <param name="m">The <see cref="Machine"/> to create this literal in.</param>
-		public abstract Literal CreateLiteral(Machine m, byte[] raw);
-
-		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Type"/>.
-		/// </summary>
-		/// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Type"/>.</returns>
-		public override string ToString()
-		{
-			return string.Format( "[Type: name={0}, size={1}]", this.Name, this.Size );
-		}
+        public abstract Literal CreateLiteral(byte[] raw);
+        
+        /// <summary>
+        /// Solves the type to a variable with the <see cref="Literals.TypeLiteral"/> as value.
+        /// </summary>
+        /// <returns>A suitable <see cref="Variable"/>.</returns>
+        public override Variable SolveToVariable()
+        {
+            var lit = new Literals.TypeLiteral( this );
+            return new Variables.NoPlaceTempVariable( lit );
+        }
 
 		/// <summary>
 		/// Determines whether the type is arithmetic.
@@ -70,7 +98,8 @@ namespace CSim.Core {
 		/// or a "de facto" <see cref="Any"/>.
 		/// </summary>
 		/// <returns><c>true</c> if this instance is any or similar; otherwise, <c>false</c>.</returns>
-		public bool IsAny() {
+		public bool IsAny()
+        {
 			bool toret = ( this is Any );
 
 			// "any" type (void*) or pointer to any.
@@ -89,8 +118,8 @@ namespace CSim.Core {
 		/// Determines whether this instance is compatible with another, given one.
 		/// </summary>
 		/// <returns><c>true</c> if this instance is compatible with the specified other; otherwise, <c>false</c>.</returns>
-		/// <param name="other">The other <see cref="Type"/>.</param>
-		public bool IsCompatibleWith(Type other)
+		/// <param name="other">The other <see cref="AType"/>.</param>
+		public bool IsCompatibleWith(AType other)
 		{
 			bool toret = ( this.IsAny() || other.IsAny() );
 
@@ -117,5 +146,14 @@ namespace CSim.Core {
  
 			return toret;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents the current <see cref="AType"/>.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents the current <see cref="AType"/>.</returns>
+        public override string ToString()
+        {
+            return this.Name;
+        }
     }
 }

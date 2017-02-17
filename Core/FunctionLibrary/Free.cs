@@ -31,15 +31,15 @@ namespace CSim.Core.FunctionLibrary {
 		public override void Execute(RValue[] realParams)
 		{
 			long address = this.Machine.Memory.Max;
-			Variable vble = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
+			Variable vble = realParams[ 0 ].SolveToVariable();
 			var ptrVbleType = vble.Type as Ptr;
 
 			if ( ptrVbleType != null ) {
-				address = vble.LiteralValue.GetValueAsInt();
+				address = vble.LiteralValue.GetValueAsLongInt();
 			}
 			else
 			if ( vble.Type == this.Machine.TypeSystem.GetIntType() ) {
-				address = vble.LiteralValue.GetValueAsInt();
+				address = vble.LiteralValue.GetValueAsLongInt();
 			}
 			else {
 				throw new TypeMismatchException(
@@ -50,10 +50,7 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			this.Machine.TDS.DeleteBlk( address );
-
-			Variable result = new NoPlaceTempVariable( Machine.TypeSystem.GetIntType() );
-			result.LiteralValue = new IntLiteral( this.Machine, 0 );
-			this.Machine.ExecutionStack.Push( result );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( new IntLiteral( this.Machine, 0 ) ) );
 		}
 
 		/// <summary>
@@ -63,7 +60,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				instance = new Free( m, new Variable[] {
-										new VoidPtrVariable( new Id( @"ptr" ), m )
+										new VoidPtrVariable( new Id( m, @"ptr" ) )
 									} );
 			}
 

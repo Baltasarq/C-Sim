@@ -31,7 +31,7 @@
 		{
 			if ( instance == null ) {
 				absFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), m.TypeSystem.GetIntType(), m )
+					new Variable( new Id( m, @"x" ), m.TypeSystem.GetIntType() )
 				};
 
 				instance = new Abs( m );
@@ -47,17 +47,18 @@
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable x = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
+			Variable x = realParams[ 0 ].SolveToVariable();
 
 			if ( !( x.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( x.LiteralValue + "?" );
 			}
 
-			result.LiteralValue = new IntLiteral(
+			Variable result = new NoPlaceTempVariable(
+                                new IntLiteral(
 									this.Machine,
-									System.Math.Abs( x.LiteralValue.GetValueAsInt() )
+									System.Math.Abs( x.LiteralValue.GetValueAsLongInt() ) )
 			);
+            
 			this.Machine.ExecutionStack.Push( result );
 		}
 

@@ -1,10 +1,8 @@
-using System;
-
-using CSim.Core;
-using CSim.Core.Types;
-using CSim.Core.Literals;
 
 namespace CSim.Core.Variables {
+    using CSim.Core.Types;
+    using CSim.Core.Literals;
+
 	/// <summary>Ptr <see cref="Variable"/>s.</summary>
 	public class PtrVariable: Variable {
 
@@ -12,34 +10,19 @@ namespace CSim.Core.Variables {
 		/// Initializes a new instance of the <see cref="CSim.Core.Variables.PtrVariable"/> class.
 		/// </summary>
 		/// <param name="id">Identifier, as a string</param>
-		/// <param name="t">The type. This type must include the pointer part,
-		///  				not just the primitive.</param>
-		/// <param name="m">The machine this variable will live on.</param>
-		public PtrVariable(Id id, CSim.Core.Type t, Machine m)
-			: base( id, t, m )
+        /// <param name="t">The associated <see cref="AType"/> for this pointer.</param>
+		/// <param name="indirectionLevel">The number of stars in the type.</param>
+		public PtrVariable(Id id, AType t, int indirectionLevel = -1)
+			: base( id, t.Machine.TypeSystem.GetPtrType( t, indirectionLevel ) )
 		{
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Core.Variables.PtrVariable"/> class.
-		/// </summary>
-		/// <param name="id">Identifier, as a string</param>
-		/// <param name="t">The type. This type must include the pointer part,
-		///  				not just the primitive.</param>
-		/// <param name="m">The machine this variable will live on.</param>
-		/// <param name="address">The address this variable is placed on memory.</param>
-		public PtrVariable(Id id, CSim.Core.Type t, Machine m, long address)
-            : this( id, t, m )
-        {
-            this.Address = address;
-        }
 
 		/// <summary>
 		/// Gets the associated type. If this is "int *",
 		/// then the answer is "int".
 		/// </summary>
-		/// <value>The associated <see cref="Type"/>.</value>
-        public virtual CSim.Core.Type AssociatedType {
+		/// <value>The associated <see cref="AType"/>.</value>
+        public virtual AType AssociatedType {
 			get {
 				return ( (Ptr) this.Type ).AssociatedType;
 			}

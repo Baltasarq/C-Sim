@@ -6,27 +6,26 @@
 	/// <summary>
 	/// Literals of type Int.
 	/// </summary>
-	public class VectorLiteral: Literal {
+	public class ArrayLiteral: Literal {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.VectorLiteral"/> class.
 		/// </summary>
-		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="t">A <see cref="Primitive"/> <see cref="Variable"/>.</param>
 		/// <param name="x">The sequence of values to store in the literal.</param>
-		public VectorLiteral(Machine m, Primitive t, object[] x)
-			:base( m, x )
+		public ArrayLiteral(Primitive t, object[] x)
+			:base( t.Machine, x )
 		{
-			this.VectorType = new Ptr( 1, t, this.Machine.WordSize );
+            this.ArrayType = new Ptr( 1, t );
 		}
 
 		/// <summary>
-		/// Gets the type of the vector literal.
-		/// The type is CSim.Core.Types.Ptr
+        /// Gets the type of the <see cref="ArrayLiteral"/>.
+        /// The type is <see cref="CSim.Core.Types.Ptr"/>.
 		/// </summary>
-		/// <value>The type.</value>
-		public override CSim.Core.Type Type {
+        /// <value>The <see cref="AType"/>.</value>
+		public override AType Type {
 			get {
-				return this.VectorType;
+				return this.ArrayType;
 			}
 		}
 
@@ -46,7 +45,7 @@
 		/// <value>The raw value.</value>
 		public override byte[] GetRawValue()
 		{
-			byte[] result = new byte[ this.Value.Length * this.VectorType.AssociatedType.Size ];
+			byte[] result = new byte[ this.Value.Length * this.ArrayType.AssociatedType.Size ];
 			System.Buffer.BlockCopy( this.Value, 0, result, 0, result.Length );
 			return result;
 		}
@@ -72,9 +71,10 @@
 
 		/// <summary>
 		/// Gets or sets the type of the vector.
+        /// (Which is <see cref="Ptr"/>.)
 		/// </summary>
-		/// <value>The <see cref="CSim.Core.Type"/> of the vector.</value>
-		public CSim.Core.Types.Ptr VectorType {
+		/// <value>The <see cref="AType"/> of the vector.</value>
+		public Ptr ArrayType {
 			get; set;
 		}
 	}

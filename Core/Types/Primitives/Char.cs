@@ -1,9 +1,7 @@
-using System;
 
-using CSim.Core.Literals;
+namespace CSim.Core.Types.Primitives {
+	using CSim.Core.Literals;
 
-namespace CSim.Core.Types.Primitives
-{
 	/// <summary>
 	/// Represents the Char type, for values from 0...255,
 	/// it is the ISO-8859-1 code for characters.
@@ -20,7 +18,8 @@ namespace CSim.Core.Types.Primitives
 		/// Initializes a new instance of the <see cref="CSim.Core.Types.Primitives.Char"/> class.
 		/// It's size is guaranteed to be 1.
 		/// </summary>
-        internal Char(): base( TypeName, 1 )
+        private Char(Machine m)
+            : base( m, TypeName, 1 )
         {
         }
 
@@ -37,12 +36,28 @@ namespace CSim.Core.Types.Primitives
 		/// Creates the corresponding literal.
 		/// </summary>
 		/// <returns>The <see cref="Literal"/>.</returns>
-		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="raw">The raw bytes needed to build the literal.</param>
-		public override Literal CreateLiteral(Machine m, byte[] raw)
+		public override Literal CreateLiteral(byte[] raw)
 		{
-			return new CharLiteral( m, m.Bytes.FromBytesToChar( raw ) );
+			return new CharLiteral( this.Machine, this.Machine.Bytes.FromBytesToChar( raw ) );
 		}
+        
+        /// <summary>
+        /// Gets the only instance for this <see cref="AType"/>.
+        /// </summary>
+        /// <returns>The <see cref="AType"/>.</returns>
+        /// <param name="m">The <see cref="Machine"/> this type will be used in.</param>
+        public static Char Get(Machine m)
+        {
+            if ( instance == null ) {
+                instance = new Char( m );
+            }
+
+            return instance;
+        }
+
+        /// <summary>The only instance for this type.</summary>
+        protected static Char instance;
    }
 }
 

@@ -20,7 +20,6 @@ namespace CSim.Core.Opcodes {
         public AssignOpcode(Machine m)
             : base( m )
         {
-			this.Value = null;
         }
 
 		private void SetRef(RefVariable lvalue, Variable rvalue)
@@ -36,7 +35,7 @@ namespace CSim.Core.Opcodes {
 
 			// Assign to variable
 			if ( rvalueTypeAsRef != null ) {
-				long targetVbleAddress = rvalue.LiteralValue.GetValueAsInt();
+				var targetVbleAddress = rvalue.LiteralValue.GetValueAsLongInt();
 				lvalue.PointedVble = this.Machine.TDS.LookForAddress( targetVbleAddress );
 
 				if ( lvalue.PointedVble == null ) {
@@ -68,24 +67,23 @@ namespace CSim.Core.Opcodes {
         public override void Execute()
 		{
 			// Take value
-			this.Value = this.Machine.ExecutionStack.Pop();
-			Variable rvalue = this.Machine.TDS.SolveToVariable( this.Value );
+			var rvalueVble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			// Take variable
-			this.Vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			var lvalueVble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			// Prepare assign parts
-			if ( this.Vble is NoPlaceTempVariable ) {
-				throw new UnknownVbleException( "temp vble: " + this.Vble.Name.Name + "??" );
+			if ( lvalueVble is NoPlaceTempVariable ) {
+				throw new UnknownVbleException( "temp vble: " + lvalueVble.Name.Name + "??" );
 			}
 
-			Variable toret = this.Vble;
+			Variable toret = lvalueVble;
 
 			// Chk types
-			if ( !toret.Type.IsCompatibleWith( rvalue.Type ) ) {
+			if ( !toret.Type.IsCompatibleWith( rvalueVble.Type ) ) {
 				throw new TypeMismatchException(
-						rvalue.Name.Name + ": "
-						+ rvalue.Type + " != "
+						rvalueVble.Name.Name + "? : "
+						+ rvalueVble.Type + " != "
 						+ toret.Type
 					);
 			}
@@ -95,49 +93,44 @@ namespace CSim.Core.Opcodes {
 
 			if ( r != null ) {
 				if ( !r.IsSet() ) {
-					this.SetRef( r, rvalue );
+					this.SetRef( r, rvalueVble );
 					toret = r.PointedVble;
 				} else {
 					toret = r.PointedVble;
-					toret.LiteralValue = rvalue.LiteralValue;
 				}
+			}
+            
+            // Assign rvalue
+            var strRValue = rvalueVble.LiteralValue as StrLiteral;
+            
+			if ( strRValue != null ) {
+                string s = strRValue.Value;
+				Variable mblock = new ArrayVariable(
+					    new Id( this.Machine, SymbolTable.GetNextMemoryBlockName() ),
+					    this.Machine.TypeSystem.GetCharType(),
+                        s.Length + 1
+                );
+				
+                this.Machine.TDS.Add( mblock );
+
+				// Copy string contents
+				for(int i = 0; i < s.Length; ++i) {
+					this.Machine.Memory.Write( mblock.Address + i, new byte[]{ (byte) s[ i ] } );
+				}
+
+				// Set trailing zero
+				this.Machine.Memory.Write( mblock.Address + s.Length, new byte[]{ 0 } );
+
+				toret.LiteralValue = new IntLiteral( this.Machine, mblock.Address );
+			}
+			else
+			if ( rvalueVble is ArrayVariable ) {
+				toret.LiteralValue = new IntLiteral( this.Machine, rvalueVble.Address );
 			} else {
-				if ( this.Value is StrLiteral ) {
-					var s = (string) rvalue.LiteralValue.Value;
-
-					Variable mblock = this.Machine.TDS.AddArray(
-						new Id( SymbolTable.GetNextMemoryBlockName() ),
-						this.Machine.TypeSystem.GetCharType(),
-						s.Length + 1
-					);
-
-					// Copy string contents
-					for(int i = 0; i < s.Length; ++i) {
-						this.Machine.Memory.Write( mblock.Address + i, new byte[]{ (byte) s[ i ] } );
-					}
-
-					// Set trailing zero
-					this.Machine.Memory.Write( mblock.Address + s.Length, new byte[]{ 0 } );
-
-					toret.LiteralValue = new IntLiteral( this.Machine, mblock.Address );
-				}
-				else
-				if ( rvalue is ArrayVariable ) {
-					toret.LiteralValue = new IntLiteral( this.Machine, rvalue.Address );
-				} else {
-					toret.LiteralValue = rvalue.LiteralValue;
-				}
+				toret.LiteralValue = rvalueVble.LiteralValue;
 			}
 
 			this.Machine.ExecutionStack.Push( toret );
         }
-        
-        private RValue Value {
-            get; set;
-        }
-
-		private Variable Vble {
-			get; set;
-		}
     }
 }

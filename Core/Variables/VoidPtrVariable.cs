@@ -11,9 +11,8 @@ namespace CSim.Core.Variables {
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Variables.VoidPtrVariable"/> class.
 		/// </summary>
 		/// <param name="id">An <see cref="Id"/> for this variable.</param>
-		/// <param name="m">The <see cref="Machine"/> this variable will live in.</param>
-		public VoidPtrVariable(Id id, Machine m)
-			:base( id, Any.Get(), m )
+		public VoidPtrVariable(Id id)
+            :base( id, Any.Get( id.Machine ) )
 		{
 		}
 
@@ -21,10 +20,9 @@ namespace CSim.Core.Variables {
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Variables.VoidPtrVariable"/> class.
 		/// </summary>
 		/// <param name="id">An <see cref="Id"/> for this variable.</param>
-		/// <param name="m">The <see cref="Machine"/> this variable will live in.</param>
 		/// <param name="address">The address of the variable.</param>
-		public VoidPtrVariable(Id id, Machine m, int address)
-			: this( id, m )
+		public VoidPtrVariable(Id id, int address)
+			: this( id )
 		{
 			this.Address = address;
 		}
@@ -32,10 +30,10 @@ namespace CSim.Core.Variables {
 		/// <summary>
 		/// Gets the associated type, which is <see cref="Any"/>.
 		/// </summary>
-		/// <value>The associated <see cref="CSim.Core.Type"/>.</value>
-		public override CSim.Core.Type AssociatedType {
+		/// <value>The associated <see cref="AType"/>.</value>
+		public override AType AssociatedType {
 			get {
-				return Any.Get();
+                return Any.Get( this.Machine );
 			}
 		}
 

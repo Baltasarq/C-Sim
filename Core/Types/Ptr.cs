@@ -1,14 +1,13 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-
-using CSim.Core.Literals;
+using CSim.Core.Variables;
 
 namespace CSim.Core.Types {
+    using System.Linq;
+    using CSim.Core.Literals;
+
 	/// <summary>
 	/// Represents the pointer type.
 	/// </summary>
-	public class Ptr: Type {
+	public class Ptr: AType {
 		/// <summary>The ptr's type name part.</summary>
 		public const string PtrTypeNamePart = "*";
 
@@ -17,9 +16,8 @@ namespace CSim.Core.Types {
 		/// </summary>
 		/// <param name="n">The name of the type.</param>
 		/// <param name="associatedType">The associated type.</param>
-		/// <param name="wordSize">The word size of the machine.</param>
-		internal Ptr(string n, Type associatedType, int wordSize)
-			:base( n, wordSize )
+		internal Ptr(string n, AType associatedType)
+			:base( associatedType.Machine, n, associatedType.Machine.WordSize )
 		{
 			this.AssociatedType = associatedType;
 			this.IndirectionLevel = 1;
@@ -30,22 +28,20 @@ namespace CSim.Core.Types {
 		/// </summary>
 		/// <param name="indirections">Number of indirections.</param>
 		/// <param name="associatedType">Associated type.</param>
-		/// <param name="wordSize">Word size.</param>
-        internal Ptr(int indirections, Type associatedType, int wordSize)
-			: base(
+        internal Ptr(int indirections, AType associatedType)
+			: this(
 				associatedType.Name
 					+ string.Concat( Enumerable.Repeat( PtrTypeNamePart, indirections ) ),
-				wordSize )
+                associatedType )
         {
-            this.AssociatedType = associatedType;
 			this.IndirectionLevel = indirections;
         }
 
 		/// <summary>
 		/// Gets the associated basic type.
 		/// </summary>
-		/// <value>A <see cref="Type"/>.</value>
-        public Type AssociatedType {
+		/// <value>A <see cref="AType"/>.</value>
+        public AType AssociatedType {
 			get; private set;
         }
 
@@ -56,12 +52,12 @@ namespace CSim.Core.Types {
 		/// Otherwise, the result is a <see cref="Ptr"/>.
 		/// </summary>
 		/// <value>The type of the derreferenced.</value>
-		public Type DerreferencedType {
+		public AType DerreferencedType {
 			get {
-				Type toret = this.AssociatedType;
+				AType toret = this.AssociatedType;
 
 				if ( this.IndirectionLevel > 1 ) {
-					toret = new Ptr( this.IndirectionLevel - 1, this.AssociatedType, this.Size );
+					toret = new Ptr( this.IndirectionLevel - 1, this.AssociatedType );
 				}
 
 				return toret;
@@ -77,24 +73,33 @@ namespace CSim.Core.Types {
 		}
 
 		/// <summary>
-		/// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Types.Ptr"/>.
-		/// </summary>
-		/// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Types.Ptr"/>.</returns>
-		public override string ToString()
-		{
-			return this.Name;
-		}
-
-		/// <summary>
 		/// Creates a literal for this type, given a byte sequence.
 		/// </summary>
 		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
 		/// <param name="raw">The sequence of bytes containing the value in memory.</param>
-		/// <param name="m">M.</param>
-		public override Literal CreateLiteral(Machine m, byte[] raw)
+		public override Literal CreateLiteral(byte[] raw)
 		{
-			return new IntLiteral( m, m.Bytes.FromBytesToInt( raw ) );
+			return new IntLiteral( this.Machine, this.Machine.Bytes.FromBytesToInt( raw ) );
 		}
+
+		/// <summary>
+		/// Creates a corresponding variable.
+		/// </summary>
+		/// <returns>A <see cref="Variable"/> with this <see cref="AType"/>.</returns>
+		/// <param name="strId">The identifier for the variable.</param>
+		public override Variable CreateVariable(string strId)
+		{
+			return new PtrVariable( new Id( this.Machine, strId ), this, this.IndirectionLevel );
+		}
+        
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Types.Ptr"/>.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Types.Ptr"/>.</returns>
+        public override string ToString()
+        {
+            return this.Name;
+        }
 	}
 }
 

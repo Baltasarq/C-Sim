@@ -1,7 +1,9 @@
+using CSim.Core.Literals;
 
 namespace CSimTests {
 	using NUnit.Framework;
 	using CSim.Core;
+	using CSim.Core.Types;
 
 	[TestFixture]
 	public class TypeTests {
@@ -11,6 +13,7 @@ namespace CSimTests {
 		{
 			this.vm = new Machine();
 
+			this.any_t = Any.Get( this.vm );
 			this.int_t = this.vm.TypeSystem.GetIntType();
 			this.char_t = this.vm.TypeSystem.GetCharType();
 			this.double_t = this.vm.TypeSystem.GetDoubleType();
@@ -87,10 +90,45 @@ namespace CSimTests {
 			Assert.AreEqual( CSim.Core.Types.Primitives.Double.TypeName + CSim.Core.Types.Ref.RefTypeNamePart, double_rt.Name );
 		}
 
+		[Test]
+		public void TypeRepresentation()
+		{
+			var bytes = new byte[] {
+				this.vm.Bytes.FromTypeToBytes( this.any_t )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.char_t )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.int_t )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.double_t )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPtrType( this.any_t ) )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPtrType( this.char_t ) )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPtrType( this.int_t ) )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPtrType( this.double_t ) )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetRefType( this.any_t ) )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetRefType( this.char_t ) )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetRefType( this.int_t ) )[ 0 ],
+				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetRefType( this.double_t ) )[ 0 ],
+			};
+			var types = new AType[] {
+				this.any_t,
+				this.char_t,
+				this.int_t,
+				this.double_t,
+				this.vm.TypeSystem.GetPtrType( this.any_t ),
+				this.vm.TypeSystem.GetPtrType( this.char_t ),
+				this.vm.TypeSystem.GetPtrType( this.int_t ),
+				this.vm.TypeSystem.GetPtrType( this.double_t )
+			};
+
+			for(int i = 0; i < types.Length; ++i) {
+				var t = this.vm.Bytes.FromBytesToType( new []{ bytes[ i ] } );
+				Assert.AreSame( types[ i ], t, t + " != " + types[ i ] );
+			}
+		}
+
 		private Machine vm;
-		private CSim.Core.Type int_t;
-		private CSim.Core.Type char_t;
-		private CSim.Core.Type double_t;
+		private AType any_t;
+		private AType int_t;
+        private AType char_t;
+        private AType double_t;
 	}
 }
 

@@ -16,10 +16,10 @@ namespace CSim.Core.Literals {
 
         /// <summary>
         /// Gets the type of the int literal.
-        /// The type is CSim.Core.Types.Primitives.Int
+        /// The type is <see cref="CSim.Core.Types.Primitives.Int"/>.
         /// </summary>
-        /// <value>The type.</value>
-        public override CSim.Core.Type Type {
+        /// <value>The <see cref="AType"/>.</value>
+        public override AType Type {
             get {
                 return this.Machine.TypeSystem.GetIntType();
             }
@@ -43,7 +43,7 @@ namespace CSim.Core.Literals {
         {
 			return this.Machine.Bytes.FromIntToBytes( this.Value );
         }
-
+        
 		/// <summary>
 		/// Returns a string appropriately formatted with the value of the literal.
 		/// </summary>

@@ -1,11 +1,7 @@
-using System;
-using System.Collections.ObjectModel;
-
-using CSim.Core;
-using CSim.Core.Exceptions;
-using CSim.Core.FunctionLibrary;
 
 namespace CSim.Core.Opcodes {
+    using CSim.Core.Exceptions;
+
 	/// <summary>
 	/// Represents function calls.
 	/// </summary>
@@ -30,7 +26,7 @@ namespace CSim.Core.Opcodes {
             }
 
             if ( string.IsNullOrEmpty( id ) ) {
-				throw new ArgumentException( "void id in fn. call" );
+				throw new System.ArgumentException( "void id in fn. call" );
 			}
 
 			this.id = id;
@@ -64,13 +60,13 @@ namespace CSim.Core.Opcodes {
 				}
 
 				for(int i = args.Length - 1; i >= 0; --i) {
-					args[ i ] = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+					args[ i ] = this.Machine.ExecutionStack.Pop().SolveToVariable();
 				}
 
 				// Check types
 				for(int i = 0; i < args.Length; ++i) {
-					CSim.Core.Type t1 = args[ i ].Type;
-					CSim.Core.Type t2 = f.FormalParams[ i ].Type;
+                    var t1 = args[ i ].Type;
+					var t2 = f.FormalParams[ i ].Type;
 
 					if ( !t1.IsCompatibleWith( t2 ) ) {
 						throw new TypeMismatchException(

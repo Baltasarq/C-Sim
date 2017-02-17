@@ -1,6 +1,7 @@
 
 namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// This is the print function.
@@ -28,7 +29,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				printFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
+                    new Variable( new Id( m, @"x" ), Any.Get( m ) )
 				};
 
 				instance = new Printf( m );
@@ -44,8 +45,7 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable result = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			this.Machine.ExecutionStack.Push( result );
+			this.Machine.ExecutionStack.Push( realParams[ 0 ].SolveToVariable() );
 		}
 
 		private static Printf instance = null;

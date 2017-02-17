@@ -30,7 +30,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				atoiFormalParams = new Variable[] {
-					new PtrVariable( new Id( @"x" ), m.TypeSystem.GetCharType(), m )
+					new PtrVariable( new Id( m, @"x" ), m.TypeSystem.GetCharType() )
 				};
 
 				instance = new Atoi( m );
@@ -46,11 +46,9 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			long valueFromStr = System.Convert.ToInt64( param.LiteralValue.Value );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
-			result.LiteralValue = new IntLiteral( this.Machine, valueFromStr );
-
+			var param = realParams[ 0 ].SolveToVariable();
+			var valueFromStr = param.LiteralValue.GetValueAsLongInt();
+			var result = new NoPlaceTempVariable( new IntLiteral( this.Machine, valueFromStr ) );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

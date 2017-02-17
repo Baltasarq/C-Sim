@@ -15,11 +15,10 @@ namespace CSim.Core.Variables
 		/// Initializes a new instance of the <see cref="CSim.Core.Variables.ArrayVariable"/> class.
 		/// </summary>
 		/// <param name="id">The identifier for the array.</param>
-		/// <param name="t">The type for elements.</param>
-		/// <param name="m">The machine this variable will be stored in.</param>
+        /// <param name="t">The <see cref="AType"/> for elements (associated type).</param>
 		/// <param name="count">The number of elements.</param>
-		public ArrayVariable(Id id, CSim.Core.Type t, Machine m, long count)
-			: base( id, m.TypeSystem.GetPtrType( t ), m )
+		public ArrayVariable(Id id, AType t, long count)
+			: base( id, t.Machine.TypeSystem.GetPtrType( t ) )
 		{
 			this.Count = count;
 			this.Size = t.Size * (int) count;
@@ -29,8 +28,8 @@ namespace CSim.Core.Variables
 		/// Gets the associated type.
 		/// This is a shortcut to the type stored in the type.
 		/// </summary>
-		/// <value>The associated type, as a <see cref="Core.Type"/> instance.</value>
-        public virtual CSim.Core.Type AssociatedType {
+		/// <value>The associated type, as a <see cref="AType"/> instance.</value>
+        public virtual AType AssociatedType {
 			get {
 				return ( (Ptr) this.Type ).AssociatedType;
 			}
@@ -61,9 +60,9 @@ namespace CSim.Core.Variables
         /// memory width.
         /// </summary>
         /// <value>The value, as an <see cref="IntLiteral"/>.</value>
-        public new VectorLiteral LiteralValue {
+        public new ArrayLiteral LiteralValue {
             get {
-                return (VectorLiteral)
+                return (ArrayLiteral)
 						this.Memory.CreateLiteral( this.Address, this.Type );
             }
             set {

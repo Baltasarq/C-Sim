@@ -31,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				cosFormalParams = new Variable[] {
-					new PtrVariable( new Id( @"x" ), m.TypeSystem.GetDoubleType(), m )
+					new PtrVariable( new Id( m, @"x" ), m.TypeSystem.GetDoubleType() )
 				};
 
 				instance = new Cos( m );
@@ -47,17 +47,15 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
+			var param = realParams[ 0 ].SolveToVariable();
 
 			if ( !( param.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( param.LiteralValue + "?" );
 			}
 
-			double x = System.Convert.ToDouble( param.LiteralValue.Value );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
-			result.LiteralValue = new DoubleLiteral( this.Machine, System.Math.Cos( x ) );
-
-			this.Machine.ExecutionStack.Push( result );
+			var x = System.Convert.ToDouble( param.LiteralValue.Value );
+			var litResult = new DoubleLiteral( this.Machine, System.Math.Cos( x ) );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
 		}
 
 		private static Cos instance = null;

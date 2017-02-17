@@ -10,11 +10,10 @@ namespace CSim {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.StoreRValue"/> class.
 		/// </summary>
-		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="rvalue">The <see cref="RValue"/>to store
 		/// in the <see cref="ExecutionStack"/>.</param>
-		public StoreRValue(Machine m, RValue rvalue)
-			:base(m)
+		public StoreRValue(RValue rvalue)
+			:base( rvalue.Machine )
 		{
 			this.RValue = rvalue;
 		}

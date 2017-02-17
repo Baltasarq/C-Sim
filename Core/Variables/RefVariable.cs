@@ -7,27 +7,14 @@ namespace CSim.Core.Variables {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Variables.RefVariable"/> class.
 		/// </summary>
-		/// <param name="id">The <see cref="Id"/> (identifier).</param>
-		/// <param name="t">The <see cref="Type"/>.</param>
-		/// <param name="m">The <see cref="Machine"/> this variable will live in.</param>
-		/// <param name="address">The address of this variable.</param>
-        public RefVariable(Id id, CSim.Core.Type t, Machine m, long address)
-            : this( id, t, m )
-        {
-            this.Address = address;
-        }
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="T:CSim.Core.Variables.RefVariable"/> class.
-		/// </summary>
 		/// <param name="id">The <see cref="Id"/> for this reference.</param>
-		/// <param name="t">The associated type of the reference.</param>
-		/// <param name="m">The <see cref="Machine"/> this reference will live in.</param>
-        public RefVariable(Id id, CSim.Core.Type t, Machine m)
-            : base( id, t, m )
+        /// <param name="t">The associated <see cref="AType"/> for this reference.</param>
+        public RefVariable(Id id, AType t)
+            : base( id, t )
         {
-            this.SetType( m.TypeSystem.GetRefType( t ) );
+            this.SetType( t.Machine.TypeSystem.GetRefType( t ) );
             this.pointedVble = null;
+            this.Address = -1;
         }
 
 		/// <summary>
@@ -61,18 +48,6 @@ namespace CSim.Core.Variables {
                 }
             }
         }
-
-		/// <summary>
-		/// Gets the type of the referenced variable,
-		/// not the type of the refernce itself.
-		/// I.e.. it is aware of references.
-		/// (accessing a reference is the same as accessing the target)
-		/// </summary>
-		/// <returns>The type of the associated type.</returns>
-		public override Type GetTargetType()
-		{
-			return this.AssociatedType;
-		}
 
         private Variable pointedVble;
     }

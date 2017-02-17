@@ -1,5 +1,5 @@
 ﻿//
-// TempVariable.cs
+// TypeVariable.cs
 //
 // Author:
 //       baltasarq <baltasarq@gmail.com>
@@ -23,35 +23,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using System;
 
 namespace CSim.Core.Variables {
-	/// <summary>
-	/// A temp variable that should be collected
-	/// before the next execution.
-	/// </summary>
-	public class TempVariable: Variable {
-		/// <summary>The prefix for labels for temp variables.</summary>
-		public const string EtqTempVariable = "_aux__";
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Core.Variables.TempVariable"/> class.
-		/// </summary>
-		/// <param name="t">A <see cref="AType"/>.</param>
-		public TempVariable(AType t)
-			:base( new Id( t.Machine, "aux" ), t )
-		{
-			this.SetNameWithoutChecking( EtqTempVariable + NumTemps );
-			++NumTemps;
-		}
-
-		/// <summary>
-		/// Gets or sets the number temp variables.
-		/// </summary>
-		/// <value>The number of temps, as an int.</value>
-		public static int NumTemps {
-			get; private set;
-		}
-	}
+    /// <summary>Variables that can store types.</summary>
+    public class TypeVariable: Variable {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:CSim.Core.Variables.TypeVariable"/> class.
+        /// </summary>
+        /// <param name="id">An <see cref="Id"/>.</param>
+        public TypeVariable(Id id)
+            :base( id, Types.TypeType.Get( id.Machine ) )
+        {
+        }
+    }
 }
-

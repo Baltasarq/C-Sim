@@ -31,7 +31,7 @@
 		{
 			if ( instance == null ) {
 				logFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), m.TypeSystem.GetDoubleType(), m )
+					new Variable( new Id( m, @"x" ), m.TypeSystem.GetDoubleType() )
 				};
 
 				instance = new Log( m );
@@ -47,18 +47,17 @@
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable x = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
+			Variable x = realParams[ 0 ].SolveToVariable();
 
 			if ( !( x.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( x.LiteralValue + "?" );
 			}
 
-			result.LiteralValue = new DoubleLiteral(
+			var litResult = new DoubleLiteral(
 				this.Machine,
 				System.Math.Log( System.Convert.ToDouble( x.LiteralValue.Value ) )
 			);
-			this.Machine.ExecutionStack.Push( result );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
 		}
 
 		private static Log instance = null;

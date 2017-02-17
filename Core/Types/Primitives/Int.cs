@@ -1,14 +1,11 @@
-using System;
 
-using CSim.Core.Literals;
+namespace CSim.Core.Types.Primitives {
+    using CSim.Core.Literals;
 
-namespace CSim.Core.Types.Primitives
-{
 	/// <summary>
 	/// Represents the Int type, for integer numbers.
 	/// </summary>
-    public class Int: Primitive
-    {
+    public class Int: Primitive {
 		/// <summary>
 		/// The name of the type.
 		/// </summary>
@@ -18,7 +15,8 @@ namespace CSim.Core.Types.Primitives
 		/// Initializes a new instance of the <see cref="CSim.Core.Types.Primitives.Int"/> class.
 		/// It's size is guaranteed to be the same for the width of the system.
 		/// </summary>
-        internal Int(int wordSize): base( TypeName, wordSize )
+        private Int(Machine m)
+            :base( m, TypeName, m.WordSize )
         {
         }
 
@@ -35,12 +33,28 @@ namespace CSim.Core.Types.Primitives
 		/// Creates the corresponding literal.
 		/// </summary>
 		/// <returns>The <see cref="Literal"/>.</returns>
-		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="raw">The raw bytes needed to build the literal.</param>
-		public override Literal CreateLiteral(Machine m, byte[] raw)
+		public override Literal CreateLiteral(byte[] raw)
 		{
-			return new IntLiteral( m, m.Bytes.FromBytesToInt( raw ) );
+			return new IntLiteral( this.Machine, this.Machine.Bytes.FromBytesToInt( raw ) );
 		}
+        
+        /// <summary>
+        /// Gets the only instance for this <see cref="AType"/>.
+        /// </summary>
+        /// <returns>The <see cref="AType"/>.</returns>
+        /// <param name="m">The <see cref="Machine"/> this type will live in.</param>
+        public static Int Get(Machine m)
+        {
+            if ( instance == null ) {
+                instance = new Int( m );
+            }
+
+            return instance;
+        }
+
+        /// <summary>The only instance for this type.</summary>
+        protected static Int instance;
     }
 }
 

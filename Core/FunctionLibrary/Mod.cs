@@ -31,8 +31,8 @@
 		{
 			if ( instance == null ) {
 				modFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), m.TypeSystem.GetDoubleType(), m ),
-					new Variable( new Id( @"y" ), m.TypeSystem.GetDoubleType(), m )
+					new Variable( new Id( m, @"x" ), m.TypeSystem.GetDoubleType() ),
+					new Variable( new Id( m, @"y" ), m.TypeSystem.GetDoubleType() )
 				};
 
 				instance = new Mod( m );
@@ -48,10 +48,9 @@
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable x = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			Variable y = this.Machine.TDS.SolveToVariable( realParams[ 1 ] );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
-
+			Variable x = realParams[ 0 ].SolveToVariable();
+			Variable y = realParams[ 1 ].SolveToVariable();
+			
 			if ( !( x.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( x.LiteralValue + "?" );
 			}
@@ -60,12 +59,12 @@
 				throw new TypeMismatchException( y.LiteralValue + "?" );
 			}
 
-			result.LiteralValue = new DoubleLiteral(
+			var litResult = new DoubleLiteral(
 				this.Machine,
 				System.Convert.ToDouble( x.LiteralValue.Value )
 							% System.Convert.ToDouble( y.LiteralValue.Value )
 			);
-			this.Machine.ExecutionStack.Push( result );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
 		}
 
 		private static Mod instance = null;

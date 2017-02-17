@@ -30,8 +30,8 @@
 			}
 
 			// Take ops
-			Variable op1 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
-			Variable op2 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			Variable op1 = this.Machine.ExecutionStack.Pop().SolveToVariable();
+			Variable op2 = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			// Check ops
 			if ( op1 == null
@@ -69,8 +69,8 @@
 				                              * System.Convert.ToDouble( op2.LiteralValue.Value ) );
 			} else {
 				litResult = new IntLiteral( this.Machine,
-				                           op1.LiteralValue.GetValueAsInt()
-				                           * op2.LiteralValue.GetValueAsInt() );
+				                           op1.LiteralValue.GetValueAsLongInt()
+				                           * op2.LiteralValue.GetValueAsLongInt() );
 			}
 
 			// Store in the temp vble and end

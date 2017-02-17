@@ -31,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				sinFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), m.TypeSystem.GetDoubleType(), m )
+					new Variable( new Id( m, @"x" ), m.TypeSystem.GetDoubleType() )
 				};
 
 				instance = new Sin( m );
@@ -47,17 +47,15 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
+			Variable param = realParams[ 0 ].SolveToVariable();
 
 			if ( !( param.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( param.LiteralValue + "?" );
 			}
 
 			double x = System.Convert.ToDouble( param.LiteralValue.Value );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
-			result.LiteralValue = new DoubleLiteral( this.Machine, System.Math.Sin( x ) );
-
-			this.Machine.ExecutionStack.Push( result );
+			var litResult = new DoubleLiteral( this.Machine, System.Math.Sin( x ) );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
 		}
 
 		private static Sin instance = null;

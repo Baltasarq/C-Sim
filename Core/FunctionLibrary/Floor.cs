@@ -31,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				floorFormalParams = new Variable[] {
-					new PtrVariable( new Id( @"x" ), m.TypeSystem.GetDoubleType(), m )
+					new PtrVariable( new Id( m, @"x" ), m.TypeSystem.GetDoubleType() )
 				};
 
 				instance = new Floor( m );
@@ -47,15 +47,14 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
+			var param = realParams[ 0 ].SolveToVariable();
 
 			if ( !( param.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
-			double value = System.Convert.ToDouble( param.LiteralValue.Value );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
-			result.LiteralValue = new DoubleLiteral( this.Machine, System.Math.Floor( value ) );
+			var value = System.Convert.ToDouble( param.LiteralValue.Value );
+			var result = new NoPlaceTempVariable( new DoubleLiteral( this.Machine, System.Math.Floor( value ) ) );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

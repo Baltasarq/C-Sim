@@ -7,164 +7,6 @@ namespace CSim.Core {
     /// Represents the target machine emulated
     /// </summary>
     public class Machine {
-		/// <summary>
-		/// Byte converter.
-		/// Reads or writes bytes for the primitive types.
-		/// </summary>
-		public class ByteConverter {
-			/// <summary>
-			/// Initializes a new instance of the <see cref="ByteConverter"/> class.
-			/// </summary>
-			/// <param name="m">The <see cref="Machine"/> this converter will work for.</param>
-			public ByteConverter(Machine m)
-			{
-				this.Machine = m;
-			}
-
-			/// <summary>
-			/// Converts the given byte vector to a single char.
-			/// </summary>
-			/// <returns>The char, as a primitive char.</returns>
-			/// <param name="data">The data, as a vector of bytes.</param>
-			public char FromBytesToChar(byte[] data)
-			{
-				return (char) data[ 0 ];
-			}
-
-			/// <summary>
-			/// Cnvts the char to a vector of bytes.
-			/// Note that chars are guaranteed to be of size 1.
-			/// </summary>
-			/// <seealso cref="CSim.Core.Types.Primitives.Char"/>
-			/// <returns>A vector of bytes, length 1</returns>
-			/// <param name="c">The char to convert, as a primitive char.</param>
-			public byte[] FromCharToBytes(char c)
-			{
-				var toret = new byte[ 1 ];
-
-				toret[ 0 ] = (byte) c;
-				return toret;
-			}
-
-			/// <summary>
-			/// Converts the given byte vector to a single int.
-			/// The byte sequence is expected to follow the machine's architecture.
-			/// </summary>
-			/// <returns>The int, as a primitive int.</returns>
-			/// <param name="data">The data, as a vector of bytes.</param>
-			public long FromBytesToInt(byte[] data)
-			{
-				int currentWordSize = this.Machine.WordSize;
-				int destLength = data.Length < sizeof(long) ? sizeof(long) : data.Length;
-
-				// Create dest array
-				var bytes = new byte[ destLength ];
-
-				// Create org vector, if needed
-				if ( data.Length != currentWordSize ) {
-					var newData = new byte[ currentWordSize ];
-
-					Array.Copy(
-						data, 0,
-						newData, Math.Max( 0, currentWordSize - data.Length ),
-						data.Length );
-
-					data = newData;
-				}
-
-				// Reverse it if needed
-				if ( BitConverter.IsLittleEndian != this.Machine.IsLittleEndian )
-				{
-					Array.Reverse( data );
-				}
-
-				// Copy the result and end
-				Array.Copy(
-					data, 0,
-					bytes, 0,//Math.Max( 0, destLength - wordSize ),
-					currentWordSize );
-				return BitConverter.ToInt64( bytes, 0 );
-			}
-
-			/// <summary>
-			/// Converts an int to an array of bytes.
-			/// The byte sequence will be returned following the machine's architecture.
-			/// </summary>
-			/// <returns>The resulting array.</returns>
-			/// <param name="value">Value to convert, as a primitive int.</param>
-			public byte[] FromIntToBytes(long value)
-			{
-				int currentWordSize = this.Machine.WordSize;
-				var toret = BitConverter.GetBytes( value );
-
-				// Limit the byte array to wordsize
-				if ( toret.Length > currentWordSize ) {
-					var bytes = new byte[ this.Machine.WordSize ];
-
-					if ( !BitConverter.IsLittleEndian ) {
-						Array.Copy( toret, currentWordSize, bytes, 0, currentWordSize );
-						toret = bytes;
-						bytes = new byte[ this.Machine.WordSize ];
-					}
-
-					Array.Copy( toret, 0, bytes, 0, currentWordSize );
-					toret = bytes;
-				}
-
-				if ( BitConverter.IsLittleEndian != this.Machine.IsLittleEndian )
-				{
-					Array.Reverse( toret );
-				}
-
-				return toret;
-			}
-
-			/// <summary>
-			/// Converts the given byte vector to a single double.
-			/// Should apply IEEE 754.
-			/// </summary>
-			/// <returns>The double, as a primitive double.</returns>
-			/// <param name="data">The data, as a vector of bytes.</param>
-			public double FromBytesToDouble(byte[] data)
-			{
-				if ( BitConverter.IsLittleEndian != this.Machine.IsLittleEndian )
-				{
-					var bytes = new byte[ data.Length ];
-					Array.Copy( data, bytes, data.Length );
-					Array.Reverse( bytes );
-					data = bytes;
-				}
-
-				return BitConverter.ToDouble( data, 0 );
-			}
-
-			/// <summary>
-			/// Converts a double to an array of bytes.
-			/// </summary>
-			/// <returns>The resulting array.</returns>
-			/// <param name="value">Value to convert, as a primitive double.</param>
-			public byte[] FromDoubleToBytes(double value)
-			{
-				var toret = BitConverter.GetBytes( value );
-
-				if ( BitConverter.IsLittleEndian != this.Machine.IsLittleEndian )
-				{
-					Array.Reverse( toret );
-				}
-
-				return toret;
-			}
-
-			/// <summary>
-			/// Gets the machine for this byte converter.
-			/// </summary>
-			/// <value>The <see cref="Machine"/>.</value>
-			public Machine Machine {
-				get; private set;
-			}
-		}
-
-
         /// <summary>
         /// The default width of the system, in bytes.
         /// </summary>
@@ -201,8 +43,8 @@ namespace CSim.Core {
 			this.wordSize = CalculateWordSize( wordSize );
 
 			this.TypeSystem = new TypeSystem( this );
-			this.Memory = new MemoryManager( this, maxMemory );
-			this.TDS = new SymbolTable( this );
+            this.Memory = new MemoryManager( this, maxMemory );
+			this.TDS = new SymbolTable( this ) { AlignVbles = true };
 			this.API = new StdLib( this );
 			this.SetRandomEngine();
 			this.ExecutionStack = new ExecutionStack();
@@ -318,6 +160,22 @@ namespace CSim.Core {
 		}
 
         /// <summary>
+        /// Switchs the endianness of this machine.
+        /// </summary>
+        public void SwitchEndianness()
+        {
+            var endianess = this.Endian;
+
+            if ( endianness == Endianness.BigEndian ) {
+                this.Endian = Endianness.LittleEndian;
+            } else {
+                this.Endian = Endianness.BigEndian;
+            }
+
+            return;
+        }
+
+        /// <summary>
         /// Gets the system's text encoding.
         /// </summary>
         /// <value>The text encoding, as an <see cref="Encoding"/> object.</value>
@@ -356,7 +214,7 @@ namespace CSim.Core {
 					opcode.Execute();
 				}
 
-				toret = this.TDS.SolveToVariable( this.ExecutionStack.Pop() );
+				toret = this.ExecutionStack.Pop().SolveToVariable();
 
 				// Create snapshot
 				this.SnapshotManager.SaveSnapshot();
@@ -431,9 +289,17 @@ namespace CSim.Core {
 			}
 			set {
 				this.endianness = value;
-				this.Reset( MemoryManager.ResetType.Zero );
+                this.TDS.SwitchEndianness();
 			}
 		}
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="T:CSim.Core.Machine"/> aligns vbles.
+        /// </summary>
+        /// <value><c>true</c> if aligns vbles; otherwise, <c>false</c>.</value>
+        public bool AlignVbles {
+            get; set;
+        }
 
 		/// <summary>
 		/// Gets the type system for this machine.

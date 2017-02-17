@@ -28,7 +28,7 @@ namespace CSim.Core.Opcodes {
 		{
 			Variable toret = null;
 			long address = 0;
-			var vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			var vble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			if ( vble != null
 			  && !( vble is NoPlaceTempVariable ) )

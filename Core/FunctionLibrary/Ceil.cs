@@ -31,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				ceilFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), m.TypeSystem.GetDoubleType(), m )
+					new Variable( new Id( m, @"x" ), m.TypeSystem.GetDoubleType() )
 				};
 
 				instance = new Ceil( m );
@@ -47,15 +47,14 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
+			Variable param = realParams[ 0 ].SolveToVariable();
 
 			if ( !( param.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
 			double value = System.Convert.ToDouble( param.LiteralValue.Value );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
-			result.LiteralValue = new DoubleLiteral( this.Machine, System.Math.Ceiling( value ) );
+			Variable result = new NoPlaceTempVariable( new DoubleLiteral( this.Machine, System.Math.Ceiling( value ) ) );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

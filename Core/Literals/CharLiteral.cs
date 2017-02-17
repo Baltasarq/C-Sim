@@ -16,11 +16,11 @@ namespace CSim.Core.Literals {
         }
 
         /// <summary>
-        /// Gets the type of the char literal.
-        /// The type is CSim.Core.Types.Primitives.Char
+        /// Gets the type of the <see cref="CharLiteral"/>.
+        /// The type is <see cref="Core.Types.Primitives.Char"/>.
         /// </summary>
-        /// <value>The type.</value>
-        public override CSim.Core.Type Type {
+        /// <value>The <see cref="AType"/>.</value>
+        public override AType Type {
             get {
 				return this.Machine.TypeSystem.GetCharType();
             }
@@ -52,7 +52,7 @@ namespace CSim.Core.Literals {
 		public override string AsArrayElement()
 		{
 			char value = this.Value;
-			string toret = string.Format( "{0}", this.ToHex() );
+			var toret = string.Format( "{0}", this.ToHex() );
 
 			if ( !char.IsControl( value ) ) {
 				toret = String.Format( "{0}", char.ToString( value ) );
@@ -68,7 +68,7 @@ namespace CSim.Core.Literals {
 		public override string ToString()
 		{
 			char value = this.Value;
-			string toret = string.Format( "({0})", this.ToPrettyNumber() );
+			var toret = string.Format( "({0})", this.ToPrettyNumber() );
 
 			if ( !char.IsControl( value ) ) {
 				toret = String.Format( "'{0}' ", char.ToString( value ) ) + toret;

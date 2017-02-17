@@ -3,6 +3,7 @@ namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// This is the sizeof function.
@@ -20,7 +21,7 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="m">The Machine this function will be executed in.</param>
 		/// </summary>
 		private SizeOf(Machine m)
-			: base( m, Name, null, sizeofFormalParams )
+			: base( m, Name, m.TypeSystem.GetIntType(), sizeofFormalParams )
 		{
 		}
 
@@ -31,7 +32,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				sizeofFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
+                    new Variable( new Id( m, @"x" ), Any.Get( m ) )
 				};
 
 				instance = new SizeOf( m );
@@ -47,10 +48,16 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable vble = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
-			result.LiteralValue = new IntLiteral( this.Machine, vble.Type.Size );
-			this.Machine.ExecutionStack.Push( result );
+            var argVble = realParams[ 0 ].SolveToVariable();
+            var argType = argVble.Type as Types.TypeType;
+
+            long result = argVble.LiteralValue.GetValueAsLongInt();
+            if ( argType == null ) {
+                result = argVble.Type.Size;
+            }
+
+			var litResult = new IntLiteral( this.Machine, result );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
 		}
 
 		private static SizeOf instance = null;

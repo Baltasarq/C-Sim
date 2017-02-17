@@ -5,6 +5,7 @@
 
 	using CSim.Core;
 	using CSim.Core.Literals;
+	using CSim.Core.Types;
 	using CSim.Core.Variables;
 
 
@@ -48,6 +49,8 @@
 		/// </summary>
 		protected override void CalculateSize()
 		{
+			var arrayVariable = this.Variable as ArrayVariable;
+			var elementsType = ( (Ptr) arrayVariable.Type ).DerreferencedType;
 			this.StrValues = this.ExtractArrayElementValues();
 
 			// Determine values width
@@ -57,8 +60,9 @@
 
 			// Determine other sizes
 			this.StrName = this.Variable.Name.Name;
-			this.StrType = this.Variable.Type
-				+ " :" + this.Variable.Type.Size
+			this.StrType = elementsType
+				+ "[" + arrayVariable.Count
+				+ "] :" + this.Variable.Type.Size
 				+ " ["
 				+ new IntLiteral( this.Variable.Machine, this.Variable.Address ).ToPrettyNumber()
 				+ ']';

@@ -13,8 +13,10 @@ namespace CSim.Core {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Id"/> class.
 		/// </summary>
+        /// <param name="m">The <see cref="Machine"/> this id will be used in.</param>
 		/// <param name="id">The identifier to be, as a string.</param>
-		public Id(string id)
+		public Id(Machine m, string id)
+            :base( m )
 		{
 			this.Name = id;
 		}
@@ -108,10 +110,10 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Gets the type of the rvalue.
+        /// Gets the <see cref="AType"/> of the <see cref="RValue"/>.
 		/// </summary>
-		/// <value>The type.</value>
-		public override CSim.Core.Type Type {
+        /// <value>The <see cref="AType"/>.</value>
+		public override AType Type {
 			get {
 				throw new TypeMismatchException( this.Value + "??" );
 			}
@@ -135,6 +137,24 @@ namespace CSim.Core {
 		{
 			return this.id.StartsWith( SymbolTable.MemBlockName, StringComparison.InvariantCulture );
 		}
+
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Id"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Id"/>.</returns>
+        public override string ToString()
+        {
+            return this.Name;
+        }
+        
+        /// <summary>
+        /// Solves to variable.
+        /// </summary>
+        /// <returns>The to variable.</returns>
+        public override Variable SolveToVariable()
+        {
+            return this.Machine.TDS.LookUp( this.Name );
+        }
 
 		private string id;
 	}

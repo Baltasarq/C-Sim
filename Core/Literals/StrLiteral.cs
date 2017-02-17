@@ -16,10 +16,10 @@ namespace CSim.Core.Literals {
 
         /// <summary>
         /// Gets the type of the char* literal.
-        /// The type is Ptr with CSim.Core.Types.Primitives.Char
+        /// The type is Ptr with <see cref="CSim.Core.Types.Primitives.Char"/>.
         /// </summary>
-        /// <value>The type.</value>
-        public override CSim.Core.Type Type {
+        /// <value>The <see cref="AType"/>.</value>
+        public override CSim.Core.AType Type {
             get {
 				return this.Machine.TypeSystem.GetPtrType(
 							this.Machine.TypeSystem.GetCharType() );

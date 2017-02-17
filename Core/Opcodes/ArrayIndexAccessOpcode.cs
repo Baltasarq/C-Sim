@@ -26,10 +26,10 @@
 		public override void Execute()
 		{
 			// Take ptr
-			Variable vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			Variable vble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			// Take offset
-			Variable offset = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			Variable offset = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			if ( vble != null
 			  && offset != null )
@@ -39,7 +39,7 @@
 
 				// Find the address of the pointed array
 				if ( ptrVble != null ) {
-					address = vble.LiteralValue.GetValueAsInt();
+					address = vble.LiteralValue.GetValueAsLongInt();
 				}
 				else
 				if ( vble is ArrayVariable ) {
@@ -58,8 +58,7 @@
 										vble.Name.Name,
 										address,
 										(Ptr) vble.Type,
-										offset.LiteralValue.GetValueAsInt(),
-					                   	this.Machine );
+										offset.LiteralValue.GetValueAsLongInt() );
 		
 				this.Machine.ExecutionStack.Push( result );
 			} else {

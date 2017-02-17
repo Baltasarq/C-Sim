@@ -1,6 +1,8 @@
 ﻿
 namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
+    using CSim.Core.Variables;
+    using CSim.Core.Types;
 	using CSim.Core;
 
 	/// <summary>
@@ -18,7 +20,7 @@ namespace CSim.Core.FunctionLibrary {
 		/// This is not intended to be used directly.
 		/// </summary>
 		private Malloc(Machine m)
-			: base( m, Name, m.TypeSystem.GetPtrType( CSim.Core.Types.Any.Get() ), mallocFormalParams )
+            : base( m, Name, m.TypeSystem.GetPtrType( Any.Get( m ) ), mallocFormalParams )
 		{
 		}
 
@@ -29,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				mallocFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), m.TypeSystem.GetIntType(), m )
+					new Variable( new Id( m, @"x" ), m.TypeSystem.GetIntType() )
 				};
 
 				instance = new Malloc( m );
@@ -45,14 +47,14 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable size = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
-
-			Variable result = this.Machine.TDS.AddArray(
-								new Id( SymbolTable.GetNextMemoryBlockName() ),
+			var size = realParams[ 0 ].SolveToVariable();
+			var result = new ArrayVariable(
+								new Id( this.Machine, SymbolTable.GetNextMemoryBlockName() ),
 								this.Machine.TypeSystem.GetCharType(),
-								size.LiteralValue.GetValueAsInt()
+								size.LiteralValue.GetValueAsLongInt()
 			);
 
+            this.Machine.TDS.Add( result );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

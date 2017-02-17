@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+namespace CSim.Core.Types {
+	using CSim.Core.Variables;
 
-namespace CSim.Core.Types
-{
     /// <summary>
     /// Represents references. References are a kind of pointer,
     /// that cannot be changed to point to another variable, and does not
@@ -16,12 +13,21 @@ namespace CSim.Core.Types
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Types.Ref"/> class.
 		/// </summary>
-		/// <param name="associatedType">Associated <see cref="CSim.Core.Type"/>.</param>
-		/// <param name="wordSize">The word size of the machine.</param>
-        internal Ref(Type associatedType, int wordSize)
-			: base( associatedType.Name + RefTypeNamePart, associatedType, wordSize )
+		/// <param name="associatedType">Associated <see cref="AType"/>.</param>
+        internal Ref(AType associatedType)
+			: base( associatedType.Name + RefTypeNamePart, associatedType )
         {
         }
+
+		/// <summary>
+		/// Creates a corresponding variable.
+		/// </summary>
+		/// <returns>A <see cref="Variable"/> with this <see cref="AType"/>.</returns>
+		/// <param name="strId">The identifier for the variable.</param>
+		public override Variable CreateVariable(string strId)
+		{
+			return new RefVariable( new Id( this.Machine, strId ), this );
+		}
 
 		/// <summary>
 		/// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Types.Ref"/>.

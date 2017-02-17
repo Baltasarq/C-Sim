@@ -1,6 +1,5 @@
 
 namespace CSim.Core {
-	
 	/// <summary>
 	/// A variable living in the <see cref="Machine"/>.
 	/// </summary>
@@ -11,8 +10,8 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="m">The machine the variable will live in.</param>
 		protected Variable(Machine m)
+            :base( m )
 		{
-			this.Machine = m;
 			this.Address = -1;
 		}
 
@@ -20,29 +19,15 @@ namespace CSim.Core {
 		/// Initializes a new instance of the <see cref="CSim.Core.Variable"/> class.
 		/// </summary>
 		/// <param name="id">An <see cref="Id"/> for the variable.</param>
-		/// <param name="t">A <see cref="Type"/> for the variable.</param>
-		/// <param name="m">The <see cref="Machine"/> the variable will be in.</param>
-		public Variable(Id id, Type t, Machine m)
-			: this( m )
+		/// <param name="t">A <see cref="AType"/> for the variable.</param>
+		public Variable(Id id, AType t)
+			: this( id.Machine )
 		{
 			this.Name = id;
 			this.type = t;
 			this.Address = -1;
 			this.Size = this.type.Size;
 		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Core.Variable"/> class.
-		/// </summary>
-		/// <param name="id">An <see cref="Id"/> for the variable.</param>
-		/// <param name="t">A <see cref="Type"/> for the variable.</param>
-		/// <param name="m">The <see cref="Machine"/> the variable will be in.</param>
-		/// <param name="address">The address the variable will be sitting in.</param>
-        public Variable(Id id, Type t, Machine m, long address)
-            : this( id, t, m )
-        {
-            this.Address = address;
-        }
 
 		/// <summary>
 		/// Gets or sets the name of the variable.
@@ -62,11 +47,22 @@ namespace CSim.Core {
             this.Name.SetIdWithoutChecks( n );
 		}
 
+        /// <summary>
+        /// Determines whether this variable is stored in that address
+        /// </summary>
+        /// <returns><c>true</c>, if it is partly stored here, <c>false</c> otherwise.</returns>
+        /// <param name="address">A position in memory.</param>
+        public bool IsStoredIn(long address)
+        {
+            return ( address >= this.Address
+                  && address < this.Address + this.Size );
+        }
+
 		/// <summary>
 		/// Sets the type, internally.
 		/// </summary>
 		/// <param name="t">The new type, as a Type object.</param>
-		protected void SetType(Type t)
+		protected void SetType(AType t)
 		{
 			this.type = t;
 		}
@@ -81,10 +77,10 @@ namespace CSim.Core {
         }
 
 		/// <summary>
-		/// Gets the type of this variable.
+        /// Gets the <see cref="AType"/> of this <see cref="Variable"/>.
 		/// </summary>
-		/// <value>The type.</value>
-        public override Type Type {
+        /// <value>The corresponding <see cref="AType"/>.</value>
+        public override AType Type {
             get {
 				return this.type;
 			}
@@ -98,20 +94,6 @@ namespace CSim.Core {
         public int Size {
 			get; protected set;
         }
-
-		/// <summary>
-		/// Gets the type of the variable.
-		/// It is aware of references.
-		/// (accessing a reference is the same as accessing the target)
-		/// </summary>
-		/// <returns>
-		/// The type of the associated type in references,
-		/// the type itself of any other variable kind otherwise.
-		/// </returns>
-		public virtual Type GetTargetType()
-		{
-			return this.Type;
-		}
 
         /// <summary>
         /// Gets a value indicating whether this instance is in heap.
@@ -144,6 +126,15 @@ namespace CSim.Core {
 				return this.LiteralValue;
 			}
 		}
+        
+        /// <summary>
+        /// Solves the type to a variable with the <see cref="Literals.TypeLiteral"/> as value.
+        /// </summary>
+        /// <returns>A suitable <see cref="Variable"/>.</returns>
+        public override Variable SolveToVariable()
+        {
+            return this;
+        }
 
         /// <summary>
         /// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.
@@ -164,15 +155,7 @@ namespace CSim.Core {
 			}
         }
 
-		/// <summary>
-		/// Gets the machine in which the variable exists.
-		/// </summary>
-		/// <value>The machine.</value>
-		public Machine Machine {
-			get; private set;
-		}
-
-		private Type type;
+		private AType type;
     }
 }
 

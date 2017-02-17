@@ -1,5 +1,6 @@
 
 namespace CSim.Core {
+    using System.Reflection;
 	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
 
@@ -19,9 +20,9 @@ namespace CSim.Core {
 		public TypeSystem(Machine m)
 		{
 			this.Machine = m;
-			this.ptrTypeInstances = new Dictionary<Type, List<Ptr>>();
-			this.refTypeInstances = new Dictionary<Type, Ref>();
-			this.primitiveTypeInstances = new Dictionary<string, Type>();
+			this.ptrTypeInstances = new Dictionary<AType, List<Ptr>>();
+			this.refTypeInstances = new Dictionary<AType, Ref>();
+			this.primitiveTypeInstances = new Dictionary<string, AType>();
 
 			this.Reset();
 		}
@@ -36,12 +37,21 @@ namespace CSim.Core {
 			this.refTypeInstances.Clear();
 			this.primitiveTypeInstances.Clear();
 
-			this.primitiveTypeInstances.Add( CSim.Core.Types.Primitives.Char.TypeName,
-			                                new CSim.Core.Types.Primitives.Char() );
-			this.primitiveTypeInstances.Add( CSim.Core.Types.Primitives.Int.TypeName,
-			                                new CSim.Core.Types.Primitives.Int( this.Machine.WordSize ) );
-			this.primitiveTypeInstances.Add( CSim.Core.Types.Primitives.Double.TypeName, 
-			                                new CSim.Core.Types.Primitives.Double( this.Machine.WordSize ) );
+            // Add all primitive type instances
+            var asm = typeof( AType ).Assembly;
+
+            foreach(System.Type t in asm.GetTypes()) {
+                if ( t.IsClass
+                  && t.IsSubclassOf( typeof( Primitive ) ) )
+                {
+                    MethodInfo mthInfo = t.GetMethod( "Get" );
+                    var primitive = (Primitive) mthInfo.Invoke( null, new object[] { this.Machine } );
+                    this.primitiveTypeInstances.Add( primitive.Name, primitive );
+                }
+            }
+
+            // Add the type type.
+            this.primitiveTypeInstances.Add( TypeType.TypeName, TypeType.Get( this.Machine ) );
 		}
 
 		/// <summary>
@@ -76,9 +86,9 @@ namespace CSim.Core {
 		/// <summary>
 		/// Gets any type supported by this machine, given its name.
 		/// </summary>
-		/// <returns>The type, as a <see cref="Type"/> object.</returns>
+		/// <returns>The type, as a <see cref="AType"/> object.</returns>
 		/// <param name="strType">A string with the type's name.</param>
-		public Type GetPrimitiveType(string strType)
+		public AType GetPrimitiveType(string strType)
 		{
 			return this.primitiveTypeInstances[ strType ];
 		}
@@ -113,30 +123,40 @@ namespace CSim.Core {
 		/// </summary>
 		/// <returns>The pointer type, as a <see cref="Ptr"/> object.</returns>
 		/// <param name="t">The regular type to build the pointer on.</param>
-		/// <param name="indirectionLevel">The number of indirections.</param>
-		public Ptr GetPtrType(Type t, int indirectionLevel = 1)
+        /// <param name="indirectionLevel">Number of stars in the type.</param>
+		public Ptr GetPtrType(AType t, int indirectionLevel = -1)
 		{
 			List<Ptr> ptrTypes = null;
-			Ptr toret = null;
+            var ptrType = t as Ptr;
+            AType baseType = t;
 
-			if ( !( this.ptrTypeInstances.TryGetValue( t, out ptrTypes ) ) ) {
-				// T *
-				toret = new Ptr( 1, t, this.Machine.WordSize );
+            // Determine indirectionLevel
+            if ( indirectionLevel < 1 ) {
+                indirectionLevel = 1;            
+                if ( ptrType != null ) {
+                    indirectionLevel = ptrType.IndirectionLevel + 1;
+                }
+            }
+            
+            // Determine base type
+            if ( ptrType != null ) {
+                baseType = ptrType.AssociatedType;
+            }
+
+            // Create list of ptr types for that base type, if needed
+			if ( !( this.ptrTypeInstances.TryGetValue( baseType, out ptrTypes ) ) )
+            {
 				ptrTypes = new List<Ptr>();
-				this.ptrTypeInstances.Add( t, ptrTypes ); 
-				ptrTypes.Add( toret );
+				this.ptrTypeInstances.Add( baseType, ptrTypes ); 
+				ptrTypes.Add( new Ptr( 1, baseType ) ); // T *
 			}
 				
+            // Create all intermediate ptr types, honoring the indirection level
 			for(int i = ptrTypes.Count; i < indirectionLevel; ++i) {
-				toret = new Ptr( i + 1, t, this.Machine.WordSize );
-				ptrTypes.Add( toret );
+				ptrTypes.Add( new Ptr( i + 1, baseType ) );
 			}
 
-			if ( toret == null ) {
-				toret = ptrTypes[ indirectionLevel - 1 ];
-			}
-
-			return toret;
+			return ptrTypes[ indirectionLevel - 1 ];
 		}
 
 		/// <summary>
@@ -144,12 +164,12 @@ namespace CSim.Core {
 		/// </summary>
 		/// <returns>The reference type, as a <see cref="Ref"/> object.</returns>
 		/// <param name="t">The regular type to build the reference on.</param>
-		public Ref GetRefType(Type t)
+		public Ref GetRefType(AType t)
 		{
 			Ref toret = null;
 
 			if ( !( this.refTypeInstances.TryGetValue( t, out toret ) ) ) {
-				toret = new Ref( t, this.Machine.WordSize );
+				toret = new Ref( t );
 				this.refTypeInstances.Add( t, toret );
 			}
 
@@ -159,36 +179,38 @@ namespace CSim.Core {
 		/// <summary>
 		/// Returns the type from a textual description.
 		/// </summary>
-		/// <returns>The <see cref="CSim.Core.Type"/>corresponding to the given type.</returns>
+		/// <returns>The <see cref="AType"/>corresponding to the given type.</returns>
 		/// <param name="strType">String type.</param>
-		public Type FromStringToType(string strType)
+		public AType FromStringToType(string strType)
 		{
 			int numStars = 0;
 			bool isRef = false;
-			Type toret = null;
+			AType toret = null;
+            var lexer = new Lexer( strType.Trim() );
 
-			strType = strType.Trim();
-			int pos = strType.Length - 1;
+            lexer.Pos = lexer.Length - 1;
 
 			// Determine whether it is a reference or not
-			while ( pos > 0
-			     && strType[ pos ] == Ref.RefTypeNamePart[ 0 ] )
+			while ( lexer.Pos > 0
+			     && lexer.GetCurrentChar() == Ref.RefTypeNamePart[ 0 ] )
 			{
 				isRef = true;
-				--pos;
+				lexer.Advance( -1 );
+                lexer.SkipSpaces( -1 );
 			}
 
 			// Determine the indirection level
-			while( pos > 0
-			    && strType[ pos ] == Ptr.PtrTypeNamePart[ 0 ] )
+			while( lexer.Pos > 0
+			    && lexer.GetCurrentChar() == Ptr.PtrTypeNamePart[ 0 ] )
 			{
 				++numStars;
-				--pos;
+				lexer.Advance( -1 );
+                lexer.SkipSpaces( -1 );
 			}
 
 			// Get the primitive type
-			strType = strType.Substring( 0, pos + 1 );
-			Type primitive = this.GetPrimitiveType( strType );
+			strType = lexer.Line.Substring( 0, lexer.Pos + 1 );
+			AType primitive = this.GetPrimitiveType( strType );
 
 			if ( isRef ) {
 				if ( numStars == 0 ) {
@@ -211,11 +233,11 @@ namespace CSim.Core {
 		/// Creates a literal of the given type.
 		/// </summary>
 		/// <returns>The literal, as a <see cref="Literal"/> object.</returns>
-		/// <param name="t">The type, as a <see cref="Type"/> object.</param>
+		/// <param name="t">The type, as a <see cref="AType"/> object.</param>
 		/// <param name="raw">A vector of bytes.</param>
-		public Literal CreateLiteral(Type t, byte[] raw)
+		public Literal CreateLiteral(AType t, byte[] raw)
 		{
-			return t.CreateLiteral( this.Machine, raw );
+			return t.CreateLiteral( raw );
 		}
 
 		/// <summary>
@@ -226,9 +248,9 @@ namespace CSim.Core {
 			get; set;
 		}
 
-		private Dictionary<Type, List<Ptr>> ptrTypeInstances;
-		private Dictionary<Type, Ref> refTypeInstances;
-		private Dictionary<string, Type> primitiveTypeInstances;
+		private Dictionary<AType, List<Ptr>> ptrTypeInstances;
+		private Dictionary<AType, Ref> refTypeInstances;
+		private Dictionary<string, AType> primitiveTypeInstances;
 	}
 }
 

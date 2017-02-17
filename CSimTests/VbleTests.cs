@@ -4,6 +4,7 @@ namespace CSimTests {
 
 	using CSim.Core;
 	using CSim.Core.Literals;
+    using CSim.Core.Variables;
 
 	[TestFixture]
 	public class VbleTests {
@@ -20,7 +21,8 @@ namespace CSimTests {
 		[Test]
 		public void IntVble()
 		{
-			var int_v = this.Machine.TDS.Add( "x", int_t );
+            var int_v = new Variable( new Id( this.Machine, "x" ), int_t );
+            this.Machine.TDS.Add( int_v );
 			int_v.LiteralValue = new IntLiteral( this.Machine, 5 );
 
             // Chk memory
@@ -31,7 +33,8 @@ namespace CSimTests {
 		[Test]
 		public void CharVble()
 		{
-			var char_v = this.Machine.TDS.Add( "ch", char_t );
+            var char_v = new Variable( new Id( this.Machine, "ch" ), char_t );
+            this.Machine.TDS.Add( char_v );
 			char_v.LiteralValue = new CharLiteral( this.Machine, 'a' );
 
 			Assert.AreEqual( 'a', char_v.LiteralValue.Value );
@@ -41,7 +44,8 @@ namespace CSimTests {
 		[Test]
 		public void DoubleVble()
 		{
-			var double_v = this.Machine.TDS.Add( "d", double_t );
+            var double_v = new Variable( new Id( this.Machine, "d" ), double_t );
+            this.Machine.TDS.Add( double_v );
 			double_v.LiteralValue = new DoubleLiteral( this.Machine, 0.55 );
 
 			Assert.AreEqual( 0.55, double_v.LiteralValue.Value );

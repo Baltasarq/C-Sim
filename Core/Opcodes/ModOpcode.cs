@@ -30,8 +30,8 @@
 			}
 
 			// Take ops
-			Variable op2 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
-			Variable op1 = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			Variable op2 = this.Machine.ExecutionStack.Pop().SolveToVariable();
+			Variable op1 = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			// Check ops
 			if ( op1 == null
@@ -59,13 +59,13 @@
 			}
 
 			// Now yes, do it
-			long op2Value = op2.LiteralValue.GetValueAsInt();
+			long op2Value = op2.LiteralValue.GetValueAsLongInt();
 
 			if ( op2Value == 0 ) {
 				throw new EngineException( "/0??" );
 			}
 
-			long modRes = System.Convert.ToInt64( op1.LiteralValue.GetValueAsInt() ) % op2Value;
+			long modRes = System.Convert.ToInt64( op1.LiteralValue.GetValueAsLongInt() ) % op2Value;
 
 			// Store in the temp vble and end
 			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, modRes ) );

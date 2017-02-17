@@ -31,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				doubleCastFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), CSim.Core.Types.Any.Get(), m )
+                    new Variable( new Id( m, @"x" ), CSim.Core.Types.Any.Get( m ) )
 				};
 
 				instance = new DoubleCast( m );
@@ -47,15 +47,14 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
+			Variable param = realParams[ 0 ].SolveToVariable();
 
 			if ( !( param.Type.IsArithmetic() ) ) {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
 			double value = System.Convert.ToDouble( param.LiteralValue.Value );
-			Variable result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
-			result.LiteralValue = new DoubleLiteral( this.Machine, value );
+			Variable result = new NoPlaceTempVariable( new DoubleLiteral( this.Machine, value ) );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

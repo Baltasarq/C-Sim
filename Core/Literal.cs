@@ -24,9 +24,9 @@ namespace CSim.Core {
 		/// <param name="m">The <see cref="Machine"/> this literal is created for.</param>
 		/// <param name="v">The value, as a <see cref="System.Object"/>.</param>
 		protected Literal(Machine m, object v)
+            :base( m )
 		{
 			this.val = v;
-			this.Machine = m;
 		}
 
         /// <summary>
@@ -39,16 +39,8 @@ namespace CSim.Core {
 			}
         }
 
-		/// <summary>
-		/// Gets or sets the machine this literal pertains to.
-		/// </summary>
-		/// <value>The machine.</value>
-		public Machine Machine {
-			get; set;
-		}
-
         /// <summary>
-        /// Gets the raw value of the literal, as secquence of bytes.
+        /// Gets the raw value of the literal, as sequence of bytes.
 		/// We need the machine to do that, since it handles endianness.
         /// </summary>
         /// <return>The raw value.</return>
@@ -121,7 +113,7 @@ namespace CSim.Core {
 		/// <returns>The value, as a string.</returns>
 		public string ToDec()
 		{
-			return ShortenNumber( this.GetValueAsInt().ToString().PadLeft( 4, '0' ) );
+			return ShortenNumber( this.GetValueAsLongInt().ToString().PadLeft( 4, '0' ) );
 		}
 
 		/// <summary>
@@ -149,6 +141,15 @@ namespace CSim.Core {
 
 			return toret;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="Variable"/> with this literal as value.
+        /// </summary>
+        /// <returns>A suitable <see cref="Variable"/>.</returns>
+        public override Variable SolveToVariable()
+        {
+            return new Variables.NoPlaceTempVariable( this );
+        }
 
 		/// <summary>
 		/// Shorts the given value, removing zeroes at the left.
@@ -181,12 +182,13 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Gets the value as int, if possible.
+		/// Gets the value as an integer, if possible.
 		/// </summary>
-		/// <returns>The value as int.</returns>
-		public long GetValueAsInt()
+        /// <returns>The value as integer, specifically <see cref="T:System.Long"/>.</returns>
+		public long GetValueAsLongInt()
 		{
 			long toret = 0;
+            var typeLit = this as TypeLiteral;
 
 			if ( this is IntLiteral
 			  || this is CharLiteral
@@ -194,6 +196,10 @@ namespace CSim.Core {
 			{
 				toret = Convert.ToInt64( this.Value );
 			}
+            else
+            if ( typeLit != null ) {
+                toret = typeLit.Value.Size;
+            }
 
 			return toret;
 		}

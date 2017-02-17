@@ -17,11 +17,11 @@ namespace CSim.Core.Literals {
         }
 
         /// <summary>
-        /// Gets the type of the double literal.
+        /// Gets the type of the <see cref="DoubleLiteral"/>.
         /// The type is <see cref="CSim.Core.Types.Primitives.Double"/>
         /// </summary>
-        /// <value>The type.</value>
-        public override CSim.Core.Type Type {
+        /// <value>The <see cref="AType"/>.</value>
+        public override AType Type {
             get {
 				return this.Machine.TypeSystem.GetDoubleType();
             }

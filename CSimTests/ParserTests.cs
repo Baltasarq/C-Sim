@@ -138,9 +138,9 @@ namespace CSimTests {
 		}
 
 		private Machine machine;
-		private CSim.Core.Type int_t;
-		private CSim.Core.Type char_t;
-		private CSim.Core.Type double_t;
+		private AType int_t;
+		private AType char_t;
+		private AType double_t;
 	}
 }
 

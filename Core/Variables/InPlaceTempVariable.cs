@@ -32,10 +32,9 @@ namespace CSim.Core.Variables {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Variables.InPlaceTempVariable"/> class.
 		/// </summary>
-		/// <param name="t">A <see cref="CSim.Core.Type"/>.</param>
-		/// <param name="m">A <see cref="Machine"/>.</param>
-		public InPlaceTempVariable(Core.Type t, Machine m)
-			:base( t, m )
+		/// <param name="t">A <see cref="AType"/> for this temporal variable.</param>
+		public InPlaceTempVariable(AType t)
+			:base( t )
 		{
 		}
 	}

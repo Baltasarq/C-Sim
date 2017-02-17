@@ -1,8 +1,9 @@
 ﻿
 namespace CSim.Core.FunctionLibrary {
+    using CSim.Core.Exceptions;
 	using CSim.Core.Functions;
 	using CSim.Core.Variables;
-	using CSim.Core.Exceptions;
+    using CSim.Core.Literals;
 
 	/// <summary>
 	/// This is the srand function.
@@ -30,7 +31,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				srandFormalParams = new Variable[] {
-					new Variable( new Id( @"x" ), m.TypeSystem.GetIntType(), m )
+					new Variable( new Id( m, @"x" ), m.TypeSystem.GetIntType() )
 				};
 
 				instance = new SRand( m );
@@ -46,17 +47,19 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			Variable param = this.Machine.TDS.SolveToVariable( realParams[ 0 ] );
+			Variable param = realParams[ 0 ].SolveToVariable();
 
-			if ( param.Type != this.Machine.TypeSystem.GetIntType() ) {
+			if ( param.Type.IsArithmetic() ) {
 				throw new TypeMismatchException( param.Name.Name );
 			}
+            
+            var litSeed = new IntLiteral( this.Machine, param.LiteralValue.GetValueAsLongInt() );
 
-			this.Machine.SetRandomEngine( param.LiteralValue.GetValueAsInt() );
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() ) );
+			this.Machine.SetRandomEngine( litSeed.Value );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litSeed ) );
 		}
 
-		private static SRand instance = null;
+		private static SRand instance;
 		private static Variable[] srandFormalParams;
 	}
 }

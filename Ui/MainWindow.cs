@@ -296,10 +296,16 @@ namespace CSim.Ui {
             return;
         }
 		
+        /// <summary>
+        /// Shows the settings panel.
+        /// </summary>
 		private void ShowSettings()
 		{
 			// Prepare language
 			this.cbLocales.Text = Locale.CurrentLocaleToDescription();
+
+            // Prepare alignment
+            this.chkAlign.Checked = this.machine.AlignVbles;
 
 			// Prepare endianness
 			if ( this.machine.Endian == Machine.Endianness.BigEndian ) {
@@ -310,21 +316,23 @@ namespace CSim.Ui {
 				this.rbEndianness1.Checked = true;
 			}
 
-			// Prepare word size
-			if ( this.machine.WordSize == 2 ) {
-				this.rbWS16.Checked = true;
-			}
-			else
-			if ( this.machine.WordSize == 4 ) {
-				this.rbWS32.Checked = true;
-			}
-			else
-			if ( this.machine.WordSize == 8 ) {
-				this.rbWS64.Checked = true;
-			}
+            // Prepare word size
+            switch ( this.machine.WordSize ) {
+            case 2:
+                this.rbWS16.Checked = true;
+                break;
+            case 4:
+                this.rbWS32.Checked = true;
+                break;
+            case 8:
+                this.rbWS64.Checked = true;
+                break;
+            default:
+                throw new ArgumentException( "invalid word size" );
+            }
 
-			// UI
-			this.tbIconBar.Hide();
+            // UI
+            this.tbIconBar.Hide();
             this.pnlMain.Hide();
             this.pnlIO.Hide();
 			this.pnlSettings.Show();
@@ -334,13 +342,20 @@ namespace CSim.Ui {
             this.SetStatus( L18n.Get( L18n.Id.ActSettings ) );
 		}
 
-		private void ChangeSettings()
+        /// <summary>
+        /// Applies the chosen settings.
+        /// </summary>
+		private void ApplySettings()
 		{
+            // Locales
 			string locale = string.Empty;
 
 			if ( this.cbLocales.SelectedItem != null ) {
 				locale = this.cbLocales.Text;
 			}
+
+            // Alignment
+            this.machine.AlignVbles = this.chkAlign.Checked;
 
 			// Apply language configuration
 			Locale.SetLocaleFromDescription( locale );
@@ -353,8 +368,7 @@ namespace CSim.Ui {
 			}
 
 			if ( endian != this.machine.Endian ) {
-				this.machine = new Machine( this.machine.WordSize, this.machine.Memory.Max, endian );
-				this.DoReset();
+                this.machine.SwitchEndianness();
 			}
 
 			// Apply word size configuration
@@ -720,7 +734,7 @@ namespace CSim.Ui {
 			  && ptrVble.AssociatedType == this.machine.TypeSystem.GetCharType()
 			  && ( (Ptr) ptrVble.Type ).IndirectionLevel == 1 )
 			{
-				Variable str = this.machine.TDS.LookForAddress( ptrVble.IntValue );
+                Variable str = this.machine.TDS.LookForAddress( ptrVble.IntValue.GetValueAsLongInt() );
 
 				if ( str != null ) {
 					toret += str.LiteralValue + " (" + x.LiteralValue + ")";

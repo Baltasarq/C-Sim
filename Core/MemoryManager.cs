@@ -179,7 +179,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="address">The address to read from.</param>
 		/// <param name="type">The type, reporting the size.</param>
-		public Literal CreateLiteral(long address, Type type)
+		public Literal CreateLiteral(long address, AType type)
 		{
 			Literal toret = null;
 			var ptrType = type as Ptr;
@@ -191,7 +191,7 @@ namespace CSim.Core {
 				byte[] str = this.ReadStringFromMemory( address );
 				toret = new StrLiteral( this.Machine, new string( Machine.TextEncoding.GetChars( str ) ) );
 			} else {
-				toret = type.CreateLiteral( this.Machine, this.Read( address, type.Size ) );
+				toret = type.CreateLiteral( this.Read( address, type.Size ) );
 			}
 
 			if ( toret == null ) {
@@ -204,7 +204,7 @@ namespace CSim.Core {
 		/// <summary>
 		/// Extracts the values of an array from memory.
 		/// </summary>
-		public byte[][] ExtractArrayElementValues(Core.Type type, long address, long count)
+		public byte[][] ExtractArrayElementValues(AType type, long address, long count)
 		{
 			var toret = new byte[ count ][];
 
@@ -215,6 +215,23 @@ namespace CSim.Core {
 
 			return toret;
 		}
+
+        /// <summary>
+        /// Reverse the endianness' value at the specified address and type.
+        /// </summary>
+        /// <param name="address">The address of the value to reverse endianness.</param>
+        /// <param name="size">The number of bytes affected.</param>
+        public void SwitchEndianness(long address, int size)
+        {
+            if ( size > 1 ) {
+                byte[] rawValue = this.Read( address, size );
+
+                Array.Reverse( rawValue );
+                this.Write( address, rawValue );
+            }
+
+            return;
+        }
 
 		/// <summary>
 		/// Gets the machine owning this memory.

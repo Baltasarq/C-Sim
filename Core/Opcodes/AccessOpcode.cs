@@ -27,7 +27,7 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		public override void Execute()
 		{
-			Variable vble = this.Machine.TDS.SolveToVariable( this.Machine.ExecutionStack.Pop() );
+			Variable vble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			if ( vble != null ) {
 				for(int i = 0; i < this.Levels; ++i) {
@@ -43,7 +43,7 @@ namespace CSim.Core.Opcodes {
 					// Access the pointed value
 					if ( vbleType != null ) {
 						long address = System.Convert.ToInt64( vble.LiteralValue.Value );
-						vble = new InPlaceTempVariable( vbleType.DerreferencedType, this.Machine );
+						vble = new InPlaceTempVariable( vbleType.DerreferencedType );
 						vble.Address = address;
 						this.Machine.TDS.AddVariableInPlace( vble );
 					}
