@@ -2,10 +2,11 @@ using System;
 
 using CSim.Core;
 using CSim.Core.Types;
-using CSim.Core.Literals;
 
-namespace CSim.Core.Variables
-{
+namespace CSim.Core.Variables {
+    using System.Numerics;
+    using CSim.Core.Literals;
+    
 	/// <summary>
 	/// An array variable.
 	/// </summary>
@@ -17,7 +18,7 @@ namespace CSim.Core.Variables
 		/// <param name="id">The identifier for the array.</param>
         /// <param name="t">The <see cref="AType"/> for elements (associated type).</param>
 		/// <param name="count">The number of elements.</param>
-		public ArrayVariable(Id id, AType t, long count)
+		public ArrayVariable(Id id, AType t, BigInteger count)
 			: base( id, t.Machine.TypeSystem.GetPtrType( t ) )
 		{
 			this.Count = count;
@@ -40,7 +41,7 @@ namespace CSim.Core.Variables
 		/// </summary>
 		public Literal[] ExtractArrayElementValues()
 		{
-			var toret = new Literal[ this.Count ];
+			var toret = new Literal[ (int) this.Count ];
 			byte[][] rawValues = this.Machine.Memory.ExtractArrayElementValues(
 														this.AssociatedType,
 														this.Address,
@@ -75,7 +76,7 @@ namespace CSim.Core.Variables
 		/// This size is totally dependent on the type.
 		/// </summary>
 		/// <value>The size, as an int.</value>
-		public long Count {
+		public BigInteger Count {
 			get; set;
 		}
 	}

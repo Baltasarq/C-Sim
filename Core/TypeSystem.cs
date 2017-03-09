@@ -44,6 +44,11 @@ namespace CSim.Core {
                 if ( t.IsClass
                   && t.IsSubclassOf( typeof( Primitive ) ) )
                 {
+                    // Erase the old instance so the type is re-created
+                    FieldInfo fldInfo = t.GetField( "instance", BindingFlags.Static | BindingFlags.NonPublic );
+                    fldInfo.SetValue( null, null );
+                
+                    // Create the type
                     MethodInfo mthInfo = t.GetMethod( "Get" );
                     var primitive = (Primitive) mthInfo.Invoke( null, new object[] { this.Machine } );
                     this.primitiveTypeInstances.Add( primitive.Name, primitive );
@@ -53,6 +58,42 @@ namespace CSim.Core {
             // Add the type type.
             this.primitiveTypeInstances.Add( TypeType.TypeName, TypeType.Get( this.Machine ) );
 		}
+        
+        /// <summary>
+        /// Gets the <see cref="TypeType"/>.
+        /// </summary>
+        /// <returns>The type <see cref="TypeType"/>.</returns>
+        public TypeType GetTypeType()
+        {
+            return (TypeType) this.GetPrimitiveType( TypeType.TypeName );
+        }
+        
+        /// <summary>
+        /// Gets the char type.
+        /// </summary>
+        /// <returns>The char type, as a <see cref="CSim.Core.Types.Primitives.Char"/> object.</returns>
+        public Char GetCharType()
+        {
+            return (Char) this.GetPrimitiveType( Char.TypeName );
+        }
+        
+        /// <summary>
+        /// Gets the short type.
+        /// </summary>
+        /// <returns>The short type, as a <see cref="Short"/> object.</returns>
+        public Short GetShortType()
+        {
+            return (Short) this.GetPrimitiveType( Short.TypeName );
+        }
+        
+        /// <summary>
+        /// Gets the unsigned short type.
+        /// </summary>
+        /// <returns>The ushort type, as a <see cref="UShort"/> object.</returns>
+        public UShort GetUShortType()
+        {
+            return (UShort) this.GetPrimitiveType( UShort.TypeName );
+        }
 
 		/// <summary>
 		/// Gets the int type.
@@ -62,27 +103,52 @@ namespace CSim.Core {
 		{
 			return (Int) this.GetPrimitiveType( Int.TypeName );
 		}
+        
+        /// <summary>
+        /// Gets the unsigned int type.
+        /// </summary>
+        /// <returns>The unsigned int type, as a <see cref="UInt"/> object.</returns>
+        public UInt GetUIntType()
+        {
+            return (UInt) this.GetPrimitiveType( UInt.TypeName );
+        }
+        
+        /// <summary>
+        /// Gets the long int type.
+        /// </summary>
+        /// <returns>The int type, as a <see cref="Long"/> object.</returns>
+        public Long GetLongType()
+        {
+            return (Long) this.GetPrimitiveType( Long.TypeName );
+        }
+        
+        /// <summary>
+        /// Gets the unsigned long int type.
+        /// </summary>
+        /// <returns>The int type, as a <see cref="ULong"/> object.</returns>
+        public ULong GetULongType()
+        {
+            return (ULong) this.GetPrimitiveType( ULong.TypeName );
+        }
 
 		/// <summary>
-		/// Gets the double type.
+		/// Gets the float type.
 		/// </summary>
-		/// <returns>The double type, as a <see cref="CSim.Core.Types.Primitives.Double"/> object.</returns>
-		public CSim.Core.Types.Primitives.Double GetDoubleType()
+		/// <returns>The float type, as a <see cref="Float"/> object.</returns>
+		public Float GetFloatType()
 		{
-			return (CSim.Core.Types.Primitives.Double)
-				this.GetPrimitiveType( CSim.Core.Types.Primitives.Double.TypeName );
+			return (Float) this.GetPrimitiveType( Float.TypeName );
 		}
-
-		/// <summary>
-		/// Gets the char type.
-		/// </summary>
-		/// <returns>The char type, as a <see cref="CSim.Core.Types.Primitives.Char"/> object.</returns>
-		public CSim.Core.Types.Primitives.Char GetCharType()
-		{
-			return (CSim.Core.Types.Primitives.Char)
-				this.GetPrimitiveType( CSim.Core.Types.Primitives.Char.TypeName );
-		}
-
+        
+        /// <summary>
+        /// Gets the double type.
+        /// </summary>
+        /// <returns>The double type, as a <see cref="Double"/> object.</returns>
+        public Double GetDoubleType()
+        {
+            return (Double) this.GetPrimitiveType( CSim.Core.Types.Primitives.Double.TypeName );
+        }
+        
 		/// <summary>
 		/// Gets any type supported by this machine, given its name.
 		/// </summary>

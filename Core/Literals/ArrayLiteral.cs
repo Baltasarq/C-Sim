@@ -1,12 +1,13 @@
 ﻿namespace CSim.Core.Literals {
-	using System.Text;
+    using System.Text;
+    using System.Numerics;
 
-	using CSim.Core.Types;
+    using CSim.Core.Types;
 
-	/// <summary>
-	/// Literals of type Int.
-	/// </summary>
-	public class ArrayLiteral: Literal {
+    /// <summary>
+    /// Literals of type Int.
+    /// </summary>
+    public class ArrayLiteral: Literal {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.VectorLiteral"/> class.
 		/// </summary>
@@ -69,12 +70,22 @@
 			return toret.ToString();
 		}
 
-		/// <summary>
-		/// Gets or sets the type of the vector.
+        /// <summary>
+        /// Gets the value as a <see cref="BigInteger"/>.
+        /// </summary>
+        /// <returns>Does not return any value.</returns>
+        /// <exception cref="EngineException">Always.</exception>
+        public override BigInteger GetValueAsInteger()
+        {
+            throw new EngineException( "cannot transform literal to int" );
+        }
+
+        /// <summary>
+        /// Gets or sets the type of the vector.
         /// (Which is <see cref="Ptr"/>.)
-		/// </summary>
-		/// <value>The <see cref="AType"/> of the vector.</value>
-		public Ptr ArrayType {
+        /// </summary>
+        /// <value>The <see cref="AType"/> of the vector.</value>
+        public Ptr ArrayType {
 			get; set;
 		}
 	}

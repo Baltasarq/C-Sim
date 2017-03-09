@@ -13,7 +13,7 @@ namespace CSim.Core.Types.Primitives {
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Types.Primitives.Int"/> class.
-		/// It's size is guaranteed to be the same for the width of the system.
+		/// Its size is guaranteed to be the same for the width of the system.
 		/// </summary>
         private Int(Machine m)
             :base( m, TypeName, m.WordSize )
@@ -37,6 +37,16 @@ namespace CSim.Core.Types.Primitives {
 		public override Literal CreateLiteral(byte[] raw)
 		{
 			return new IntLiteral( this.Machine, this.Machine.Bytes.FromBytesToInt( raw ) );
+		}
+
+		/// <summary>
+		/// Creates a literal for this type, given a value.
+		/// </summary>
+		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
+		/// <param name="v">The given value.</param>
+		public override Literal CreateLiteral(object v)
+		{
+			return new IntLiteral( this.Machine, v );
 		}
         
         /// <summary>

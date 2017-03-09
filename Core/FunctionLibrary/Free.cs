@@ -1,5 +1,7 @@
 
 namespace CSim.Core.FunctionLibrary {
+    using System.Numerics;
+    
 	using CSim.Core.Functions;
 	using CSim.Core.Types;
 	using CSim.Core.Variables;
@@ -30,16 +32,16 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			long address = this.Machine.Memory.Max;
+			BigInteger address = this.Machine.Memory.Max;
 			Variable vble = realParams[ 0 ].SolveToVariable();
 			var ptrVbleType = vble.Type as Ptr;
 
 			if ( ptrVbleType != null ) {
-				address = vble.LiteralValue.GetValueAsLongInt();
+				address = vble.LiteralValue.GetValueAsInteger();
 			}
 			else
 			if ( vble.Type == this.Machine.TypeSystem.GetIntType() ) {
-				address = vble.LiteralValue.GetValueAsLongInt();
+				address = vble.LiteralValue.GetValueAsInteger();
 			}
 			else {
 				throw new TypeMismatchException(

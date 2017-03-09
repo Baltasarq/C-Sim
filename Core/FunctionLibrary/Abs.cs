@@ -1,8 +1,10 @@
 ﻿namespace CSim.Core.FunctionLibrary {
+    using System.Numerics;
 	using CSim.Core.Functions;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
+    using CSim.Core.Types;
 	using CSim.Core;
 
 	/// <summary>
@@ -49,20 +51,20 @@
 		{
 			Variable x = realParams[ 0 ].SolveToVariable();
 
-			if ( !( x.Type.IsArithmetic() ) ) {
+			if ( !( x.Type is Primitive ) ) {
 				throw new TypeMismatchException( x.LiteralValue + "?" );
 			}
 
 			Variable result = new NoPlaceTempVariable(
                                 new IntLiteral(
 									this.Machine,
-									System.Math.Abs( x.LiteralValue.GetValueAsLongInt() ) )
+									BigInteger.Abs( x.LiteralValue.GetValueAsInteger() ) )
 			);
             
 			this.Machine.ExecutionStack.Push( result );
 		}
 
-		private static Abs instance = null;
+		private static Abs instance;
 		private static Variable[] absFormalParams;
 	}
 }

@@ -1,5 +1,6 @@
 ﻿
 namespace CSim.Ui.Drawer {
+    using System.Numerics;
 	using System.Drawing;
 	using System.Collections.Generic;
 
@@ -188,9 +189,9 @@ namespace CSim.Ui.Drawer {
 		/// This is specially intended for arrays' cells and so on.
 		/// </summary>
 		/// <returns>The related boxes.</returns>
-		public virtual IDictionary<long, GrphBoxedVariable> GetInvolvedBoxes()
+		public virtual IDictionary<BigInteger, GrphBoxedVariable> GetInvolvedBoxes()
 		{
-			var toret = new Dictionary<long, GrphBoxedVariable>();
+			var toret = new Dictionary<BigInteger, GrphBoxedVariable>();
 
 			toret.Add( this.Variable.Address, this );
 			return toret;

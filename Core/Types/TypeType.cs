@@ -59,8 +59,18 @@ namespace CSim.Core.Types {
         /// <param name="raw">A raw representation of the value in memory.</param>
         public override Literal CreateLiteral(byte[] raw)
         {
-			return new Literals.TypeLiteral( this.Machine, raw[ 0 ] );
+			return Literals.TypeLiteral.Create( this.Machine, raw[ 0 ] );
         }
+
+		/// <summary>
+		/// Creates a literal for this type, given a value.
+		/// </summary>
+		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
+		/// <param name="v">The given value.</param>
+		public override Literal CreateLiteral(object v)
+		{
+			return new Literals.TypeLiteral( v );
+		}
 
         /// <summary>
         /// Returns the only instance for this <see cref="AType"/>.

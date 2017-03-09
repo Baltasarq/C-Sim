@@ -1,5 +1,6 @@
 ﻿namespace CSim.Ui.Drawer {
 	using System;
+    using System.Numerics;
 	using System.Drawing;
 	using System.Collections.Generic;
 
@@ -32,7 +33,7 @@
 			string separator = "";
 			var arrVble = this.Variable as ArrayVariable;
 			Literal[] lits = arrVble.ExtractArrayElementValues();
-			var toret = new string[ arrVble.Count ];
+			var toret = new string[ (int) arrVble.Count ];
 
 			for (int i = 0; i < arrVble.Count; ++i) {
 				toret[ i ] = lits[ i ].AsArrayElement();
@@ -134,9 +135,9 @@
 		/// This will return the individual items as if they were boxes.
 		/// </summary>
 		/// <returns>The related boxes.</returns>
-		public override IDictionary<long, GrphBoxedVariable> GetInvolvedBoxes ()
+		public override IDictionary<BigInteger, GrphBoxedVariable> GetInvolvedBoxes ()
 		{
-			IDictionary<long, GrphBoxedVariable> toret = base.GetInvolvedBoxes();
+			IDictionary<BigInteger, GrphBoxedVariable> toret = base.GetInvolvedBoxes();
 
 
 			return toret;

@@ -1,11 +1,13 @@
 
 namespace CSim.Core {
 	using System;
+    using System.Numerics;
 	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
 
 	using CSim.Core.Exceptions;
 	using CSim.Core.Variables;
+    using CSim.Core.Literals;
 	using CSim.Core.Types;
 
 	/// <summary>All the variables in the <see cref="Machine"/> reside here.</summary>
@@ -22,8 +24,8 @@ namespace CSim.Core {
         {
             this.Machine = m;
             this.tdsIds = new Dictionary<string, Variable>();
-            this.tdsAddresses = new Dictionary<long, Variable>();
-            this.addresses = new List<long>();
+            this.tdsAddresses = new Dictionary<BigInteger, List<Variable>>();
+            this.addresses = new List<BigInteger>();
         }
 
 		/// <summary>
@@ -48,9 +50,9 @@ namespace CSim.Core {
         /// <returns>The addresses to fill, as an array.</returns>
         /// <param name="address">The address in which the variable could sit.</param>
         /// <param name="size">The size needed by the <see cref="Variable"/>.</param>
-        private long[] CreateAddressesToFill(long address, int size)
+        private BigInteger[] CreateAddressesToFill(BigInteger address, int size)
         {
-            long[] toret = new long[ size ];
+            BigInteger[] toret = new BigInteger[ size ];
 
             // Create addresses to fill
             for (int i = 0; i < size; ++i) {
@@ -67,7 +69,7 @@ namespace CSim.Core {
         /// <param name="v">V.</param>
         private void StoreAddressesToFill(Variable v)
         {
-            long[] addressesToOccupy = this.CreateAddressesToFill( v.Address, v.Size );
+            BigInteger[] addressesToOccupy = this.CreateAddressesToFill( v.Address, v.Size );
 
             // Store the addresses to fill
             for (int i = 0; i < addressesToOccupy.Length; ++i) {
@@ -81,8 +83,21 @@ namespace CSim.Core {
         /// <param name="v">The <see cref="Variable"/> to register.</param>
         private void Register(Variable v)
         {
+            List<Variable> vbleList;
+            
+            // Register by id
             this.tdsIds.Add( v.Name.Name, v );
-            this.tdsAddresses.Add( v.Address, v );
+                        
+            // Register by variable address
+            if ( !this.tdsAddresses.TryGetValue( v.Address, out vbleList ) )
+            {
+                vbleList = new List<Variable>();
+                this.tdsAddresses.Add( v.Address, vbleList );
+            }
+
+            vbleList.Add( v );
+            
+            // Register memory addresses
             this.StoreAddressesToFill( v );
         }
 
@@ -216,9 +231,9 @@ namespace CSim.Core {
         /// <returns><c>true</c>, if location is free, <c>false</c> otherwise.</returns>
         /// <param name="address">The starting address.</param>
         /// <param name="size">The needed size.</param>
-        private bool IsLocationFree(long address, int size)
+        private bool IsLocationFree(BigInteger address, int size)
         {
-            long[] addressesToOccupy = this.CreateAddressesToFill( address, size );
+            BigInteger[] addressesToOccupy = this.CreateAddressesToFill( address, size );
             int i = 0;
 
             for (; i < addressesToOccupy.Length; ++i) {
@@ -236,9 +251,9 @@ namespace CSim.Core {
         /// <param name='v'>
 		/// The <see cref="Variable"/> to reserve memory for.
         /// </param>
-        public long Reserve(Variable v)
+        public BigInteger Reserve(Variable v)
         {
-            long toret;
+            BigInteger toret;
 
             if ( this.AlignVbles ) {
                 toret = this.AlignedReserve( v );
@@ -249,13 +264,13 @@ namespace CSim.Core {
             return toret;
         }
 
-        private long AlignedReserve(Variable v)
+        private BigInteger AlignedReserve(Variable v)
         {
             int toret = -1;
             int address = this.Machine.WordSize;
 
             while( address < this.Memory.Max ) {
-                if ( this.LookForAddress( address ) == null
+                if ( this.LookForAllVblesInAddress( address ) == null
                   && this.IsLocationFree( address, v.Size ) )
                 {
                     toret = address;
@@ -274,7 +289,7 @@ namespace CSim.Core {
             return toret;
         }
 
-        private long AleaReserve(Variable v)
+        private BigInteger AleaReserve(Variable v)
         {
             int tries = 100;
             var randomEngine = new Random();
@@ -282,7 +297,8 @@ namespace CSim.Core {
 
             // Generate memory location
             do {
-				toret = randomEngine.Next( 0, this.Memory.Max - this.Machine.WordSize );
+                int max = (int) ( ( (long) this.Memory.Max ) - this.Machine.WordSize );
+				toret = randomEngine.Next( max );
 
                 if ( ( toret + v.Size ) >= this.Memory.Max
                   || !this.IsLocationFree( toret, v.Size ) )
@@ -375,17 +391,17 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Looks for a variable, given its address.
+		/// Looks for all variables in a given address.
 		/// </summary>
 		/// <returns>
-		/// The variable, as a Variable object.
+		/// The variables, as a <see cref="IEnumerable{Variable}"/>.
 		/// </returns>
 		/// <param name='address'>
 		/// The address to look for.
 		/// </param>
-		public Variable LookForAddress(long address)
+		public IEnumerable<Variable> LookForAllVblesInAddress(BigInteger address)
 		{
-            Variable toret;
+            List<Variable> toret;
 
             if ( !this.tdsAddresses.TryGetValue( address, out toret ) )
             {
@@ -394,62 +410,76 @@ namespace CSim.Core {
 
 			return toret;
 		}
-
-		/// <summary>
-		/// Returns the variable pointed by the pointer variable, or a
-		/// temporary variable for that address.
-		/// </summary>
-		/// <returns>A temporary or a true variable</returns>
-		/// <param name="ptrVble">A PtrVariable object.</param>
-		public Variable GetPointedValueAsVariable(PtrVariable ptrVble)
-		{
-            long address = ptrVble.IntValue.GetValueAsLongInt();
-            AType requiredType = ptrVble.AssociatedType;
-            Variable toret = this.LookForAddress( address );
-
-            if ( toret != null ) {
-                // Determine whether the required type is the same one
-                AType targetType = toret.Type;
-                var ptrType = targetType as Ptr;
-
-                if ( ptrType != null ) {
-                    targetType = ptrType.AssociatedType;
-                }
-
-                if ( requiredType != targetType ) {
-                    toret = null;
-                }
+        
+        /// <summary>Returns the variable in that address</summary>
+        /// <param name='t'>
+        /// An optional type to match the variable.
+        /// </param>
+        /// <returns>
+        /// The variable, as a Variable object.
+        /// </returns>
+        /// <param name='address'>
+        /// The address to look for.
+        /// </param>
+        public Variable LookForAddress(BigInteger address, AType t = null)
+        {
+            Variable toret = null;
+            List<Variable> vbleList = null;
+            
+            // Fix optional type
+            if ( t == null ) {
+                t = Any.Get( this.Machine );
+            }
+            
+            // Examine all variables
+            if ( this.tdsAddresses.TryGetValue( address, out vbleList ) )
+            {
+                if ( vbleList.Count > 1 ) {
+                    foreach(Variable vble in vbleList) {
+                        if ( t is Any
+                          || vble.Type == t )
+                        {
+                            toret = vble;
+                            break;
+                        }
+                    }
+                 } else {
+                    toret = vbleList[ 0 ];
+                 }
             }
 
-            if ( toret == null ) {
-                toret = new InPlaceTempVariable( requiredType );
-				toret.Address = address;
-				this.Machine.TDS.AddVariableInPlace( toret );
-            }
-
-			return toret;
-		}
+            return toret;
+        }
 
 		/// <summary>
 		/// Deletes a memory block given a memory address.
 		/// Looks for the pointed variable, which must be on heap.
 		/// </summary>
-		/// <param name="address">The address of the memory block, as an int.</param>
+		/// <param name="address">The address of the memory block, as a <see cref="BigInteger"/> .</param>
 		/// <exception cref="IncorrectAddressException">when the memory pointed is not on heap.</exception>
-		public void DeleteBlk(long address)
+		public void DeleteBlk(BigInteger address)
 		{
-			Variable pointedVble = this.Machine.TDS.LookForAddress( address );
+            bool removed = false;
+			IEnumerable<Variable> pointedVbles = this.LookForAllVblesInAddress( address );
 
-			if ( pointedVble != null ) {
-				if ( pointedVble.IsInHeap ) {
-					this.Machine.TDS.Remove( pointedVble.Name.Name );
-				} else {
-					throw new IncorrectAddressException(
-						L18n.Get( L18n.Id.ErrMemoryNotInHeap )
-						+ ": " + pointedVble.LiteralValue.ToPrettyNumber()
-						);
-				}
-			}
+            // Look for variable in heap
+            foreach (Variable pointedVble in pointedVbles) {
+    			if ( pointedVble != null ) {
+    				if ( pointedVble.IsInHeap ) {
+                        removed = true;
+    					this.Remove( pointedVble.Name.Name );
+                        break;
+    				}
+    			}
+            }
+            
+            // Vble found?
+            if ( !removed ) {
+                throw new IncorrectAddressException(
+                    L18n.Get( L18n.Id.ErrMemoryNotInHeap )
+                    + ": " + new IntLiteral( this.Machine, address ).ToPrettyNumber()
+                    );
+            }
 
 			return;
 		}
@@ -476,8 +506,8 @@ namespace CSim.Core {
                 var arrayVble = vble as ArrayVariable;
 
                 if ( arrayVble != null ) {
-                    long address = arrayVble.Address;
-                    var elementSize = arrayVble.Type.Size;
+                    BigInteger address = arrayVble.Address;
+					var elementSize = ( (Ptr) arrayVble.Type ).DerreferencedType.Size;
                     var endAddress = address + arrayVble.Size;
 
                     // Reverse each element
@@ -485,7 +515,7 @@ namespace CSim.Core {
                         this.Memory.SwitchEndianness( address, elementSize );
                     }
                 } else {
-                    this.Memory.SwitchEndianness( vble.Address, vble.Type.Size );
+                    this.Memory.SwitchEndianness( vble.Address, vble.Size );
                 }
             }
 
@@ -526,8 +556,8 @@ namespace CSim.Core {
 		}
 
 		private Dictionary<string, Variable> tdsIds;
-        private Dictionary<long, Variable> tdsAddresses;
-		private List<long> addresses;
+        private Dictionary<BigInteger, List<Variable>> tdsAddresses;
+		private List<BigInteger> addresses;
 
         private static int numMemBlock = 0;
     }

@@ -35,8 +35,8 @@ namespace CSim.Core.Opcodes {
 
 			// Assign to variable
 			if ( rvalueTypeAsRef != null ) {
-				var targetVbleAddress = rvalue.LiteralValue.GetValueAsLongInt();
-				lvalue.PointedVble = this.Machine.TDS.LookForAddress( targetVbleAddress );
+				var targetVbleAddress = rvalue.LiteralValue.GetValueAsInteger();
+				lvalue.PointedVble = this.Machine.TDS.LookForAddress( targetVbleAddress, lvalue.AssociatedType );
 
 				if ( lvalue.PointedVble == null ) {
 					throw new UnknownVbleException( string.Format(

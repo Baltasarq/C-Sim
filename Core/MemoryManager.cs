@@ -1,6 +1,7 @@
 // MemoryManager.cs
 namespace CSim.Core {
 	using System;
+    using System.Numerics;
 	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
 
@@ -88,9 +89,9 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="pos">The position to check.</param>
 		/// <param name="size">The size in bytes to check.</param>
-        public void CheckSizeFits(long pos, int size)
+        public void CheckSizeFits(BigInteger pos, int size)
         {
-            int maxMemory = this.Max;
+            BigInteger maxMemory = this.Max;
             
             if ( pos < 0
 			  || pos > maxMemory
@@ -109,12 +110,12 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="pos">The position, as an int.</param>
 		/// <param name="size">The size, as an int.</param>
-        public byte[] Read(long pos, int size)
+        public byte[] Read(BigInteger pos, int size)
         {
             var toret = new byte[ size ];
 
 			this.CheckSizeFits( pos, size );
-			Array.Copy( this.raw, pos, toret, 0, size );
+			Array.Copy( this.raw, (int) pos, toret, 0, size );
 
             return  toret;
         }
@@ -124,21 +125,13 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="pos">The position, as an int.</param>
 		/// <param name="value">The vector of bytes.</param>
-        public void Write(long pos, byte[] value)
+        public void Write(BigInteger pos, byte[] value)
         {
             int size = value.Length;
             this.CheckSizeFits( pos, size );
-			Array.Copy( value, 0, this.raw, pos, size );
+			Array.Copy( value, 0, this.raw, (int) pos, size );
 
             return;
-        }
-
-		/// <summary>
-		/// Gets the upper limit for memory.
-		/// </summary>
-		/// <value>The max number of bytes, as an int.</value>
-        public int Max {
-            get { return this.raw.Length; }
         }
 
         /// <summary>
@@ -146,32 +139,17 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="pos">The position to begin to read from.</param>
         /// <returns>The raw secquence of bytes.</returns>
-        public byte[] ReadStringFromMemory(long pos)
+        public byte[] ReadStringFromMemory(BigInteger pos)
         {
             var toret = new List<byte>();
 
-            while( this.raw[ pos ] != 0 ) {
+            while( this.raw[ (int) pos ] != 0 ) {
                 this.CheckSizeFits( pos, 1 );
-                toret.Add( this.raw[ pos ] );
+                toret.Add( this.raw[ (int) pos ] );
                 ++pos;
             }
 
             return toret.ToArray();
-        }
-
-        /// <summary>
-        /// Gets the whole memory.
-        /// </summary>
-        /// <value>
-        /// The memory, as a vector of char.
-        /// </value>
-        public ReadOnlyCollection<byte> Raw {
-            get {
-				byte[] toret = new byte[ this.raw.Length ];
-
-				Array.Copy( this.raw, toret, this.raw.Length );
-				return new ReadOnlyCollection<byte>( toret );
-			}
         }
 
 		/// <summary>
@@ -179,7 +157,7 @@ namespace CSim.Core {
 		/// </summary>
 		/// <param name="address">The address to read from.</param>
 		/// <param name="type">The type, reporting the size.</param>
-		public Literal CreateLiteral(long address, AType type)
+		public Literal CreateLiteral(BigInteger address, AType type)
 		{
 			Literal toret = null;
 			var ptrType = type as Ptr;
@@ -204,9 +182,9 @@ namespace CSim.Core {
 		/// <summary>
 		/// Extracts the values of an array from memory.
 		/// </summary>
-		public byte[][] ExtractArrayElementValues(AType type, long address, long count)
+		public byte[][] ExtractArrayElementValues(AType type, BigInteger address, BigInteger count)
 		{
-			var toret = new byte[ count ][];
+			var toret = new byte[ (int) count ][];
 
 			for (int i = 0; i < count; ++i) {
 				toret[ i ] = this.Read( address, type.Size );
@@ -221,16 +199,37 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="address">The address of the value to reverse endianness.</param>
         /// <param name="size">The number of bytes affected.</param>
-        public void SwitchEndianness(long address, int size)
+        public void SwitchEndianness(BigInteger address, int size)
         {
             if ( size > 1 ) {
-                byte[] rawValue = this.Read( address, size );
-
-                Array.Reverse( rawValue );
-                this.Write( address, rawValue );
+				byte[] rawValue = this.Read( address, size );
+				this.Write( address, SwitchEndiannessInBytes( this.Machine.WordSize, rawValue ) );
             }
 
             return;
+        }
+        
+        /// <summary>
+        /// Gets the whole memory.
+        /// </summary>
+        /// <value>
+        /// The memory, as a vector of char.
+        /// </value>
+        public ReadOnlyCollection<byte> Raw {
+            get {
+                byte[] toret = new byte[ this.raw.Length ];
+
+                Array.Copy( this.raw, toret, this.raw.Length );
+                return new ReadOnlyCollection<byte>( toret );
+            }
+        }
+        
+        /// <summary>
+        /// Gets the upper limit for memory.
+        /// </summary>
+        /// <value>The max number of bytes, as a <see cref="BigInteger"/>.</value>
+        public BigInteger Max {
+            get { return new BigInteger( this.raw.Length ); }
         }
 
 		/// <summary>
@@ -239,6 +238,32 @@ namespace CSim.Core {
 		/// <value>The machine.</value>
 		public Machine Machine {
 			get; private set;
+		}
+
+		/// <summary>
+		/// Switchs the endianness in bytes.
+		/// </summary>
+		/// <returns>The new sequence of bytes.</returns>
+		/// <param name="data">A raw sequence of bytes.</param>
+		/// <param name="wordSize">The size of the machine's word, in bytes.</param>
+		public static byte[] SwitchEndiannessInBytes(int wordSize, byte[] data)
+		{
+			byte[] toret = data;
+			int size = data.Length;
+
+			if ( size > 1 ) {
+				if ( data.Length < wordSize ) {
+					wordSize = data.Length;
+				}
+
+				int i = 0;
+				do {
+					Array.Reverse( toret, i, wordSize );
+					i += wordSize;
+				} while( i < toret.Length );
+			}
+
+			return toret;
 		}
 
         private byte[] raw;

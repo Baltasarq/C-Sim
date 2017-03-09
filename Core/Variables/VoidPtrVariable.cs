@@ -1,5 +1,6 @@
 
 namespace CSim.Core.Variables {
+    using System.Numerics;
 	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
@@ -42,7 +43,7 @@ namespace CSim.Core.Variables {
 		/// This is not possible for this type.
 		/// </summary>
 		/// <value>The memory read or written.</value>
-		public override long Access {
+		public override BigInteger Access {
 			get {
 				throw new TypeMismatchException( L18n.Get( L18n.Id.ErrDerreferencedVoid ) );
 			}

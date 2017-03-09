@@ -1,4 +1,5 @@
 ﻿namespace CSim.Core.Variables {
+    using System.Numerics;
 	using CSim.Core;
 	using CSim.Core.Types;
 
@@ -14,7 +15,7 @@
 		/// <param name="address">The address of the array.</param>
 		/// <param name="ptrType">Ptr type.</param>
 		/// <param name="pos">Position.</param>
-		public ArrayElement(string id, long address, Ptr ptrType, long pos)
+		public ArrayElement(string id, BigInteger address, Ptr ptrType, BigInteger pos)
 			:base( new Id( ptrType.Machine, "_" + id + "_" + pos ), ptrType.DerreferencedType)
 		{
 			this.Offset = pos * this.Type.Size;
@@ -26,15 +27,15 @@
 		/// Gets the position in the array.
 		/// </summary>
 		/// <value>The position.</value>
-		public long Pos {
+		public BigInteger Pos {
 			get; private set;
 		}
 
 		/// <summary>
 		/// Gets the offset from the beginning of the array.
 		/// </summary>
-		/// <value>The offset, as a long.</value>
-		public long Offset {
+		/// <value>The offset, as a <see cref="BigInteger"/>.</value>
+		public BigInteger Offset {
 			get; private set;
 		}
 	}

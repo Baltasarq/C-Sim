@@ -1,7 +1,10 @@
-﻿namespace CSim.Core.Opcodes {
+namespace CSim.Core.Opcodes {
+    using System.Numerics;
+
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// Mod opcode, allowing operations like 10%3.
@@ -35,13 +38,13 @@
 
 			// Check ops
 			if ( op1 == null
-	  	      || !( op1.Type.IsArithmetic() ) )
+	  	      || !( op1.Type is Primitive ) )
 			{
 				throw new TypeMismatchException( ": op1: " + op1.Type );
 			}
 
 			if ( op2 == null
-	   	      || !( op2.Type.IsArithmetic() ) )
+	   	      || !( op2.Type is Primitive ) )
 			{
 				throw new TypeMismatchException( ": op2: " + op2.Type );
 			}
@@ -59,13 +62,13 @@
 			}
 
 			// Now yes, do it
-			long op2Value = op2.LiteralValue.GetValueAsLongInt();
+			BigInteger op2Value = op2.LiteralValue.GetValueAsInteger();
 
 			if ( op2Value == 0 ) {
 				throw new EngineException( "/0??" );
 			}
 
-			long modRes = System.Convert.ToInt64( op1.LiteralValue.GetValueAsLongInt() ) % op2Value;
+			BigInteger modRes = op1.LiteralValue.GetValueAsInteger() % op2Value;
 
 			// Store in the temp vble and end
 			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, modRes ) );

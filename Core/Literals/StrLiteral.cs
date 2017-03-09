@@ -1,5 +1,7 @@
 ﻿
 namespace CSim.Core.Literals {
+    using System.Numerics;
+    
     /// <summary>
     /// Literals of type char*.
     /// </summary>
@@ -43,6 +45,16 @@ namespace CSim.Core.Literals {
         public override byte[] GetRawValue()
 		{
             return Machine.TextEncoding.GetBytes( this.Value.ToCharArray() );
+        }
+        
+        /// <summary>
+        /// Gets the value as an integer.
+        /// </summary>
+        /// <returns>Does not return any value.</returns>
+        /// <exception cref="EngineException">Always.</exception>
+        public override BigInteger GetValueAsInteger()
+        {
+            throw new EngineException( "cannot transform literal to int" );
         }
 
 		/// <summary>

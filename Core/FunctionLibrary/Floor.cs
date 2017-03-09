@@ -4,6 +4,7 @@ namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
 	using CSim.Core.Literals;
 	using CSim.Core.Variables;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// This is the floor math function.
@@ -49,7 +50,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			var param = realParams[ 0 ].SolveToVariable();
 
-			if ( !( param.Type.IsArithmetic() ) ) {
+			if ( !( param.Type is Primitive ) ) {
 				throw new TypeMismatchException( param.ToString() );
 			}
 

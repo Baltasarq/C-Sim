@@ -1,11 +1,22 @@
 ﻿
 namespace CSim.Core.Literals {
+    using System.Numerics;
 	using System.Globalization;
 
     /// <summary>
     /// Literals of type <see cref="double"/>.
     /// </summary>
     public class DoubleLiteral: Literal {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.DoubleLiteral"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="x">A given double.</param>
+		public DoubleLiteral(Machine m, object x)
+			:this( m, System.Convert.ToDouble( x ) )
+		{
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.DoubleLiteral"/> class.
 		/// </summary>
@@ -44,6 +55,15 @@ namespace CSim.Core.Literals {
         public override byte[] GetRawValue()
         {
 			return this.Machine.Bytes.FromDoubleToBytes( this.Value );
+        }
+        
+        /// <summary>
+        /// Gets the value as a <see cref="BigInteger"/>.
+        /// </summary>
+        /// <returns>The value as <see cref="BigInteger"/>.</returns>
+        public override BigInteger GetValueAsInteger()
+        {
+            return System.Convert.ToInt64( this.Value );
         }
 
 		/// <summary>

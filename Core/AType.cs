@@ -72,6 +72,13 @@ namespace CSim.Core {
 		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
 		/// <param name="raw">The sequence of bytes containing the value in memory.</param>
         public abstract Literal CreateLiteral(byte[] raw);
+
+		/// <summary>
+		/// Creates a literal for this type, given a value.
+		/// </summary>
+		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
+		/// <param name="v">The given value.</param>
+		public abstract Literal CreateLiteral(object v);
         
         /// <summary>
         /// Solves the type to a variable with the <see cref="Literals.TypeLiteral"/> as value.
@@ -82,16 +89,6 @@ namespace CSim.Core {
             var lit = new Literals.TypeLiteral( this );
             return new Variables.NoPlaceTempVariable( lit );
         }
-
-		/// <summary>
-		/// Determines whether the type is arithmetic.
-		/// </summary>
-		/// <returns><c>true</c> if this instance is arithmetic; otherwise, <c>false</c>.</returns>
-		public bool IsArithmetic() {
-			return ( this is Core.Types.Primitives.Int
-				  || this is Core.Types.Primitives.Char
-				  || this is Core.Types.Primitives.Double );
-		}
 
 		/// <summary>
 		/// Determines whether this type is any,
@@ -135,13 +132,13 @@ namespace CSim.Core {
 
 			// One of them is a pointer and the other a numeric value
 			if ( !toret ) {
-				toret = ( ( this is Ptr && other.IsArithmetic() )
-				  	   || ( this.IsArithmetic() && other is Ptr ) );
+				toret = ( ( this is Ptr && other is Primitive )
+				  	   || ( this is Primitive && other is Ptr ) );
 			}
 
 			// Compatibility between arithmetic types
 			if ( !toret ) {
-				toret = ( this.IsArithmetic() || other.IsArithmetic() );
+				toret = ( this is Primitive || other is Primitive );
 			}
  
 			return toret;

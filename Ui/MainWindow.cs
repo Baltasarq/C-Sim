@@ -1,15 +1,15 @@
 namespace CSim.Ui {
 	using System;
+    using System.Numerics;
+    using System.IO;
 	using System.Globalization;
-	using System.IO;
-	using System.Windows.Forms;
 	using System.Drawing;
+    using System.Windows.Forms;
 	using System.Collections.ObjectModel;
 
 	using CSim.Core;
 	using CSim.Core.Exceptions;
 	using CSim.Core.Variables;
-	using CSim.Core.Types;
 
     /// <summary>
     /// The main window of the application.
@@ -85,7 +85,7 @@ namespace CSim.Ui {
                 
 				try {
 					Variable vble = this.machine.TDS.LookUp( id );
-                    long pos = vble.Address;
+                    BigInteger pos = vble.Address;
 					int row = (int) pos / MaxDataColumns;
 					int col = (int) ( ( pos % MaxDataColumns ) +1 );
 
@@ -337,8 +337,6 @@ namespace CSim.Ui {
             this.pnlIO.Hide();
 			this.pnlSettings.Show();
 			this.cbLocales.Focus();
-
-            this.SaveCurrentStatus();
             this.SetStatus( L18n.Get( L18n.Id.ActSettings ) );
 		}
 
@@ -379,14 +377,14 @@ namespace CSim.Ui {
 				this.DoReset();
 			}
 			else
-			if ( this.rbWS16.Checked
+			if ( this.rbWS32.Checked
 			  && this.machine.WordSize != 4 )
 			{
 				this.machine.WordSize = 4;
 				this.DoReset();
 			}
 			else
-			if ( this.rbWS16.Checked
+			if ( this.rbWS64.Checked
 			  && this.machine.WordSize != 8 )
 			{
 				this.machine.WordSize = 8;
@@ -394,28 +392,13 @@ namespace CSim.Ui {
 			}
 
 			// UI
+			this.UpdateView();
             this.pnlSettings.Hide();
-            this.RestoreStatus();
 			this.tbIconBar.Show();
             this.pnlMain.Show();
             this.pnlIO.Show();
+            this.SetStatus();
 			this.FocusOnInput();
-		}
-
-		/// <summary>
-		/// Saves the current status.
-		/// </summary>
-		protected void SaveCurrentStatus()
-		{
-			this.statusBeforeSettings = this.lblStatus.Text;
-		}
-
-		/// <summary>
-		/// Restores the status.
-		/// </summary>
-		protected void RestoreStatus()
-		{
-			this.SetStatus( this.statusBeforeSettings );
 		}
 
 		private void DoReset()
@@ -724,6 +707,7 @@ namespace CSim.Ui {
 		private string FromVbleToString(Variable x)
 		{
 			var ptrVble = x as PtrVariable;
+            var charPtr = this.machine.TypeSystem.GetPtrType( this.machine.TypeSystem.GetCharType() );
 			string toret = string.Format( "{0}({1} [{2}]) = ",
 				x.Name.Value,
 				x.Type,
@@ -731,11 +715,10 @@ namespace CSim.Ui {
 
 			// Es char *?
 			if ( ptrVble != null
-			  && ptrVble.AssociatedType == this.machine.TypeSystem.GetCharType()
-			  && ( (Ptr) ptrVble.Type ).IndirectionLevel == 1 )
+			  && ptrVble.Type == charPtr )
 			{
-                Variable str = this.machine.TDS.LookForAddress( ptrVble.IntValue.GetValueAsLongInt() );
-
+                Variable str = this.machine.TDS.LookForAddress( ptrVble.IntValue.GetValueAsInteger() );
+                
 				if ( str != null ) {
 					toret += str.LiteralValue + " (" + x.LiteralValue + ")";
 				}	
@@ -822,12 +805,12 @@ namespace CSim.Ui {
 			this.lblLocales.Text = L18n.Get( L18n.Id.LblLanguage );
 		}
 
-		private static string FromIntToHex(long value, int wordSize = 1)
+		private static string FromIntToHex(BigInteger value, int wordSize = 1)
 		{
 			return Literal.ShortenNumber( value.ToString( "x" ).PadLeft( wordSize * 2, '0' ) );
 		}
 
-		private static string FromIntToPrettyHex(long value, int wordSize = 1)
+		private static string FromIntToPrettyHex(BigInteger value, int wordSize = 1)
 		{
 			return @"0x" + Literal.ShortenNumber( FromIntToHex( value, wordSize ) );
 		}
@@ -835,7 +818,6 @@ namespace CSim.Ui {
 		private bool doNotApplySnapshot;
         private int charWidth = -1;
         private Machine machine;
-		private string statusBeforeSettings;
         private SchemaDrawer sdDrawingBoard;
 		private string cfgFile = "";
 

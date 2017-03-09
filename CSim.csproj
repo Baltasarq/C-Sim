@@ -48,6 +48,7 @@
     <Folder Include="Core\Literals\" />
     <Folder Include="Ui\" />
     <Folder Include="Ui\Drawer\" />
+    <Folder Include="Core\Native\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\MemoryManager.cs" />
@@ -156,11 +157,43 @@
     <Compile Include="Core\Literals\TypeLiteral.cs" />
     <Compile Include="Core\FunctionLibrary\TypeOf.cs" />
     <Compile Include="Core\ByteConverter.cs" />
+    <Compile Include="Core\Types\Primitives\Short.cs" />
+    <Compile Include="Core\Types\Primitives\Long.cs" />
+    <Compile Include="Core\Types\Primitives\Float.cs" />
+    <Compile Include="Core\Literals\LongLiteral.cs" />
+    <Compile Include="Core\Literals\FloatLiteral.cs" />
+    <Compile Include="Core\Literals\ShortLiteral.cs" />
+    <Compile Include="Core\Types\Primitives\UShort.cs" />
+    <Compile Include="Core\Literals\UShortLiteral.cs" />
+    <Compile Include="Core\Literals\UIntLiteral.cs" />
+    <Compile Include="Core\Types\Primitives\UInt.cs" />
+    <Compile Include="Core\Types\Primitives\ULong.cs" />
+    <Compile Include="Core\Literals\ULongLiteral.cs" />
+    <Compile Include="Core\ExtensionMethods.cs" />
+    <Compile Include="Core\Native\Int128.cs" />
+    <Compile Include="Core\Native\UInt128.cs" />
+    <Compile Include="Core\Types\Primitives\Int8.cs" />
+    <Compile Include="Core\Literals\Int8Literal.cs" />
+    <Compile Include="Core\Literals\UInt8Literal.cs" />
+    <Compile Include="Core\Types\Primitives\UInt8.cs" />
+    <Compile Include="Core\Types\Primitives\Int16.cs" />
+    <Compile Include="Core\Literals\Int16Literal.cs" />
+    <Compile Include="Core\Types\Primitives\UInt16.cs" />
+    <Compile Include="Core\Literals\UInt16Literal.cs" />
+    <Compile Include="Core\Types\Primitives\Int32.cs" />
+    <Compile Include="Core\Types\Primitives\UInt32.cs" />
+    <Compile Include="Core\Literals\Int32Literal.cs" />
+    <Compile Include="Core\Literals\UInt32Literal.cs" />
+    <Compile Include="Core\Types\Primitives\Int64.cs" />
+    <Compile Include="Core\Types\Primitives\UInt64.cs" />
+    <Compile Include="Core\Literals\UInt64Literal.cs" />
+    <Compile Include="Core\Literals\Int64Literal.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Res\appIcon.png" />

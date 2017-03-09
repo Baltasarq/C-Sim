@@ -1,4 +1,5 @@
 ﻿namespace CSim.Core.Opcodes {
+    using System.Numerics;
 	using CSim.Core.Variables;
 	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
@@ -34,12 +35,12 @@
 			if ( vble != null
 			  && offset != null )
 			{
-				long address = 0;
+				BigInteger address = 0;
 				var ptrVble = vble.Type as Ptr;
 
 				// Find the address of the pointed array
 				if ( ptrVble != null ) {
-					address = vble.LiteralValue.GetValueAsLongInt();
+					address = vble.LiteralValue.GetValueAsInteger();
 				}
 				else
 				if ( vble is ArrayVariable ) {
@@ -49,7 +50,7 @@
 				}
 
 				// Chk
-				if ( !offset.Type.IsArithmetic() ) {
+				if ( !( offset.Type is Primitive ) ) {
 					throw new TypeMismatchException( offset.LiteralValue.ToString() );
 				}		
 
@@ -58,7 +59,7 @@
 										vble.Name.Name,
 										address,
 										(Ptr) vble.Type,
-										offset.LiteralValue.GetValueAsLongInt() );
+										offset.LiteralValue.GetValueAsInteger() );
 		
 				this.Machine.ExecutionStack.Push( result );
 			} else {

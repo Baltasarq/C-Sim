@@ -41,6 +41,16 @@ namespace CSim.Core.Types.Primitives {
 		{
 			return new CharLiteral( this.Machine, this.Machine.Bytes.FromBytesToChar( raw ) );
 		}
+
+		/// <summary>
+		/// Creates a literal for this type, given a value.
+		/// </summary>
+		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
+		/// <param name="v">The given value.</param>
+		public override Literal CreateLiteral(object v)
+		{
+			return new CharLiteral( this.Machine, v );
+		}
         
         /// <summary>
         /// Gets the only instance for this <see cref="AType"/>.

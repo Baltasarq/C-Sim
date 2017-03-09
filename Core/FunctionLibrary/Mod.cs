@@ -3,6 +3,7 @@
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
+    using CSim.Core.Types;
 	using CSim.Core;
 
 	/// <summary>
@@ -51,11 +52,11 @@
 			Variable x = realParams[ 0 ].SolveToVariable();
 			Variable y = realParams[ 1 ].SolveToVariable();
 			
-			if ( !( x.Type.IsArithmetic() ) ) {
+			if ( !( x.Type is Primitive ) ) {
 				throw new TypeMismatchException( x.LiteralValue + "?" );
 			}
 
-			if ( !( y.Type.IsArithmetic() ) ) {
+			if ( !( y.Type is Primitive ) ) {
 				throw new TypeMismatchException( y.LiteralValue + "?" );
 			}
 

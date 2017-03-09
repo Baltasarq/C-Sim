@@ -1,5 +1,7 @@
 ﻿
 namespace CSim.Core.Opcodes {
+    using System.Numerics;
+    
 	using CSim.Core.Variables;
 	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
@@ -42,7 +44,7 @@ namespace CSim.Core.Opcodes {
 
 					// Access the pointed value
 					if ( vbleType != null ) {
-						long address = System.Convert.ToInt64( vble.LiteralValue.Value );
+						BigInteger address = System.Convert.ToInt64( vble.LiteralValue.Value );
 						vble = new InPlaceTempVariable( vbleType.DerreferencedType );
 						vble.Address = address;
 						this.Machine.TDS.AddVariableInPlace( vble );

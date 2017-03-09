@@ -1,10 +1,10 @@
 
 namespace CSimTests {
+    using System.Numerics;
 	using NUnit.Framework;
 
 	using CSim.Core;
 	using CSim.Core.Literals;
-    using CSim.Core.Variables;
 
 	[TestFixture]
 	public class VbleTests {
@@ -26,8 +26,8 @@ namespace CSimTests {
 			int_v.LiteralValue = new IntLiteral( this.Machine, 5 );
 
             // Chk memory
-            Assert.AreEqual( 5, this.Machine.Memory.CreateLiteral( int_v.Address, int_v.Type ).Value );
-			Assert.AreEqual( 5, int_v.LiteralValue.Value );
+            Assert.AreEqual( (BigInteger) 5, this.Machine.Memory.CreateLiteral( int_v.Address, int_v.Type ).Value );
+			Assert.AreEqual( (BigInteger) 5, int_v.LiteralValue.Value );
 		}
 
 		[Test]

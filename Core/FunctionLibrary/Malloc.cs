@@ -51,7 +51,7 @@ namespace CSim.Core.FunctionLibrary {
 			var result = new ArrayVariable(
 								new Id( this.Machine, SymbolTable.GetNextMemoryBlockName() ),
 								this.Machine.TypeSystem.GetCharType(),
-								size.LiteralValue.GetValueAsLongInt()
+								size.LiteralValue.GetValueAsInteger()
 			);
 
             this.Machine.TDS.Add( result );

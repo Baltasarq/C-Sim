@@ -1,5 +1,6 @@
 
 namespace CSimTests {
+    using System.Numerics;
 	using NUnit.Framework;
 
 	using CSim.Core;
@@ -36,10 +37,14 @@ namespace CSimTests {
 
 			Assert.AreEqual( int_t, vble.Type );
 
-			this.machine.Execute( @"x = 5;" );
+			Variable vble_x = this.machine.Execute( @"x = 5;" );
 
-			Assert.AreEqual( 5, vble.LiteralValue.Value );
-			Assert.AreEqual( 5, this.machine.Memory.CreateLiteral( vble.Address, vble.Type ).Value );
+            Assert.AreSame( vble_x, vble, "Variable int x is not the one created" );
+            Assert.AreSame( vble_x.Type, this.int_t, "Variable x does not have type: int" );
+			Assert.AreEqual( (BigInteger) 5, vble.LiteralValue.Value, "Variable x does not have value: 5" );
+			Assert.AreEqual( (BigInteger) 5,
+                             this.machine.Memory.CreateLiteral( vble.Address, vble.Type ).Value,
+                             "Variable x does not have a coherent value in memory" );
 		}
 
 		[Test]

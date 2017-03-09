@@ -1,7 +1,8 @@
 
 namespace CSim.Ui {
-	using System.Collections.Generic;
+    using System.Numerics;
 	using System.Drawing;
+    using System.Collections.Generic;
 
 	using CSim.Core;
 	using CSim.Core.Variables;
@@ -28,7 +29,7 @@ namespace CSim.Ui {
 		public SchemaDrawer(Machine m)
         {
             this.Machine = m;
-			this.boxes = new Dictionary<long, GrphBoxedVariable>();
+			this.boxes = new Dictionary<BigInteger, GrphBoxedVariable>();
 
 			var normalFont = new Font( FontFamily.GenericMonospace, 12 );
 			var smallFont = new Font( FontFamily.GenericMonospace, 10 );
@@ -162,7 +163,7 @@ namespace CSim.Ui {
 			var ptrVble = box.Variable as PtrVariable;
 
 			if ( ptrVble != null ) {
-				long address = ptrVble.IntValue.Value;
+				var address = (BigInteger) ptrVble.IntValue.Value;
 				GrphBoxedVariable pointedBox = null;
 
 				if ( address == 0 ) {
@@ -312,7 +313,7 @@ namespace CSim.Ui {
 			get; set;
 		}
 
-		private Dictionary<long, GrphBoxedVariable> boxes;
+		private Dictionary<BigInteger, GrphBoxedVariable> boxes;
 
         private Bitmap bmBoard;
         private Graphics board;

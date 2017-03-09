@@ -1,5 +1,7 @@
 
 namespace CSim.Core {
+    using System.Numerics;
+    
 	/// <summary>
 	/// A variable living in the <see cref="Machine"/>.
 	/// </summary>
@@ -52,7 +54,7 @@ namespace CSim.Core {
         /// </summary>
         /// <returns><c>true</c>, if it is partly stored here, <c>false</c> otherwise.</returns>
         /// <param name="address">A position in memory.</param>
-        public bool IsStoredIn(long address)
+        public bool IsStoredIn(BigInteger address)
         {
             return ( address >= this.Address
                   && address < this.Address + this.Size );
@@ -66,13 +68,30 @@ namespace CSim.Core {
 		{
 			this.type = t;
 		}
+        
+        /// <summary>
+        /// Solves the type to a variable with the <see cref="Literals.TypeLiteral"/> as value.
+        /// </summary>
+        /// <returns>A suitable <see cref="Variable"/>.</returns>
+        public override Variable SolveToVariable()
+        {
+            return this;
+        }
 
+        /// <summary>
+        /// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.
+        /// </summary>
+        /// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.</returns>
+        public override string ToString()
+        {
+            return this.Type + " " + this.Name.Name;
+        }        
 
 		/// <summary>
 		/// Gets or sets the address this variable exists in.
 		/// </summary>
 		/// <value>The address, as an int.</value>
-        public long Address {
+        public BigInteger Address {
             get; set;
         }
 
@@ -113,7 +132,8 @@ namespace CSim.Core {
 				return this.Memory.CreateLiteral( this.Address, this.Type );
             }
             set {
-                this.Memory.Write( this.Address, value.GetRawValue() );
+				var lit = this.type.CreateLiteral( value.Value );
+				this.Memory.Write( this.Address, lit.GetRawValue() );
             }
         }
 
@@ -127,24 +147,6 @@ namespace CSim.Core {
 			}
 		}
         
-        /// <summary>
-        /// Solves the type to a variable with the <see cref="Literals.TypeLiteral"/> as value.
-        /// </summary>
-        /// <returns>A suitable <see cref="Variable"/>.</returns>
-        public override Variable SolveToVariable()
-        {
-            return this;
-        }
-
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.
-        /// </summary>
-        /// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.</returns>
-        public override string ToString()
-        {
-            return this.Type + " " + this.Name.Name;
-        }
-
         /// <summary>
         /// Gets the memory in which this variable is stored.
         /// </summary>

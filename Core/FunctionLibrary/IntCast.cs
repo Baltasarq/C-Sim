@@ -1,9 +1,11 @@
 ﻿
 namespace CSim.Core.FunctionLibrary {
+    using System.Numerics;
 	using CSim.Core.Exceptions;
 	using CSim.Core.Functions;
 	using CSim.Core.Literals;
 	using CSim.Core.Variables;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// This is the int cast.
@@ -49,11 +51,11 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			Variable param = realParams[ 0 ].SolveToVariable();
 
-			if ( !( param.Type.IsArithmetic() ) ) {
+			if ( !( param.Type is Primitive ) ) {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
-			long value = param.LiteralValue.GetValueAsLongInt();
+			BigInteger value = param.LiteralValue.GetValueAsInteger();
 			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( new IntLiteral( this.Machine, value ) ) );
 		}
 

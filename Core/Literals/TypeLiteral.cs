@@ -25,10 +25,21 @@
 // THE SOFTWARE.
 
 namespace CSim.Core.Literals {
+    using System.Numerics;
+    
     /// <summary>
     /// <see cref="AType"/> <see cref="Literal"/>'s.
     /// </summary>
     public class TypeLiteral: Literal {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.TypeLiteral"/> class.
+		/// </summary>
+		/// <param name="v">The value for the literal.</param>
+		public TypeLiteral(object v)
+			:this( (AType) v )
+		{
+		}
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:CSim.Core.Literals.TypeLiteral"/> class.
         /// </summary>
@@ -43,9 +54,9 @@ namespace CSim.Core.Literals {
         /// </summary>
         /// <param name="m">The machine this literal will live in.</param>
         /// <param name="v">The representation of the type as a byte.</param>
-        internal TypeLiteral(Machine m, byte v)
-            :base( m, v )
+        internal static TypeLiteral Create(Machine m, byte v)
         {
+			return new TypeLiteral( m.Bytes.FromBytesToType( new []{ v } ) );
         }
 
         /// <summary>
@@ -76,6 +87,15 @@ namespace CSim.Core.Literals {
         public override byte[] GetRawValue()
         {
             return new []{ (byte) base.Value };
+        }
+        
+        /// <summary>
+        /// Gets the value as an integer.
+        /// </summary>
+        /// <returns>The value as a <see cref="BigInteger"/>.</returns>
+        public override BigInteger GetValueAsInteger()
+        {
+            return System.Convert.ToInt64( this.Value.Size );
         }
 
         /// <summary>

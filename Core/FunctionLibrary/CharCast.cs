@@ -4,6 +4,7 @@ namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
 	using CSim.Core.Literals;
 	using CSim.Core.Variables;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// This is the char cast.
@@ -49,11 +50,11 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			Variable param = realParams[ 0 ].SolveToVariable();
 
-			if ( !( param.Type.IsArithmetic() ) ) {
+			if ( !( param.Type is Primitive ) ) {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
-			char value = System.Convert.ToChar( param.LiteralValue.GetValueAsLongInt() );
+			char value = System.Convert.ToChar( param.LiteralValue.GetValueAsInteger() );
 			Variable result = new NoPlaceTempVariable( new CharLiteral( this.Machine, value ) );
 			this.Machine.ExecutionStack.Push( result );
 		}

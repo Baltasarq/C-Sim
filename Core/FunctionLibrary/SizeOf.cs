@@ -1,5 +1,6 @@
 
 namespace CSim.Core.FunctionLibrary {
+    using System.Numerics;
 	using CSim.Core.Functions;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
@@ -51,7 +52,7 @@ namespace CSim.Core.FunctionLibrary {
             var argVble = realParams[ 0 ].SolveToVariable();
             var argType = argVble.Type as Types.TypeType;
 
-            long result = argVble.LiteralValue.GetValueAsLongInt();
+            BigInteger result = argVble.LiteralValue.GetValueAsInteger();
             if ( argType == null ) {
                 result = argVble.Type.Size;
             }
@@ -60,7 +61,7 @@ namespace CSim.Core.FunctionLibrary {
 			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
 		}
 
-		private static SizeOf instance = null;
+		private static SizeOf instance;
 		private static Variable[] sizeofFormalParams;
 	}
 }

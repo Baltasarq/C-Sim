@@ -47,7 +47,7 @@ namespace CSim.Core.FunctionLibrary {
 		public override void Execute(RValue[] realParams)
 		{
 			var param = realParams[ 0 ].SolveToVariable();
-			var valueFromStr = param.LiteralValue.GetValueAsLongInt();
+			var valueFromStr = param.LiteralValue.GetValueAsInteger();
 			var result = new NoPlaceTempVariable( new IntLiteral( this.Machine, valueFromStr ) );
 			this.Machine.ExecutionStack.Push( result );
 		}

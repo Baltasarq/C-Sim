@@ -1,5 +1,6 @@
 
 namespace CSim.Core.Variables {
+    using System.Numerics;
     using CSim.Core.Types;
     using CSim.Core.Literals;
 
@@ -62,7 +63,7 @@ namespace CSim.Core.Variables {
         /// Access the memory pointed by the value of this variable.
         /// </summary>
         /// <value>The memory read or written.</value>
-		public virtual long Access {
+		public virtual BigInteger Access {
 			get {
 				return this.Machine.Bytes.FromBytesToInt(
 					this.Memory.Read( this.IntValue.Value, this.AssociatedType.Size

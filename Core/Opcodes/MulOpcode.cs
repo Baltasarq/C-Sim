@@ -1,7 +1,8 @@
-﻿namespace CSim.Core.Opcodes {
+namespace CSim.Core.Opcodes {
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// Mul opcode, allowing operations such as 5*3.
@@ -35,13 +36,13 @@
 
 			// Check ops
 			if ( op1 == null
-		  	  || !( op1.Type.IsArithmetic() ) )
+		  	  || !( op1.Type is Primitive ) )
 			{
 				throw new TypeMismatchException( ": op1: " + op1.Type );
 			}
 
 			if ( op2 == null
-			  || !( op2.Type.IsArithmetic() ) )
+			  || !( op2.Type is Primitive ) )
 			{
 				throw new TypeMismatchException( ": op2: " + op2.Type );
 			}
@@ -69,8 +70,8 @@
 				                              * System.Convert.ToDouble( op2.LiteralValue.Value ) );
 			} else {
 				litResult = new IntLiteral( this.Machine,
-				                           op1.LiteralValue.GetValueAsLongInt()
-				                           * op2.LiteralValue.GetValueAsLongInt() );
+				                           op1.LiteralValue.GetValueAsInteger()
+				                           * op2.LiteralValue.GetValueAsInteger() );
 			}
 
 			// Store in the temp vble and end

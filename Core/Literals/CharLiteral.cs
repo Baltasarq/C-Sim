@@ -1,10 +1,22 @@
 ﻿using System;
 
 namespace CSim.Core.Literals {
+    using System.Numerics;
+    
     /// <summary>
     /// Literals of type Char.
     /// </summary>
     public class CharLiteral: Literal {
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.CharLiteral"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="ch">A given char.</param>
+		public CharLiteral(Machine m, object ch)
+			:this( m, System.Convert.ToChar( ch ) )
+		{
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.CharLiteral"/> class.
 		/// </summary>
@@ -43,6 +55,15 @@ namespace CSim.Core.Literals {
         public override byte[] GetRawValue()
 		{
 			return this.Machine.Bytes.FromCharToBytes( this.Value );
+        }
+        
+        /// <summary>
+        /// Gets the value as an integer.
+        /// </summary>
+        /// <returns>The value as <see cref="BigInteger"/>.</returns>
+        public override BigInteger GetValueAsInteger()
+        {
+            return new BigInteger( this.Value );
         }
 
 		/// <summary>

@@ -131,7 +131,7 @@ namespace CSim.Ui {
 			this.grdMemory.Columns.AddRange( columns );
 
 			// Create rows
-			var rows = new DataGridViewRow[ this.machine.Memory.Max / MaxDataColumns ];
+			var rows = new DataGridViewRow[ (int) this.machine.Memory.Max / MaxDataColumns ];
 
 			for(int i = 0; i < rows.Length; ++i) {
 				rows[ i ] = new DataGridViewRow();

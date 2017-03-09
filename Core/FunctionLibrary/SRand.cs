@@ -4,6 +4,7 @@ namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
 	using CSim.Core.Variables;
     using CSim.Core.Literals;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// This is the srand function.
@@ -49,11 +50,11 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			Variable param = realParams[ 0 ].SolveToVariable();
 
-			if ( param.Type.IsArithmetic() ) {
+			if ( param.Type is Primitive ) {
 				throw new TypeMismatchException( param.Name.Name );
 			}
             
-            var litSeed = new IntLiteral( this.Machine, param.LiteralValue.GetValueAsLongInt() );
+            var litSeed = new IntLiteral( this.Machine, param.LiteralValue.GetValueAsInteger() );
 
 			this.Machine.SetRandomEngine( litSeed.Value );
 			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litSeed ) );

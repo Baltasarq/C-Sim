@@ -1,8 +1,7 @@
 ﻿
 namespace CSim.Core {
-	using System;
 	using System.Text;
-	using CSim.Core.Literals;
+    using System.Numerics;
 
     /// <summary>
     /// Literals are rvalues.
@@ -22,7 +21,7 @@ namespace CSim.Core {
 		/// Initializes a new instance of the <see cref="CSim.Core.Literal"/> class.
 		/// </summary>
 		/// <param name="m">The <see cref="Machine"/> this literal is created for.</param>
-		/// <param name="v">The value, as a <see cref="System.Object"/>.</param>
+		/// <param name="v">The value, as an <see cref="System.Object"/>.</param>
 		protected Literal(Machine m, object v)
             :base( m )
 		{
@@ -113,7 +112,7 @@ namespace CSim.Core {
 		/// <returns>The value, as a string.</returns>
 		public string ToDec()
 		{
-			return ShortenNumber( this.GetValueAsLongInt().ToString().PadLeft( 4, '0' ) );
+			return ShortenNumber( this.GetValueAsInteger().ToString().PadLeft( 4, '0' ) );
 		}
 
 		/// <summary>
@@ -185,24 +184,7 @@ namespace CSim.Core {
 		/// Gets the value as an integer, if possible.
 		/// </summary>
         /// <returns>The value as integer, specifically <see cref="T:System.Long"/>.</returns>
-		public long GetValueAsLongInt()
-		{
-			long toret = 0;
-            var typeLit = this as TypeLiteral;
-
-			if ( this is IntLiteral
-			  || this is CharLiteral
-			  || this is DoubleLiteral )
-			{
-				toret = Convert.ToInt64( this.Value );
-			}
-            else
-            if ( typeLit != null ) {
-                toret = typeLit.Value.Size;
-            }
-
-			return toret;
-		}
+		public abstract BigInteger GetValueAsInteger();
 
 		/// <summary>
 		/// The type of display (<see cref="DisplayType"/>),

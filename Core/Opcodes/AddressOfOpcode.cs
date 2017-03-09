@@ -1,5 +1,6 @@
 
 namespace CSim.Core.Opcodes {
+    using System.Numerics;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 
@@ -27,7 +28,7 @@ namespace CSim.Core.Opcodes {
 		public override void Execute()
 		{
 			Variable toret = null;
-			long address = 0;
+			BigInteger address = 0;
 			var vble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			if ( vble != null

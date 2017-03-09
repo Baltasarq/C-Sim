@@ -47,6 +47,16 @@ namespace CSim.Core.Types {
 		}
 
 		/// <summary>
+		/// Creates a literal for this type, given a value.
+		/// </summary>
+		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
+		/// <param name="v">The given value.</param>
+		public override Literal CreateLiteral(object v)
+		{
+			return new CharLiteral( this.Machine, v );
+		}
+
+		/// <summary>
 		/// Gets the Any type. This type does not depend
         /// in any form from the machine's structure.
         /// <returns>The <see cref="AType"/>.</returns>

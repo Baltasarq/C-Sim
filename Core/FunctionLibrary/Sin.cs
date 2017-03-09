@@ -4,6 +4,7 @@ namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Exceptions;
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// This is the sin function.
@@ -49,7 +50,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			Variable param = realParams[ 0 ].SolveToVariable();
 
-			if ( !( param.Type.IsArithmetic() ) ) {
+			if ( !( param.Type is Primitive ) ) {
 				throw new TypeMismatchException( param.LiteralValue + "?" );
 			}
 

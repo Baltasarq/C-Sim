@@ -1,7 +1,8 @@
-﻿namespace CSim.Core.Opcodes {
+namespace CSim.Core.Opcodes {
 	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
+    using CSim.Core.Types;
 
 	/// <summary>
 	/// The Div opcode (mathematically divides numbers).
@@ -35,13 +36,13 @@
 
 			// Check ops
 			if ( op1 == null
-		  	  || !( op1.Type.IsArithmetic() ) )
+		  	  || !( op1.Type is Primitive ) )
 			{
 				throw new TypeMismatchException( ": op1" );
 			}
 
 			if ( op2 == null
-			  || !( op2.Type.IsArithmetic() ) )
+			  || !( op2.Type is Primitive ) )
 			{
 				throw new TypeMismatchException( ": op2" );
 			}
@@ -59,7 +60,7 @@
 			}
 
 			// Chk
-			if ( op2.LiteralValue.GetValueAsLongInt() == 0 ) {
+			if ( op2.LiteralValue.GetValueAsInteger() == 0 ) {
 				throw new EngineException( "/0!!" );
 			}
 
@@ -74,8 +75,8 @@
 				                              / System.Convert.ToDouble( op2.LiteralValue.Value ) );
 			} else {
 				litResult = new IntLiteral( this.Machine,
-				                           op1.LiteralValue.GetValueAsLongInt()
-				                           / op2.LiteralValue.GetValueAsLongInt() );
+				                           op1.LiteralValue.GetValueAsInteger()
+				                           / op2.LiteralValue.GetValueAsInteger() );
 			}
 
 			// Store in the temp vble and end

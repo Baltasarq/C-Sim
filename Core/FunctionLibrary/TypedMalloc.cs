@@ -1,4 +1,4 @@
-﻿
+
 namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
     using CSim.Core.Variables;
@@ -53,7 +53,7 @@ namespace CSim.Core.FunctionLibrary {
             var typeVble = realParams[ 1 ].SolveToVariable();
 
             // Chk
-            if ( !countVble.Type.IsArithmetic() ) {
+            if ( !( countVble.Type is Primitive ) ) {
                 throw new EngineException( string.Format( "size == {0}??", countVble ) );
             }
 
@@ -62,7 +62,7 @@ namespace CSim.Core.FunctionLibrary {
             }
 
             // Build
-            var count = countVble.LiteralValue.GetValueAsLongInt();
+            var count = countVble.LiteralValue.GetValueAsInteger();
             var type = ( (TypeLiteral) typeVble.Value ).Value;
             string blkId = SymbolTable.GetNextMemoryBlockName();
 

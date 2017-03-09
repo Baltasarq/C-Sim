@@ -2,6 +2,7 @@
 namespace CSim.Core {
 	using System;
 	using System.Text;
+    using System.Numerics;
 
     /// <summary>
     /// Represents the target machine emulated
@@ -62,6 +63,7 @@ namespace CSim.Core {
 			this.SnapshotManager.Reset();
 			this.TDS.Reset();
 			this.TypeSystem.Reset();
+            this.Bytes.Reset( this );
 		}
 
 		/// <summary>
@@ -75,7 +77,7 @@ namespace CSim.Core {
 		/// Sets the random engine with a given seed.
 		/// </summary>
 		/// <param name="seed">The seed to initialize the random generator, as an int.</param>
-		public void SetRandomEngine(long seed) {
+		public void SetRandomEngine(BigInteger seed) {
 			this.Random = new Random( (int) seed );
 		}
 
@@ -115,51 +117,6 @@ namespace CSim.Core {
 		}
 
         /// <summary>
-        /// Gets or sets the size of a word (in bytes) for this system.
-		/// Setting the word size implies a full reset of the machine.
-        /// </summary>
-        /// <value>The size of the word in bytes, as an int.</value>
-        public int WordSize {
-            get {
-                return this.wordSize;
-            }
-			set {
-				this.wordSize = CalculateWordSize( value );
-				this.Reset( MemoryManager.ResetType.Zero );
-			}
-        }
-
-		/// <summary>
-		/// Gets the word size in bits.
-		/// </summary>
-		/// <value>The word size in bits, as an int.</value>
-		public int WordSizeInBits {
-			get {
-				return ( this.WordSize * 8 );
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this machine is little endian.
-		/// </summary>
-		/// <value><c>true</c> if this instance is little endian; otherwise, <c>false</c>.</value>
-		public bool IsLittleEndian {
-			get {
-				return ( this.Endian == Endianness.LittleEndian );
-			}
-		}
-
-		/// <summary>
-		/// Gets a value indicating whether this machine is big endian.
-		/// </summary>
-		/// <value><c>true</c> if this instance is little endian; otherwise, <c>false</c>.</value>
-		public bool IsBigEndian {
-			get {
-				return ( this.Endian == Endianness.BigEndian );
-			}
-		}
-
-        /// <summary>
         /// Switchs the endianness of this machine.
         /// </summary>
         public void SwitchEndianness()
@@ -173,16 +130,6 @@ namespace CSim.Core {
             }
 
             return;
-        }
-
-        /// <summary>
-        /// Gets the system's text encoding.
-        /// </summary>
-        /// <value>The text encoding, as an <see cref="Encoding"/> object.</value>
-        public static Encoding TextEncoding {
-            get {
-                return Encoding.GetEncoding( "ISO-8859-1" );
-            }
         }
 
 		/// <summary>
@@ -229,6 +176,51 @@ namespace CSim.Core {
 
 			return toret;
 		}
+        
+        /// <summary>
+        /// Gets or sets the size of a word (in bytes) for this system.
+        /// Setting the word size implies a full reset of the machine.
+        /// </summary>
+        /// <value>The size of the word in bytes, as an int.</value>
+        public int WordSize {
+            get {
+                return this.wordSize;
+            }
+            set {
+                this.wordSize = CalculateWordSize( value );
+                this.Reset( MemoryManager.ResetType.Zero );
+            }
+        }
+
+        /// <summary>
+        /// Gets the word size in bits.
+        /// </summary>
+        /// <value>The word size in bits, as an int.</value>
+        public int WordSizeInBits {
+            get {
+                return ( this.WordSize * 8 );
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this machine is little endian.
+        /// </summary>
+        /// <value><c>true</c> if this instance is little endian; otherwise, <c>false</c>.</value>
+        public bool IsLittleEndian {
+            get {
+                return ( this.Endian == Endianness.LittleEndian );
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this machine is big endian.
+        /// </summary>
+        /// <value><c>true</c> if this instance is little endian; otherwise, <c>false</c>.</value>
+        public bool IsBigEndian {
+            get {
+                return ( this.Endian == Endianness.BigEndian );
+            }
+        }
 
 		/// <summary>
 		/// Gets the execution stack.
@@ -316,6 +308,16 @@ namespace CSim.Core {
 		public ByteConverter Bytes {
 			get; private set;
 		}
+        
+        /// <summary>
+        /// Gets the system's text encoding.
+        /// </summary>
+        /// <value>The text encoding, as an <see cref="Encoding"/> object.</value>
+        public static Encoding TextEncoding {
+            get {
+                return Encoding.GetEncoding( "ISO-8859-1" );
+            }
+        }
 
 		private int wordSize;
 		private Endianness endianness;

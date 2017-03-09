@@ -1,5 +1,7 @@
 ﻿
 namespace CSim.Core.Literals {
+    using System.Numerics;
+    
     /// <summary>
     /// Literals of type Int.
     /// </summary>
@@ -8,8 +10,18 @@ namespace CSim.Core.Literals {
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.IntLiteral"/> class.
 		/// </summary>
 		/// <param name="m">The <see cref="Machine"/>.</param>
-		/// <param name="x">A given long.</param>
-        public IntLiteral(Machine m, long x)
+		/// <param name="x">A given integral value.</param>
+		public IntLiteral(Machine m, object x)
+			:this( m, x.ToBigInteger() )
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.IntLiteral"/> class.
+		/// </summary>
+		/// <param name="m">The <see cref="Machine"/>.</param>
+		/// <param name="x">A given integer.</param>
+        public IntLiteral(Machine m, BigInteger x)
 			:base( m, x )
         {
         }
@@ -29,9 +41,9 @@ namespace CSim.Core.Literals {
         /// The value stored, as an integer value.
         /// </summary>
         /// <value>The value.</value>
-        public new long Value {
+        public new BigInteger Value {
             get {
-                return (long) base.Value;
+                return (BigInteger) base.Value;
             }
         }
 
@@ -42,6 +54,15 @@ namespace CSim.Core.Literals {
         public override byte[] GetRawValue()
         {
 			return this.Machine.Bytes.FromIntToBytes( this.Value );
+        }
+        
+        /// <summary>
+        /// Gets the value as an integer.
+        /// </summary>
+        /// <returns>The value as <see cref="BigInteger"/>.</returns>
+        public override BigInteger GetValueAsInteger()
+        {
+            return this.Value;
         }
         
 		/// <summary>

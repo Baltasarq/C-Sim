@@ -15,7 +15,7 @@ namespace CSim.Core.Types.Primitives {
         /// <param name="m">The <see cref="Machine"/> this will be used in.</param>
         /// </summary>
         private Double(Machine m)
-            :base( m, TypeName, m.WordSize * 2 )
+            :base( m, TypeName, m.WordSize << 1 )
         {
         }
 
@@ -36,6 +36,16 @@ namespace CSim.Core.Types.Primitives {
 		public override Literal CreateLiteral(byte[] raw)
 		{
 			return new DoubleLiteral( this.Machine, this.Machine.Bytes.FromBytesToDouble( raw ) );
+		}
+
+		/// <summary>
+		/// Creates a literal for this type, given a value.
+		/// </summary>
+		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
+		/// <param name="v">The given value.</param>
+		public override Literal CreateLiteral(object v)
+		{
+			return new DoubleLiteral( this.Machine, v );
 		}
 
         /// <summary>
