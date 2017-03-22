@@ -534,8 +534,11 @@ namespace CSim.Ui {
             ReadOnlyCollection<Variable> variables = this.machine.TDS.Variables;
 
 			this.tvSymbolTable.Nodes.Clear();
-
             foreach(Variable vble in variables) {
+                if ( vble is TempVariable ) {
+                    continue;
+                }
+            
 				string varTypeAddr = vble.Type.Name + " :" + vble.Type.Size
 					+ " ["
 					+ FromIntToPrettyHex( vble.Address, this.machine.WordSize )

@@ -44,7 +44,7 @@ namespace CSim.Core.Opcodes {
 
 					// Access the pointed value
 					if ( vbleType != null ) {
-						BigInteger address = System.Convert.ToInt64( vble.LiteralValue.Value );
+						BigInteger address = vble.LiteralValue.Value.ToBigInteger();
 						vble = new InPlaceTempVariable( vbleType.DerreferencedType );
 						vble.Address = address;
 						this.Machine.TDS.AddVariableInPlace( vble );

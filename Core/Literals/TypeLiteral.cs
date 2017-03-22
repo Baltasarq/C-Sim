@@ -95,7 +95,7 @@ namespace CSim.Core.Literals {
         /// <returns>The value as a <see cref="BigInteger"/>.</returns>
         public override BigInteger GetValueAsInteger()
         {
-            return System.Convert.ToInt64( this.Value.Size );
+            return this.Value.Size.ToBigInteger();
         }
 
         /// <summary>

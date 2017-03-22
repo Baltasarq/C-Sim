@@ -29,7 +29,7 @@ namespace CSim.Ui {
 		public SchemaDrawer(Machine m)
         {
             this.Machine = m;
-			this.boxes = new Dictionary<BigInteger, GrphBoxedVariable>();
+			this.boxes = new Dictionary<BigInteger, List<GrphBoxedVariable>>();
 
 			var normalFont = new Font( FontFamily.GenericMonospace, 12 );
 			var smallFont = new Font( FontFamily.GenericMonospace, 10 );
@@ -54,10 +54,22 @@ namespace CSim.Ui {
 		private void AddVariablesAsBoxes(IEnumerable<Variable> list)
 		{
 			foreach (Variable v in list) {
+                if ( v is TempVariable) {
+                    continue;
+                }
+            
 				var box = GrphBoxedVariable.Create( v, this.GraphInfo );
 
 				foreach(var boxInfo in box.GetInvolvedBoxes()) {
-					this.boxes.Add( boxInfo.Key, boxInfo.Value );
+                    List<GrphBoxedVariable> l;
+                    
+                    if ( this.boxes.TryGetValue( boxInfo.Key, out l) ) {
+                        l.Add( boxInfo.Value );
+                    } else {
+                        l = new List<GrphBoxedVariable>();
+                        l.Add( boxInfo.Value );
+    					this.boxes.Add( boxInfo.Key, l );
+                    }
 				}
 
 				this.rows.AddBox( box );
@@ -144,15 +156,19 @@ namespace CSim.Ui {
 			this.Cls();
 
 			// Draw relationships
-			foreach(GrphBoxedVariable box in this.boxes.Values) {
-				if ( box.Variable is PtrVariable ) {
-					this.DrawRelationship( box );
-				}
+			foreach(IList<GrphBoxedVariable> storedBoxes in this.boxes.Values) {
+                foreach(GrphBoxedVariable box in storedBoxes) {
+    				if ( box.Variable is PtrVariable ) {
+    					this.DrawRelationship( box );
+    				}
+                }
 			}
 
 			// Draw the boxes themselves
-			foreach(GrphBoxedVariable box in this.boxes.Values) {
-				box.Draw();
+			foreach(IList<GrphBoxedVariable> storedBoxes in this.boxes.Values) {
+                foreach(GrphBoxedVariable box in storedBoxes) {
+				    box.Draw();
+                }
 			}
 
             return;
@@ -163,14 +179,16 @@ namespace CSim.Ui {
 			var ptrVble = box.Variable as PtrVariable;
 
 			if ( ptrVble != null ) {
-				var address = (BigInteger) ptrVble.IntValue.Value;
+				BigInteger address = ptrVble.IntValue.Value;
 				GrphBoxedVariable pointedBox = null;
+                List<GrphBoxedVariable> l;
 
 				if ( address == 0 ) {
 					this.DrawNullPointer( box );
 				}
 				else
-				if ( this.boxes.TryGetValue( address, out pointedBox ) ) {
+				if ( this.boxes.TryGetValue( address, out l ) ) {
+                    pointedBox = l[0];
 				    float delta = 0;
 
 					if ( !( pointedBox is Drawer.GrphBoxedArray ) ) {
@@ -313,7 +331,7 @@ namespace CSim.Ui {
 			get; set;
 		}
 
-		private Dictionary<BigInteger, GrphBoxedVariable> boxes;
+		private Dictionary<BigInteger, List<GrphBoxedVariable>> boxes;
 
         private Bitmap bmBoard;
         private Graphics board;

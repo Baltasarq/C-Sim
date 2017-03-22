@@ -31,9 +31,8 @@ namespace CSim.Core.FunctionLibrary {
 			var result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
 			result.LiteralValue = new IntLiteral(
 				this.Machine,
-				System.Convert.ToInt64(
 					System.Math.Ceiling(
-						System.DateTime.Now.TimeOfDay.TotalSeconds ) ) );
+						System.DateTime.Now.TimeOfDay.TotalSeconds ).ToBigInteger() );
 
 			this.Machine.ExecutionStack.Push( result );
 		}
