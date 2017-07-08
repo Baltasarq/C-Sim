@@ -333,8 +333,7 @@ namespace CSim.Ui {
 
             // UI
             this.tbIconBar.Hide();
-            this.pnlMain.Hide();
-            this.pnlIO.Hide();
+            this.splMain.Hide();
 			this.pnlSettings.Show();
 			this.cbLocales.Focus();
             this.SetStatus( L18n.Get( L18n.Id.ActSettings ) );
@@ -395,8 +394,7 @@ namespace CSim.Ui {
 			this.UpdateView();
             this.pnlSettings.Hide();
 			this.tbIconBar.Show();
-            this.pnlMain.Show();
-            this.pnlIO.Show();
+            this.splMain.Show();
             this.SetStatus();
 			this.FocusOnInput();
 		}
@@ -416,14 +414,14 @@ namespace CSim.Ui {
 
 		private void DoOpen()
 		{
-			var dlg = new OpenFileDialog();
+            var dlg = new OpenFileDialog() {
+                Title = "Load session",
+                Filter = AppInfo.Name + "|*." + AppInfo.FileExt + "|*|*.*",
+                CheckFileExists = true,
+                FileName = Path.GetFullPath( CurrentDir )
+            };
 
-			dlg.Title = "Load session";
-			dlg.Filter = AppInfo.Name + "|*." + AppInfo.FileExt + "|*|*.*";
-			dlg.CheckFileExists = true;
-			dlg.FileName = Path.GetFullPath( CurrentDir );
-
-			this.SetStatus();
+            this.SetStatus();
 			if ( dlg.ShowDialog() == DialogResult.OK ) {
 				this.DoReset();
 
@@ -451,13 +449,13 @@ namespace CSim.Ui {
 
 		private void DoSave()
 		{
-			var dlg = new SaveFileDialog();
+            var dlg = new SaveFileDialog() {
+                Title = "Save session",
+                Filter = AppInfo.Name + "|*." + AppInfo.FileExt + "|*|*.*",
+                FileName = Path.GetFullPath( CurrentDir )
+            };
 
-			dlg.Title = "Save session";
-			dlg.Filter = AppInfo.Name + "|*." + AppInfo.FileExt + "|*|*.*";
-			dlg.FileName = Path.GetFullPath( CurrentDir );
-
-			if ( dlg.ShowDialog() == DialogResult.OK ) {
+            if ( dlg.ShowDialog() == DialogResult.OK ) {
 				using( var writer = new StreamWriter( dlg.FileName, false ) )
 				{
 					foreach(string s in this.lbHistory.Items) {
@@ -512,15 +510,18 @@ namespace CSim.Ui {
 
 				if ( !string.IsNullOrEmpty( input ) ) {
 					try {
-						result = this.machine.Execute( new ExpressionParser( input, this.machine ) );
+						result = this.machine.Execute(
+                                    new ExpressionParser( input, this.machine ) );
 
 						// Update output
-						lblWatch.ForeColor = Color.Navy;
+                        lblWatch.ForeColor = SystemColors.InfoText;
+                        lblWatch.BackColor = SystemColors.Info;
 						lblWatch.Text = result.Value.ToString();
 					}
 					catch(EngineException)
 					{
-						lblWatch.ForeColor = Color.DarkRed;
+						lblWatch.ForeColor = SystemColors.GrayText;
+                        lblWatch.BackColor = SystemColors.Window;
 						lblWatch.Text = "ERROR";
 					}
 				}
@@ -538,7 +539,7 @@ namespace CSim.Ui {
                 if ( vble is TempVariable ) {
                     continue;
                 }
-            
+
 				string varTypeAddr = vble.Type.Name + " :" + vble.Type.Size
 					+ " ["
 					+ FromIntToPrettyHex( vble.Address, this.machine.WordSize )
@@ -589,6 +590,19 @@ namespace CSim.Ui {
                 }
 
                 return this.charWidth;
+            }
+        }
+        
+        private int CharHeight
+        {
+            get {
+                if ( this.charHeight == -1 ) {
+                    Graphics grf = this.CreateGraphics();
+                    SizeF fontSize = grf.MeasureString( "H", this.Font );
+                    this.charHeight = (int) fontSize.Height +5;
+                }
+
+                return this.charHeight;
             }
         }
 
@@ -750,6 +764,11 @@ namespace CSim.Ui {
 			{
 				this.PrintError( exc.Message );
 			}
+            #if !DEBUG
+            catch(Exception exc) {
+                this.PrintError( "ERROR (internal): " + exc.Message ); 
+            }
+            #endif
 			finally {
 				this.UpdateView();
 			}
@@ -762,43 +781,20 @@ namespace CSim.Ui {
 			L18n.SetLanguage( locale );
 
 			// Toolbar buttons
-			ToolBar.ToolBarButtonCollection tbButtons = this.tbIconBar.Buttons; 
-			for(int i = 0; i < tbButtons.Count; ++i) {
-				ToolBarButton button = tbButtons[ i ];
-
-				switch( i ) {
-					case 0: button.ToolTipText = L18n.Get( L18n.Id.ActReset );
-							break;
-					case 1: button.ToolTipText = L18n.Get( L18n.Id.ActOpen );
-							break;
-					case 2: button.ToolTipText = L18n.Get( L18n.Id.ActSave );
-							break;
-					case 3: button.ToolTipText = L18n.Get( L18n.Id.ActInHex );
-							break;
-					case 4: button.ToolTipText = L18n.Get( L18n.Id.ActInDec );
-							break;
-					case 5: button.ToolTipText = L18n.Get( L18n.Id.ActZoomIn );
-							break;
-					case 6: button.ToolTipText = L18n.Get( L18n.Id.ActZoomOut );
-							break;
-					case 7: button.ToolTipText = L18n.Get( L18n.Id.ActShowMemory );
-							break;
-					case 8: button.ToolTipText = L18n.Get( L18n.Id.ActShowDiagram );
-							break;
-					case 9: button.ToolTipText = L18n.Get( L18n.Id.ActSettings );
-							break;
-					case 10: button.ToolTipText = L18n.Get( L18n.Id.ActHelp );
-							break;
-					case 11: button.ToolTipText = L18n.Get( L18n.Id.ActAbout );
-							break;
-					case 12: button.ToolTipText = L18n.Get( L18n.Id.ActPlay );
-							break;
-					case 13: button.ToolTipText = L18n.Get( L18n.Id.ActStop );
-							break;
-				default:
-					throw new ArgumentException( "unexpected toolbar button: unhandled" );
-				}
-			}
+            this.tbbReset.ToolTipText = L18n.Get( L18n.Id.ActReset );
+			this.tbbOpen.ToolTipText = L18n.Get( L18n.Id.ActOpen );
+			this.tbbSave.ToolTipText = L18n.Get( L18n.Id.ActSave );
+			this.tbbHex.ToolTipText = L18n.Get( L18n.Id.ActInHex );
+			this.tbbDec.ToolTipText = L18n.Get( L18n.Id.ActInDec );
+            this.tbbZoomIn.ToolTipText = L18n.Get( L18n.Id.ActZoomIn );
+			this.tbbZoomOut.ToolTipText = L18n.Get( L18n.Id.ActZoomOut );
+			this.tbbMemory.ToolTipText = L18n.Get( L18n.Id.ActShowMemory );
+			this.tbbDiagram.ToolTipText = L18n.Get( L18n.Id.ActShowDiagram );
+            this.tbbStop.ToolTipText = L18n.Get( L18n.Id.ActStop );
+            this.tbbPlay.ToolTipText = L18n.Get( L18n.Id.ActPlay );
+			this.tbbSettings.ToolTipText = L18n.Get( L18n.Id.ActSettings );
+			this.tbbHelp.ToolTipText = L18n.Get( L18n.Id.ActHelp );
+			this.tbbAbout.ToolTipText = L18n.Get( L18n.Id.ActAbout );
 
 			// Tabbed panel
 			this.tcTabs.TabPages[ 0 ].Text = L18n.Get( L18n.Id.ActShowMemory );
@@ -820,6 +816,7 @@ namespace CSim.Ui {
 
 		private bool doNotApplySnapshot;
         private int charWidth = -1;
+        private int charHeight = -1;
         private Machine machine;
         private SchemaDrawer sdDrawingBoard;
 		private string cfgFile = "";

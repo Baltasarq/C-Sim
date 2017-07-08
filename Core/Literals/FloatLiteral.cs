@@ -14,7 +14,7 @@ namespace CSim.Core.Literals {
 		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="x">A given double.</param>
 		public FloatLiteral(Machine m, object x)
-			:this( m, System.Convert.ToSingle( x ) )
+			:this( m, x.ToFloat() )
 		{
 		}
 

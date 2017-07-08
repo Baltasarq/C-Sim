@@ -81,6 +81,58 @@ namespace CSim.Core {
         }
         
         /// <summary>
+        /// Tries to convert anything to a double, without exceptions,
+        /// unless impossible.
+        /// </summary>
+        /// <returns>The double value.</returns>
+        /// <param name="value">A primitive, probably boxed.</param>
+        public static double ToDouble(this object value)
+        {
+            double toret = 0.0;
+
+            if ( value == null ) {
+                throw new ArgumentException( "trying to convert null to double" );
+            }
+
+            if ( value is float
+              || value is double )
+            {
+                toret = (double) value;
+            }
+            else
+            if ( value is sbyte
+              || value is byte
+              || value is short
+              || value is ushort
+              || value is int
+              || value is uint
+              || value is long
+              || value is ulong )
+            {
+                toret = Convert.ToDouble( value );
+            }
+            else
+            if ( value is BigInteger ) {
+                toret = ( (double) ( (BigInteger) value ) );
+            } else {
+                throw new ArgumentException( "cannot convert to double from: " + value.GetType() );
+            }
+            
+            return toret;
+        }
+        
+        /// <summary>
+        /// Tries to convert anything to a float, without exceptions,
+        /// unless impossible.
+        /// </summary>
+        /// <returns>The float value.</returns>
+        /// <param name="value">A primitive, probably boxed.</param>
+        public static float ToFloat(this object value)
+        {
+            return (float) value.ToDouble();
+        }
+        
+        /// <summary>
         /// Converts a <see cref="BigInteger"/> to a byte.
         /// Overflow is allowed, so for example from a 128bit value
         /// only the first 8bits will be returned.

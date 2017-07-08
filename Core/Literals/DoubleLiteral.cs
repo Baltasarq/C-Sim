@@ -13,7 +13,7 @@ namespace CSim.Core.Literals {
 		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="x">A given double.</param>
 		public DoubleLiteral(Machine m, object x)
-			:this( m, System.Convert.ToDouble( x ) )
+			:this( m, x.ToDouble() )
 		{
 		}
 

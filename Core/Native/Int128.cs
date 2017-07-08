@@ -2,9 +2,9 @@
 // Int128.cs
 //
 // Author:
-//		Simon Mourier
+//      Simon Mourier
 // Adapted by:
-//       baltasarq <baltasarq@gmail.com>
+//      baltasarq <baltasarq@gmail.com>
 //
 // Copyright (c) 2017 baltasarq
 //
@@ -30,6 +30,7 @@ namespace CSim.Core {
     using System;
 	using System.Numerics;
     
+    /// <summary>Represents 64 bits integer values.</summary>
     public struct Int128 {
 		/// <summary>The length in bytes for this integer's
 		///  binary representation.</summary>
@@ -129,12 +130,14 @@ namespace CSim.Core {
 		{
 		}
 
+        /// <summary>Gets the value as a <see cref="BigInteger"/>.</summary>
 		public BigInteger Value {
 			get {
 				return new BigInteger();
 			}
 		}
 
+		/// <summary>Gets the representation in bytes.</summary>
 		public byte[] Bytes {
 			get {
 				return this.Value.ToByteArray();
