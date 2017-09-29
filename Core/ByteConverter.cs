@@ -515,13 +515,13 @@ namespace CSim.Core {
 		/// <param name="t">An array of bytes (length == 1), with the binary representation.</param>
 		public byte[] FromTypeToBytes(AType t)
 		{
-			byte toret = byte.MaxValue;
+			byte toret;
 
             if ( t is TypeType ) {
                 toret = byte.MaxValue;
             }
             else
-			if ( t == Any.Get( t.Machine) ) {
+			if ( t == Any.Get( t.Machine ) ) {
                 toret = 0;
             } else {
                 byte references = 0;
@@ -545,74 +545,11 @@ namespace CSim.Core {
 				}
 
 				// Basic value
-				if ( t is Types.Primitives.Char ) {
-					toret += 1;
-				}
-                else
-                if ( t is Types.Primitives.Int8 ) {
-                    toret += 2;
+                if ( t != Any.Get( t.Machine ) ) {
+                    toret += (byte) ( Primitive.GetPrimitiveNameIndex( t.Name ) + 1 );
                 }
-                else
-                if ( t is Types.Primitives.UInt8 ) {
-                    toret += 3;
-                }
-                else
-                if ( t is Types.Primitives.Short ) {
-                    toret += 4;
-                }
-                else
-                if ( t is Types.Primitives.UShort ) {
-                    toret += 5;
-                }
-                else
-                if ( t is Types.Primitives.Int16 ) {
-                    toret += 6;
-                }
-                else
-                if ( t is Types.Primitives.UInt16 ) {
-                    toret += 7;
-                }
-                else
-                if ( t is Types.Primitives.Int32 ) {
-                    toret += 8;
-                }
-                else
-                if ( t is Types.Primitives.UInt32 ) {
-                    toret += 9;
-                }
-				else
-				if ( t is Types.Primitives.Int ) {
-					toret += 10;
-				}
-                else
-                if ( t is Types.Primitives.UInt ) {
-                    toret += 11;
-                }
-                else
-                if ( t is Types.Primitives.Int64 ) {
-                    toret += 12;
-                }
-                else
-                if ( t is Types.Primitives.UInt64 ) {
-                    toret += 13;
-                }
-                else
-                if ( t is Types.Primitives.Long ) {
-                    toret += 14;
-                }
-                else
-                if ( t is Types.Primitives.ULong ) {
-                    toret += 15;
-                }
-                else
-                if ( t is Types.Primitives.Float ) {
-                    toret += 16;
-                }
-				else
-				if ( t is Types.Primitives.Double ) {
-					toret += 17;
-				}
-                
+                           
+                // Build the final type's value    
                 references <<= 7;
                 indirections <<= 5;
                 toret += (byte) ( references + indirections );
@@ -643,63 +580,14 @@ namespace CSim.Core {
                 references = x & 128;    // 10000000
                 references >>= 7;
                 x = (byte) ( x & 31 );   // 00011111
-
-    			switch( x ) {
-    				case 0:
-        				toret = Any.Get( this.Machine );
-        				break;
-    				case 1:
-        				toret = this.Machine.TypeSystem.GetCharType();
-        				break;
-                    case 2:
-                        toret = this.Machine.TypeSystem.GetPrimitiveType( Int8.TypeName );
-                        break;
-    				case 3:
-        				toret = this.Machine.TypeSystem.GetPrimitiveType( UInt8.TypeName );
-        				break;
-                    case 4:
-                        toret = this.Machine.TypeSystem.GetPrimitiveType( Short.TypeName );
-                        break;
-                    case 5:
-                        toret = this.Machine.TypeSystem.GetPrimitiveType( UShort.TypeName );
-                        break;
-    				case 6:
-        				toret = this.Machine.TypeSystem.GetPrimitiveType( Int16.TypeName );
-        				break;
-                    case 7:
-                        toret = this.Machine.TypeSystem.GetPrimitiveType( UInt16.TypeName );
-                        break;
-                    case 8:
-                        toret = this.Machine.TypeSystem.GetPrimitiveType( Int32.TypeName );
-                        break;
-                    case 9:
-                        toret = this.Machine.TypeSystem.GetPrimitiveType( UInt32.TypeName );
-                        break;
-                    case 10:
-                        toret = this.Machine.TypeSystem.GetIntType();
-                        break;
-                    case 11:
-                        toret = this.Machine.TypeSystem.GetUIntType();
-                        break;
-                    case 12:
-                        toret = this.Machine.TypeSystem.GetPrimitiveType( Int64.TypeName );
-                        break;
-                    case 13:
-                        toret = this.Machine.TypeSystem.GetPrimitiveType( UInt64.TypeName );
-                        break;
-                    case 14:
-                        toret = this.Machine.TypeSystem.GetLongType();
-                        break;
-                    case 15:
-                        toret = this.Machine.TypeSystem.GetULongType();
-                        break;
-                    case 16:
-                        toret = this.Machine.TypeSystem.GetFloatType();
-                        break;
-                    case 17:
-                        toret = this.Machine.TypeSystem.GetDoubleType();
-                        break;
-    			}
+                
+                // Retrieve the appropiate basic type
+                if ( x == 0 ) {
+                    toret = Any.Get( this.Machine );
+                } else {
+                    toret = this.Machine.TypeSystem.GetBasicType(
+                                Primitive.GetPrimitiveNameAt( x - 1 ) );
+                }
     
                 // Indirections
     			if ( indirections > 0 ) {

@@ -53,7 +53,7 @@ namespace CSim.Core.FunctionLibrary {
 								this.Machine.TypeSystem.GetCharType(),
 								size.LiteralValue.GetValueAsInteger()
 			);
-
+            
             this.Machine.TDS.Add( result );
 			this.Machine.ExecutionStack.Push( result );
 		}

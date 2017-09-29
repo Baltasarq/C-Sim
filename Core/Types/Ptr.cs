@@ -99,7 +99,10 @@ namespace CSim.Core.Types {
 		/// <param name="strId">The identifier for the variable.</param>
 		public override Variable CreateVariable(string strId)
 		{
-			return new PtrVariable( new Id( this.Machine, strId ), this, this.IndirectionLevel );
+			return new PtrVariable(
+                            new Id( this.Machine, strId ),
+                            this,
+                            this.IndirectionLevel );
 		}
         
         /// <summary>

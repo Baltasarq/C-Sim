@@ -1,5 +1,6 @@
 ﻿namespace CSim.Ui.Drawer {
 	using System;
+    using System.Linq;
     using System.Numerics;
 	using System.Drawing;
 	using System.Collections.Generic;
@@ -29,13 +30,14 @@
 		/// </summary>
 		private string[] ExtractArrayElementValues()
 		{
+            int count = this.ArrayVariable.Count.ToInt32();
 			string completeContents = "";
 			string separator = "";
-			var arrVble = this.Variable as ArrayVariable;
-			Literal[] lits = arrVble.ExtractArrayElementValues();
-			var toret = new string[ (int) arrVble.Count ];
+			
+			var toret = new string[ count ];
+            Literal[] lits = this.ArrayVariable.ExtractArrayElementsValues();
 
-			for (int i = 0; i < arrVble.Count; ++i) {
+			for (int i = 0; i < count; ++i) {
 				toret[ i ] = lits[ i ].AsArrayElement();
 				completeContents += separator + toret[ i ];
 				separator = ", ";
@@ -50,8 +52,7 @@
 		/// </summary>
 		protected override void CalculateSize()
 		{
-			var arrayVariable = this.Variable as ArrayVariable;
-			var elementsType = ( (Ptr) arrayVariable.Type ).DerreferencedType;
+			var elementsType = ( (Ptr) this.ArrayVariable.Type ).DerreferencedType;
 			this.StrValues = this.ExtractArrayElementValues();
 
 			// Determine values width
@@ -62,8 +63,8 @@
 			// Determine other sizes
 			this.StrName = this.Variable.Name.Name;
 			this.StrType = elementsType
-				+ "[" + arrayVariable.Count
-				+ "] :" + this.Variable.Type.Size
+				+ "[" + this.ArrayVariable.Count
+				+ "] :" + elementsType.Size * this.ArrayVariable.Count
 				+ " ["
 				+ new IntLiteral( this.Variable.Machine, this.Variable.Address ).ToPrettyNumber()
 				+ ']';
@@ -75,6 +76,33 @@
 			this.BoxY = this.GraphInfo.SmallFont.CharHeight;
 			this.Width = Math.Max( Math.Max( this.BoxWidth, lenTypeString ), lenNameString );
 			this.Height = this.GraphInfo.NormalFont.CharHeight + ( 2 * this.GraphInfo.SmallFont.CharHeight ) + 5;
+            
+            // Create box for array elements
+            this.elementBoxes = new List<GrphBoxedVariable>();
+            
+            if ( elementsType is Ptr ) {
+	            float space = 0;
+	            for(int i = 0; i < this.ArrayVariable.Count; ++i) {
+	                float posX = this.StartArrayElementsText + space;
+	                	                
+                    var box = new GrphBoxedArrayElement(
+                                new ArrayElement(
+                                        this.ArrayVariable.Name.Name,
+                                        this.ArrayVariable.Address,
+                                        (Ptr) this.ArrayVariable.Type,
+                                        i ),
+                                this.GraphInfo )
+                            {
+                                X = posX,
+                                Y = this.Y,
+                            };
+                            
+                    this.elementBoxes.Add( box );
+                    space += this.CalculateSpaceForElement( i );
+	            }
+            }
+            
+            return;
 		}
 
 		/// <summary>
@@ -82,6 +110,7 @@
 		/// </summary>
 		public override void Draw()
 		{
+            AType elementsType = ( (Ptr) this.ArrayVariable.Type ).DerreferencedType; 
 			base.Draw();
 
 			// Determine color for the surrounding rectangle
@@ -95,21 +124,26 @@
 			this.GraphInfo.Pen.Color = Color.Black;
 			this.DrawText( this.X, this.Y, this.GraphInfo.SmallFont.Font, this.StrType );
 
-			// Draw value (box caption)
+			// Draw elements in the array
 			this.GraphInfo.Pen.Color = Color.Black;
 			float space = 0;
-			float beginning = this.X + ( this.GraphInfo.NormalFont.CharWidth * 3 );
 			for (int i = 0; i < this.StrValues.Length; ++i) {
+                float posX = this.StartArrayElementsText + space;
+            
+                // Element
 				this.DrawText(
-					beginning + space,
+					posX,
 				    this.Y + this.GraphInfo.NormalFont.CharHeight,
 				    this.GraphInfo.NormalFont.Font,
 					this.StrValues[ i ] );
 				
-				space += ( this.StrValues[ i ].Length * this.GraphInfo.NormalFont.CharWidth ) + 3;
-				this.DrawLine(
-						beginning + space - 1, this.Y + this.GraphInfo.SmallFont.CharHeight,
-						beginning + space - 1, this.Y + ( this.GraphInfo.SmallFont.CharHeight * 2 ) + 5 );
+                // Show division
+                space += this.CalculateSpaceForElement( i );
+                this.DrawLine(
+                        this.StartArrayElementsText + space - 1,
+                        this.Y + this.GraphInfo.SmallFont.CharHeight,
+                        this.StartArrayElementsText + space - 1,
+                        this.Y + ( this.GraphInfo.SmallFont.CharHeight * 2 ) + 5 );
 			}
 
 			// Draw name
@@ -127,19 +161,40 @@
 				this.Y + this.GraphInfo.SmallFont.CharHeight,
 				this.BoxWidth,
 				this.GraphInfo.NormalFont.CharHeight + 5 );
-			this.GraphInfo.Pen.Width -= 1;
+			this.GraphInfo.Pen.Width -= 1;                    
 		}
+        
+        /// <summary>
+        /// Gets the start of text for array elements (x coordinate).
+        /// </summary>
+        /// <value>The start, as a float.</value>
+        public float StartArrayElementsText {
+            get {
+                return this.X + ( this.GraphInfo.NormalFont.CharWidth * 3 );
+            }
+        }
+        
+        /// <summary>
+        /// Calculates the space needed for a given array element.
+        /// </summary>
+        /// <returns>The space needed for array element.</returns>
+        /// <param name="i">The index of the array element.</param>
+        public float CalculateSpaceForElement(int i)
+        {
+            return ( this.StrValues[ i ].Length
+                    * this.GraphInfo.NormalFont.CharWidth ) + 3;
+        }
 
 		/// <summary>
 		/// Gets the related boxes.
 		/// This will return the individual items as if they were boxes.
 		/// </summary>
 		/// <returns>The related boxes.</returns>
-		public override IDictionary<BigInteger, GrphBoxedVariable> GetInvolvedBoxes ()
+		public override List<GrphBoxedVariable> GetInvolvedBoxes()
 		{
-			IDictionary<BigInteger, GrphBoxedVariable> toret = base.GetInvolvedBoxes();
-
-
+			List<GrphBoxedVariable> toret = base.GetInvolvedBoxes();
+            
+            toret.AddRange( this.elementBoxes );
 			return toret;
 		}
 
@@ -151,5 +206,18 @@
 		public string[] StrValues {
 			get; protected set;
 		}
+        
+        /// <summary>
+        /// Gets the array variable. Reinterprets the Variable property.
+        /// </summary>
+        /// <value>The <see cref="ArrayVariable"/>.</value>
+        /// <seealso cref="GrphBoxedVariable.Variable"/>
+        public ArrayVariable ArrayVariable {
+            get {
+                return (ArrayVariable) this.Variable;
+            }
+        }
+        
+        private List<GrphBoxedVariable> elementBoxes;
 	}
 }

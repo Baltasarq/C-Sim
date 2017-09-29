@@ -58,69 +58,69 @@ namespace CSimTests {
             Assert.AreEqual( 1, char_t.Size );
             
             // Int8
-            var int8_t = this.vm.TypeSystem.GetPrimitiveType( Int8.TypeName );
+            var int8_t = this.vm.TypeSystem.GetBasicType( Int8.TypeName );
             Assert.IsNotNull( int8_t );
             Assert.AreEqual( Int8.TypeName, int8_t.Name );
             Assert.AreEqual( 1, Int8.LengthInBytes );
             Assert.AreEqual( Int8.LengthInBytes, int8_t.Size );
             
             // UInt8
-            var uint8_t = this.vm.TypeSystem.GetPrimitiveType( UInt8.TypeName );
+            var uint8_t = this.vm.TypeSystem.GetBasicType( UInt8.TypeName );
             Assert.IsNotNull( uint8_t );
             Assert.AreEqual( UInt8.TypeName, uint8_t.Name );
             Assert.AreEqual( 1, UInt8.LengthInBytes );
             Assert.AreEqual( UInt8.LengthInBytes, uint8_t.Size );
             
             // Int16
-            var int16_t = this.vm.TypeSystem.GetPrimitiveType( Int16.TypeName );
+            var int16_t = this.vm.TypeSystem.GetBasicType( Int16.TypeName );
             Assert.IsNotNull( int16_t );
             Assert.AreEqual( Int16.TypeName, int16_t.Name );
             Assert.AreEqual( 2, Int16.LengthInBytes );
             Assert.AreEqual( Int16.LengthInBytes, int16_t.Size );
             
             // UInt16
-            var uint16_t = this.vm.TypeSystem.GetPrimitiveType( UInt16.TypeName );
+            var uint16_t = this.vm.TypeSystem.GetBasicType( UInt16.TypeName );
             Assert.IsNotNull( uint16_t );
             Assert.AreEqual( UInt16.TypeName, uint16_t.Name );
             Assert.AreEqual( 2, UInt16.LengthInBytes );
             Assert.AreEqual( UInt16.LengthInBytes, uint16_t.Size );
             
             // Int32
-            var int32_t = this.vm.TypeSystem.GetPrimitiveType( Int32.TypeName );
+            var int32_t = this.vm.TypeSystem.GetBasicType( Int32.TypeName );
             Assert.IsNotNull( int32_t );
             Assert.AreEqual( Int32.TypeName, int32_t.Name );
             Assert.AreEqual( 4, Int32.LengthInBytes );
             Assert.AreEqual( Int32.LengthInBytes, int32_t.Size );
             
             // UInt32
-            var uint32_t = this.vm.TypeSystem.GetPrimitiveType( UInt32.TypeName );
+            var uint32_t = this.vm.TypeSystem.GetBasicType( UInt32.TypeName );
             Assert.IsNotNull( uint32_t );
             Assert.AreEqual( UInt32.TypeName, uint32_t.Name );
             Assert.AreEqual( 4, UInt32.LengthInBytes );
             Assert.AreEqual( UInt32.LengthInBytes, uint32_t.Size );
             
             // Int32
-            var int64_t = this.vm.TypeSystem.GetPrimitiveType( Int64.TypeName );
+            var int64_t = this.vm.TypeSystem.GetBasicType( Int64.TypeName );
             Assert.IsNotNull( int64_t );
             Assert.AreEqual( Int64.TypeName, int64_t.Name );
             Assert.AreEqual( 8, Int64.LengthInBytes );
             Assert.AreEqual( Int64.LengthInBytes, int64_t.Size );
             
             // UInt32
-            var uint64_t = this.vm.TypeSystem.GetPrimitiveType( UInt64.TypeName );
+            var uint64_t = this.vm.TypeSystem.GetBasicType( UInt64.TypeName );
             Assert.IsNotNull( uint64_t );
             Assert.AreEqual( UInt64.TypeName, uint64_t.Name );
             Assert.AreEqual( 8, UInt64.LengthInBytes );
             Assert.AreEqual( UInt64.LengthInBytes, uint64_t.Size );
             
             // Short
-            var short_t = this.vm.TypeSystem.GetPrimitiveType( Short.TypeName );
+            var short_t = this.vm.TypeSystem.GetBasicType( Short.TypeName );
             Assert.IsNotNull( short_t );
             Assert.AreEqual( Short.TypeName, short_t.Name );
             Assert.AreEqual( this.vm.WordSize >> 1, short_t.Size );
             
             // UShort
-            var ushort_t = this.vm.TypeSystem.GetPrimitiveType( UShort.TypeName );
+            var ushort_t = this.vm.TypeSystem.GetBasicType( UShort.TypeName );
             Assert.IsNotNull( ushort_t );
             Assert.AreEqual( UShort.TypeName, ushort_t.Name );
             Assert.AreEqual( this.vm.WordSize >> 1, ushort_t.Size );
@@ -131,25 +131,25 @@ namespace CSimTests {
             Assert.AreEqual( this.vm.WordSize, this.int_t.Size );
             
             // UInt
-            var uint_t = this.vm.TypeSystem.GetPrimitiveType( UInt.TypeName );
+            var uint_t = this.vm.TypeSystem.GetBasicType( UInt.TypeName );
             Assert.IsNotNull( uint_t );
             Assert.AreEqual( UInt.TypeName, uint_t.Name );
             Assert.AreEqual( this.vm.WordSize, uint_t.Size );
             
             // Long
-            var long_t = this.vm.TypeSystem.GetPrimitiveType( Long.TypeName );
+            var long_t = this.vm.TypeSystem.GetBasicType( Long.TypeName );
             Assert.IsNotNull( long_t );
             Assert.AreEqual( Long.TypeName, long_t.Name );
             Assert.AreEqual( this.vm.WordSize << 1, long_t.Size );
             
             // ULong
-            var ulong_t = this.vm.TypeSystem.GetPrimitiveType( ULong.TypeName );
+            var ulong_t = this.vm.TypeSystem.GetBasicType( ULong.TypeName );
             Assert.IsNotNull( ulong_t );
             Assert.AreEqual( ULong.TypeName, ulong_t.Name );
             Assert.AreEqual( this.vm.WordSize << 1, ulong_t.Size );
             
             // Float
-            var float_t = this.vm.TypeSystem.GetPrimitiveType( Float.TypeName );
+            var float_t = this.vm.TypeSystem.GetBasicType( Float.TypeName );
             Assert.IsNotNull( float_t );
             Assert.AreEqual( Float.TypeName, float_t.Name );
             Assert.AreEqual( this.vm.WordSize, float_t.Size );
@@ -198,21 +198,21 @@ namespace CSimTests {
 			var bytes = new byte[] {
 				this.vm.Bytes.FromTypeToBytes( this.any_t )[ 0 ],
 				this.vm.Bytes.FromTypeToBytes( this.char_t )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( Int8.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( UInt8.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( Short.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( UShort.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( Int16.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( UInt16.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( Int32.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( UInt32.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( Int8.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( UInt8.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( Short.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( UShort.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( Int16.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( UInt16.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( Int32.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( UInt32.TypeName ) )[ 0 ],
 				this.vm.Bytes.FromTypeToBytes( this.int_t )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( UInt.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( Int64.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( UInt64.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( Long.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( ULong.TypeName ) )[ 0 ],
-                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPrimitiveType( Float.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( UInt.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( Int64.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( UInt64.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( Long.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( ULong.TypeName ) )[ 0 ],
+                this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetBasicType( Float.TypeName ) )[ 0 ],
 				this.vm.Bytes.FromTypeToBytes( this.double_t )[ 0 ],
 				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPtrType( this.any_t ) )[ 0 ],
 				this.vm.Bytes.FromTypeToBytes( this.vm.TypeSystem.GetPtrType( this.char_t ) )[ 0 ],
@@ -261,6 +261,7 @@ namespace CSimTests {
         [Test]
         public void TypeStringRepresentation()
         {
+            Variable type_vble = this.vm.Execute( @"type_t t;" );
             Variable int_vble = this.vm.Execute( @"int x;" );
             Variable char_vble = this.vm.Execute( @"char ch;" );
             Variable double_vble = this.vm.Execute( @"double d;" );
@@ -269,6 +270,7 @@ namespace CSimTests {
             Variable char_ptr_vble = this.vm.Execute( @"char * ptrChar;" );
             Variable double_ptr_vble = this.vm.Execute( @"double * ptrDouble;" );
             
+            Assert.AreSame( type_vble.Type, this.vm.TypeSystem.GetTypeType() );            
             Assert.AreSame( int_vble.Type, this.int_t, "Created vble is not: int" );
             Assert.AreSame( char_vble.Type, this.char_t, "Created vble is not: char" );
             Assert.AreSame( double_vble.Type, this.double_t, "Created vble is not: double" );

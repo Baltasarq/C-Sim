@@ -1,6 +1,8 @@
 ﻿
 namespace CSim.Ui.Drawer {
 	using System.Drawing;
+    using System.Linq;
+    using System.Text;
 	using System.Collections.Generic;
 
 	/// <summary>
@@ -111,6 +113,16 @@ namespace CSim.Ui.Drawer {
 
 			return toret;
 		}
+        
+        /// <summary>
+        /// Gets the index of the last row.
+        /// </summary>
+        /// <value>The index.</value>
+        public int LastRowIndex {
+            get {
+                return this.rows.Count - 1;
+            }
+        }
 
 		/// <summary>
 		/// Gets the last row in use.
@@ -118,7 +130,7 @@ namespace CSim.Ui.Drawer {
 		/// <value>The last row, as an IList instance.</value>
 		public IList<GrphBoxedVariable> LastRow {
 			get {
-				return this.rows[ this.rows.Count - 1 ];
+				return this.rows[ this.LastRowIndex ];
 			}
 		}
 
@@ -185,6 +197,48 @@ namespace CSim.Ui.Drawer {
 		public int VGap {
 			get; private set;
 		}
+        
+        /// <summary>
+        /// Gets the count of total elements.
+        /// </summary>
+        /// <value>The count, as an int.</value>
+        public int Count {
+            get {
+                int toret = 0;
+                
+                this.rows.ForEach( (row) => toret += row.Count );
+                return toret;
+            }
+        }
+        
+        /// <summary>
+        /// Gets all the rows as a single string.
+        /// </summary>
+        /// <returns>The as string.</returns>
+        public string RowsAsString()
+        {
+            StringBuilder toret = new StringBuilder();
+            
+            this.rows.ForEach( (row) => {
+                toret.Append( string.Join( ", ", row) );
+                toret.Append( '\n' );
+            });
+            
+            return toret.ToString();
+        }
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Ui.Drawer.GrphRows"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Ui.Drawer.GrphRows"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format( "[GrphRows: LastRow={0}, MaxElements={1}, HGap={2}, VGap={3}\nRows={4}\n#={5}]",
+                            string.Join( ", ", this.LastRow ),
+                            MaxElements, HGap, VGap,
+                            this.RowsAsString(),
+                            this.Count );
+        }
 
 		private List<List<GrphBoxedVariable>> rows;
 	}

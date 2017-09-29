@@ -104,6 +104,17 @@ namespace CSim.Core {
 				return this.type;
 			}
         }
+        
+        /// <summary>
+        /// Gets a value indicating whether
+        /// this <see cref="T:CSim.Core.Variable"/> is a pointer.
+        /// </summary>
+        /// <value><c>true</c> if is a pointer; otherwise, <c>false</c>.</value>
+        public bool IsPtr {
+            get {
+                return this.Type is Types.Ptr;
+            }
+        }
 
 		/// <summary>
 		/// Gets the size of the variable.

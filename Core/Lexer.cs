@@ -294,13 +294,13 @@ namespace CSim.Core {
         {
             char ch;
             string toret;
-
+            
             // Read the base type
             this.SkipSpaces();
             toret = this.GetToken();
 
             // Chk
-            if ( !Primitive.IsPrimitive( toret ) ) {
+            if ( !AType.IsIdOfBasicType( toret ) ) {
                 throw new ParsingException( toret + "?" );
             }
 
@@ -469,10 +469,9 @@ namespace CSim.Core {
         /// <param name='token'>
         /// A string to compare
         /// </param>
-        public static bool IsRealNumber(string token) {
-            double number;
-
-            return double.TryParse( token, out number );
+        public static bool IsRealNumber(string token)
+        {
+            return double.TryParse( token, out double number );
         }
 
 		/// <summary>
@@ -484,11 +483,10 @@ namespace CSim.Core {
 		/// <param name='token'>
 		/// A string to compare
 		/// </param>
-		public static bool IsIntNumber(string token) {
-			int number;
-
-			return int.TryParse( token, out number );
-		}
+		public static bool IsIntNumber(string token)
+        {
+            return int.TryParse( token, out int number );
+        }
 
 
         /// <summary>

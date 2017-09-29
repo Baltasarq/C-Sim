@@ -152,5 +152,17 @@ namespace CSim.Core {
         {
             return this.Name;
         }
+        
+        /// <summary>
+        /// Is the identifier passed of a basic type?
+        /// </summary>
+        /// <returns><c>true</c>, if identifier pertains to a basic type, <c>false</c> otherwise.</returns>
+        /// <param name="id">The identifier, as a string.</param>
+        public static bool IsIdOfBasicType(string id)
+        {
+            return ( Primitive.IsPrimitive( id )
+                  || id == TypeType.TypeName
+                  || id == Any.TypeName );
+        }
     }
 }

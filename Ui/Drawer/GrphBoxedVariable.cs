@@ -185,16 +185,13 @@ namespace CSim.Ui.Drawer {
 		}
 
 		/// <summary>
-		/// Gets the related boxes.
+		/// Gets the related boxes, not including the main one.
 		/// This is specially intended for arrays' cells and so on.
 		/// </summary>
 		/// <returns>The related boxes.</returns>
-		public virtual IDictionary<BigInteger, GrphBoxedVariable> GetInvolvedBoxes()
+		public virtual List<GrphBoxedVariable> GetInvolvedBoxes()
 		{
-			var toret = new Dictionary<BigInteger, GrphBoxedVariable>();
-
-			toret.Add( this.Variable.Address, this );
-			return toret;
+			return new List<GrphBoxedVariable>();
 		}
 
 		/// <summary>
@@ -270,11 +267,25 @@ namespace CSim.Ui.Drawer {
 			if ( arrayVble != null ) {
 				toret = new GrphBoxedArray( arrayVble, grf );
 			} else {
-				toret = new GrphBoxedPrimitive( v, grf );
+				toret = new GrphBoxedBasic( v, grf );
 			}
 
 			return toret;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Ui.Drawer.GrphBoxedVariable"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Ui.Drawer.GrphBoxedVariable"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format(
+                "[Box vble:'{0}' at ({1}({2}), {3}({4})) size ({5}({6}), {7}({8}))]",
+                this.Variable.Name,
+                this.X, this.BoxX, this.Y, this.BoxY,
+                this.Width, this.BoxWidth, this.Height, this.BoxHeight );
+                
+        }
 
 		private float height;
 		private float width;

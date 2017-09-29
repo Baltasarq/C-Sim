@@ -3,7 +3,7 @@ namespace CSim.Core {
 	public static class Reserved {
 		/// <summary>C/C++'s NULL.</summary>
 		public const string PtrNull = "NULL";
-		/// <summary>C++'s new null.</summary>
+		/// <summary>C++'s new style null.</summary>
 		public const string PtrNull2 = "nullptr";
 		/// <summary>C++'s new operator</summary>
         public const string OpNew = "new";
@@ -26,8 +26,7 @@ namespace CSim.Core {
 		public static bool IsNullId(string id)
 		{
 			return ( id == Reserved.PtrNull
-				  || id == Reserved.PtrNull2 );
+                  || id == Reserved.PtrNull2 );
 		}
 	}
 }
-

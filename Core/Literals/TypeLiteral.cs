@@ -34,12 +34,13 @@ namespace CSim.Core.Literals {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Literals.TypeLiteral"/> class.
 		/// </summary>
+        /// <param name="m">The <see cref="Machine"/> .</param>
 		/// <param name="v">The value for the literal.</param>
-		public TypeLiteral(object v)
-			:this( (AType) v )
+		public TypeLiteral(Machine m, byte v)
+			:base( m, v )
 		{
 		}
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="T:CSim.Core.Literals.TypeLiteral"/> class.
         /// </summary>
@@ -47,16 +48,6 @@ namespace CSim.Core.Literals {
         public TypeLiteral(AType v)
 			:base( v.Machine, v.Machine.Bytes.FromTypeToBytes( v )[ 0 ] )
         {
-        }
-        
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:CSim.Core.Literals.TypeLiteral"/> class.
-        /// </summary>
-        /// <param name="m">The machine this literal will live in.</param>
-        /// <param name="v">The representation of the type as a byte.</param>
-        internal static TypeLiteral Create(Machine m, byte v)
-        {
-			return new TypeLiteral( m.Bytes.FromBytesToType( new []{ v } ) );
         }
 
         /// <summary>

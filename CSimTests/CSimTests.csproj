@@ -43,6 +43,7 @@
     <Compile Include="VbleTests.cs" />
     <Compile Include="ParserTests.cs" />
     <Compile Include="UInt128Tests.cs" />
+    <Compile Include="ArrayTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSim.csproj">

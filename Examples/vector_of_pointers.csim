@@ -1,0 +1,9 @@
+int x = 55
+int y = 66
+int **v = new int*[6]
+v[0]=&x
+v[1]=&y
+int ** pv1 = &v[1]
+printf(**v)
+printf(**pv1)
+printf(*v[1])

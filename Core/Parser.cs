@@ -1,4 +1,3 @@
-
 namespace CSim.Core {
 	using System;
 	using System.Diagnostics;
@@ -50,7 +49,7 @@ namespace CSim.Core {
 					int oldPos = this.Lexer.Pos;
 					string id = this.Lexer.GetToken();
 
-                    if ( this.Machine.TypeSystem.IsPrimitiveType( id ) ) {
+                    if ( this.Machine.TypeSystem.IsBasicType( id ) ) {
 						this.Lexer.Pos = oldPos;
                         this.ParseCreation();
                     }
@@ -80,7 +79,7 @@ namespace CSim.Core {
 
 		/// <summary>
 		/// Parses a complex expression.
-		/// i.e., a * 2
+		/// i.e., (a + 4) * 2
 		/// </summary>
 		protected void ParseExpression()
 		{
@@ -186,7 +185,7 @@ namespace CSim.Core {
 				this.Lexer.Advance();
 				this.Lexer.SkipSpaces();
 			}
-			else {
+            else {
 				ParseTerminal();
 			}
 
@@ -287,12 +286,19 @@ namespace CSim.Core {
                 int typeLitPos = this.Lexer.Pos;
 				string strId = this.Lexer.GetToken();
 
-                if ( this.Machine.TypeSystem.IsPrimitiveType( strId ) ) {
+                if ( this.Machine.TypeSystem.IsBasicType( strId ) ) {
                     this.Lexer.Pos = typeLitPos;
                     string strType = this.Lexer.GetTypeLiteral();
                     var typeLit = TypeLiteral.CreateFromString( this.Machine, strType );
                     this.Opcodes.Add( new StoreRValue( typeLit ) );
                 }
+                else
+	            // Is it null?
+	            if ( Reserved.IsNullId( strId ) ) {
+	                this.Opcodes.Add(
+                                new StoreRValue(
+                                    new IntLiteral( this.Machine, 0 ) ) );
+	            }
                 else
 				if ( strId == Reserved.OpNew ) {
 					this.Lexer.Pos = oldPos;
@@ -530,7 +536,7 @@ namespace CSim.Core {
 			// Get the type literal
 			this.Lexer.SkipSpaces();
 			strId = this.Lexer.GetTypeLiteral();
-			t = this.Machine.TypeSystem.FromStringToType( strId );
+			t = this.Machine.TypeSystem.FromStringToType( strId );           
 
             // Get id
 			Lexer.SkipSpaces();

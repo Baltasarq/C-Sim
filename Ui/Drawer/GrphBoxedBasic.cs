@@ -10,14 +10,14 @@ namespace CSim.Ui.Drawer {
 	/// <summary>
 	/// Represents a variable shown in the img window.
 	/// </summary>
-	public class GrphBoxedPrimitive: GrphBoxedVariable
+	public class GrphBoxedBasic: GrphBoxedVariable
 	{
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Ui.Drawer.GrphBoxedPrimitive"/> class.
+		/// Initializes a new instance of the <see cref="CSim.Ui.Drawer.GrphBoxedBasic"/> class.
 		/// </summary>
 		/// <param name="v">The Variable, should be a Primitive.</param>
 		/// <param name="grf">All graphics settings.</param>
-		public GrphBoxedPrimitive(Variable v, GraphInfo grf)
+		public GrphBoxedBasic(Variable v, GraphInfo grf)
 			:base( v, grf )
 		{
 		}
@@ -72,7 +72,7 @@ namespace CSim.Ui.Drawer {
 			    this.StrName );
 
 			// Draw surrounding rectangle
-			if ( this.Variable is PtrVariable ) {
+			if ( this.Variable.IsPtr ) {
 				this.GraphInfo.Pen.Color = Color.Black;
 			} else {
 				this.GraphInfo.Pen.Color = Color.Navy;
@@ -88,7 +88,7 @@ namespace CSim.Ui.Drawer {
 				this.Y + this.BoxY,
 				this.BoxWidth,
 				this.BoxHeight );
-			this.GraphInfo.Pen.Width -= 1;
+			this.GraphInfo.Pen.Width -= 1;            
 		}
 	}
 }

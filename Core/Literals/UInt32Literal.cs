@@ -35,7 +35,7 @@ namespace CSim.Core.Literals {
         /// <value>The <see cref="AType"/>.</value>
         public override AType Type {
             get {
-				return this.Machine.TypeSystem.GetPrimitiveType( UInt32.TypeName );
+				return this.Machine.TypeSystem.GetBasicType( UInt32.TypeName );
             }
         }
 

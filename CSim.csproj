@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <DefineConstants>DEBUG; TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
@@ -142,7 +142,7 @@
     <Compile Include="Core\Variables\ArrayElement.cs" />
     <Compile Include="Ui\Drawer\FontInfo.cs" />
     <Compile Include="Ui\Drawer\GrphRows.cs" />
-    <Compile Include="Ui\Drawer\GrphBoxedPrimitive.cs" />
+    <Compile Include="Ui\Drawer\GrphBoxedBasic.cs" />
     <Compile Include="Ui\Drawer\GrphBoxedVariable.cs" />
     <Compile Include="Ui\Drawer\GrphBoxedArray.cs" />
     <Compile Include="Core\Variables\ArrayVariable.cs" />
@@ -188,6 +188,8 @@
     <Compile Include="Core\Types\Primitives\UInt64.cs" />
     <Compile Include="Core\Literals\UInt64Literal.cs" />
     <Compile Include="Core\Literals\Int64Literal.cs" />
+    <Compile Include="Ui\Drawer\GrphBoxesPerAddress.cs" />
+    <Compile Include="Ui\Drawer\GrphBoxedArrayElement.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

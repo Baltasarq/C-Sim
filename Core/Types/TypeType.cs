@@ -23,9 +23,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-using CSim.Core.Variables;
 
 namespace CSim.Core.Types {
+    using CSim.Core.Variables;
+
     /// <summary>
     /// A type for a <see cref="Core.Variables.TypeVariable"/>'s.
     /// </summary>
@@ -59,7 +60,7 @@ namespace CSim.Core.Types {
         /// <param name="raw">A raw representation of the value in memory.</param>
         public override Literal CreateLiteral(byte[] raw)
         {
-			return Literals.TypeLiteral.Create( this.Machine, raw[ 0 ] );
+            return new Literals.TypeLiteral( this.Machine, raw[ 0 ] );
         }
 
 		/// <summary>
@@ -69,7 +70,9 @@ namespace CSim.Core.Types {
 		/// <param name="v">The given value.</param>
 		public override Literal CreateLiteral(object v)
 		{
-			return new Literals.TypeLiteral( v );
+			return new Literals.TypeLiteral(
+                                    this.Machine,
+                                    v.ToBigInteger().ToByte() );
 		}
 
         /// <summary>

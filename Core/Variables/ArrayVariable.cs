@@ -1,6 +1,3 @@
-using System;
-
-using CSim.Core;
 using CSim.Core.Types;
 
 namespace CSim.Core.Variables {
@@ -25,30 +22,44 @@ namespace CSim.Core.Variables {
 			this.Size = t.Size * (int) count;
 		}
 
-		/// <summary>
-		/// Gets the associated type.
-		/// This is a shortcut to the type stored in the type.
-		/// </summary>
-		/// <value>The associated type, as a <see cref="AType"/> instance.</value>
-        public virtual AType AssociatedType {
-			get {
-				return ( (Ptr) this.Type ).AssociatedType;
-			}
-		}
+        /// <summary>
+        /// Gets the associated type.
+        /// This is a shortcut to the type stored in the array.
+        /// Note that it returns "int**" for an int**[].
+        /// </summary>
+        /// <value>The associated type, as a <see cref="AType"/> instance.</value>
+        public AType ElementsType {
+            get {
+                return ( (Ptr) this.Type ).DerreferencedType;
+            }
+        }
+        
+        /// <summary>
+        /// Extracts the array elements' bytes.
+        /// </summary>
+        /// <returns>A primitive byte array.
+        ///          The first dimension is the number of elements of the array.
+        ///          The second dimension is the size of the data type.
+        /// </returns>
+        public byte[][] ExtractArrayElementsRaw()
+        {
+            return this.Machine.Memory.ExtractArrayElementValues(
+                                                this.ElementsType,
+                                                this.Address,
+                                                this.Count );
+        }
 
 		/// <summary>
 		/// Extracts the values of an array from memory.
 		/// </summary>
-		public Literal[] ExtractArrayElementValues()
+		public Literal[] ExtractArrayElementsValues()
 		{
 			var toret = new Literal[ (int) this.Count ];
-			byte[][] rawValues = this.Machine.Memory.ExtractArrayElementValues(
-														this.AssociatedType,
-														this.Address,
-														this.Count );
+			byte[][] rawValues = this.ExtractArrayElementsRaw();
 			
 			for (int i = 0; i < rawValues.Length; ++i) {
-				toret[ i ] = this.Machine.TypeSystem.CreateLiteral( this.AssociatedType, rawValues[ i ] );
+				toret[ i ] = this.Machine.TypeSystem.CreateLiteral(
+                                            this.ElementsType, rawValues[ i ] );
 			}
 
 			return toret;

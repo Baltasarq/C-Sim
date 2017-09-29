@@ -22,7 +22,7 @@ namespace CSim.Core {
 			this.Machine = m;
 			this.ptrTypeInstances = new Dictionary<AType, List<Ptr>>();
 			this.refTypeInstances = new Dictionary<AType, Ref>();
-			this.primitiveTypeInstances = new Dictionary<string, AType>();
+			this.basicTypeInstances = new Dictionary<string, AType>();
 
 			this.Reset();
 		}
@@ -35,7 +35,7 @@ namespace CSim.Core {
 		{
 			this.ptrTypeInstances.Clear();
 			this.refTypeInstances.Clear();
-			this.primitiveTypeInstances.Clear();
+			this.basicTypeInstances.Clear();
 
             // Add all primitive type instances
             var asm = typeof( AType ).Assembly;
@@ -51,12 +51,12 @@ namespace CSim.Core {
                     // Create the type
                     MethodInfo mthInfo = t.GetMethod( "Get" );
                     var primitive = (Primitive) mthInfo.Invoke( null, new object[] { this.Machine } );
-                    this.primitiveTypeInstances.Add( primitive.Name, primitive );
+                    this.basicTypeInstances.Add( primitive.Name, primitive );
                 }
             }
 
             // Add the type type.
-            this.primitiveTypeInstances.Add( TypeType.TypeName, TypeType.Get( this.Machine ) );
+            this.basicTypeInstances.Add( TypeType.TypeName, TypeType.Get( this.Machine ) );
 		}
         
         /// <summary>
@@ -65,7 +65,7 @@ namespace CSim.Core {
         /// <returns>The type <see cref="TypeType"/>.</returns>
         public TypeType GetTypeType()
         {
-            return (TypeType) this.GetPrimitiveType( TypeType.TypeName );
+            return (TypeType) this.GetBasicType( TypeType.TypeName );
         }
         
         /// <summary>
@@ -74,7 +74,7 @@ namespace CSim.Core {
         /// <returns>The char type, as a <see cref="CSim.Core.Types.Primitives.Char"/> object.</returns>
         public Char GetCharType()
         {
-            return (Char) this.GetPrimitiveType( Char.TypeName );
+            return (Char) this.GetBasicType( Char.TypeName );
         }
         
         /// <summary>
@@ -83,7 +83,7 @@ namespace CSim.Core {
         /// <returns>The short type, as a <see cref="Short"/> object.</returns>
         public Short GetShortType()
         {
-            return (Short) this.GetPrimitiveType( Short.TypeName );
+            return (Short) this.GetBasicType( Short.TypeName );
         }
         
         /// <summary>
@@ -92,7 +92,7 @@ namespace CSim.Core {
         /// <returns>The ushort type, as a <see cref="UShort"/> object.</returns>
         public UShort GetUShortType()
         {
-            return (UShort) this.GetPrimitiveType( UShort.TypeName );
+            return (UShort) this.GetBasicType( UShort.TypeName );
         }
 
 		/// <summary>
@@ -101,7 +101,7 @@ namespace CSim.Core {
 		/// <returns>The int type, as a <see cref="Int"/> object.</returns>
 		public Int GetIntType()
 		{
-			return (Int) this.GetPrimitiveType( Int.TypeName );
+			return (Int) this.GetBasicType( Int.TypeName );
 		}
         
         /// <summary>
@@ -110,7 +110,7 @@ namespace CSim.Core {
         /// <returns>The unsigned int type, as a <see cref="UInt"/> object.</returns>
         public UInt GetUIntType()
         {
-            return (UInt) this.GetPrimitiveType( UInt.TypeName );
+            return (UInt) this.GetBasicType( UInt.TypeName );
         }
         
         /// <summary>
@@ -119,7 +119,7 @@ namespace CSim.Core {
         /// <returns>The int type, as a <see cref="Long"/> object.</returns>
         public Long GetLongType()
         {
-            return (Long) this.GetPrimitiveType( Long.TypeName );
+            return (Long) this.GetBasicType( Long.TypeName );
         }
         
         /// <summary>
@@ -128,7 +128,7 @@ namespace CSim.Core {
         /// <returns>The int type, as a <see cref="ULong"/> object.</returns>
         public ULong GetULongType()
         {
-            return (ULong) this.GetPrimitiveType( ULong.TypeName );
+            return (ULong) this.GetBasicType( ULong.TypeName );
         }
 
 		/// <summary>
@@ -137,7 +137,7 @@ namespace CSim.Core {
 		/// <returns>The float type, as a <see cref="Float"/> object.</returns>
 		public Float GetFloatType()
 		{
-			return (Float) this.GetPrimitiveType( Float.TypeName );
+			return (Float) this.GetBasicType( Float.TypeName );
 		}
         
         /// <summary>
@@ -146,7 +146,7 @@ namespace CSim.Core {
         /// <returns>The double type, as a <see cref="Double"/> object.</returns>
         public Double GetDoubleType()
         {
-            return (Double) this.GetPrimitiveType( CSim.Core.Types.Primitives.Double.TypeName );
+            return (Double) this.GetBasicType( CSim.Core.Types.Primitives.Double.TypeName );
         }
         
 		/// <summary>
@@ -154,9 +154,9 @@ namespace CSim.Core {
 		/// </summary>
 		/// <returns>The type, as a <see cref="AType"/> object.</returns>
 		/// <param name="strType">A string with the type's name.</param>
-		public AType GetPrimitiveType(string strType)
+		public AType GetBasicType(string strType)
 		{
-			return this.primitiveTypeInstances[ strType ];
+			return this.basicTypeInstances[ strType ];
 		}
 
 		/// <summary>
@@ -169,9 +169,9 @@ namespace CSim.Core {
 		/// <param name='typeName'>
 		/// A string possibliy containing a type name.
 		/// </param>
-		public bool IsPrimitiveType(string typeName)
+		public bool IsBasicType(string typeName)
 		{
-			return this.primitiveTypeInstances.ContainsKey( typeName );
+			return this.basicTypeInstances.ContainsKey( typeName );
 		}
 
 		/// <summary>
@@ -181,7 +181,7 @@ namespace CSim.Core {
 		public ReadOnlyCollection<string> GetPrimitiveTypes()
 		{
 			return new ReadOnlyCollection<string>(
-						new List<string>( this.primitiveTypeInstances.Keys ) );
+						new List<string>( this.basicTypeInstances.Keys ) );
 		}
 
 		/// <summary>
@@ -192,7 +192,6 @@ namespace CSim.Core {
         /// <param name="indirectionLevel">Number of stars in the type.</param>
 		public Ptr GetPtrType(AType t, int indirectionLevel = -1)
 		{
-			List<Ptr> ptrTypes = null;
             var ptrType = t as Ptr;
             AType baseType = t;
 
@@ -210,7 +209,7 @@ namespace CSim.Core {
             }
 
             // Create list of ptr types for that base type, if needed
-			if ( !( this.ptrTypeInstances.TryGetValue( baseType, out ptrTypes ) ) )
+			if ( !( this.ptrTypeInstances.TryGetValue( baseType, out List<Ptr> ptrTypes ) ) )
             {
 				ptrTypes = new List<Ptr>();
 				this.ptrTypeInstances.Add( baseType, ptrTypes ); 
@@ -232,9 +231,7 @@ namespace CSim.Core {
 		/// <param name="t">The regular type to build the reference on.</param>
 		public Ref GetRefType(AType t)
 		{
-			Ref toret = null;
-
-			if ( !( this.refTypeInstances.TryGetValue( t, out toret ) ) ) {
+			if ( !( this.refTypeInstances.TryGetValue( t, out Ref toret ) ) ) {
 				toret = new Ref( t );
 				this.refTypeInstances.Add( t, toret );
 			}
@@ -274,26 +271,27 @@ namespace CSim.Core {
                 lexer.SkipSpaces( -1 );
 			}
 
-			// Get the primitive type
+			// Get the basic type
 			strType = lexer.Line.Substring( 0, lexer.Pos + 1 );
-			AType primitive = this.GetPrimitiveType( strType );
+			AType basicType = this.GetBasicType( strType );
 
 			if ( isRef ) {
 				if ( numStars == 0 ) {
-					toret = this.GetRefType( primitive );
+					toret = this.GetRefType( basicType );
 				} else {
-					toret = this.GetRefType( this.GetPtrType( primitive, numStars ) );
+					toret = this.GetRefType( this.GetPtrType( basicType, numStars ) );
 				}
 			}
 			else
 			if ( numStars > 0 ) {
-				toret = this.GetPtrType( primitive, numStars );
+				toret = this.GetPtrType( basicType, numStars );
 			} else {
-				toret = primitive;
+				toret = basicType;
 			}
 
 			return toret;
 		}
+        
 
 		/// <summary>
 		/// Creates a literal of the given type.
@@ -305,7 +303,7 @@ namespace CSim.Core {
 		{
 			return t.CreateLiteral( raw );
 		}
-
+        
 		/// <summary>
 		/// Gets the machine all the types depend on.
 		/// </summary>
@@ -316,7 +314,7 @@ namespace CSim.Core {
 
 		private Dictionary<AType, List<Ptr>> ptrTypeInstances;
 		private Dictionary<AType, Ref> refTypeInstances;
-		private Dictionary<string, AType> primitiveTypeInstances;
+		private Dictionary<string, AType> basicTypeInstances;
 	}
 }
 

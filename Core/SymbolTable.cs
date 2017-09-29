@@ -13,7 +13,7 @@ namespace CSim.Core {
 	/// <summary>All the variables in the <see cref="Machine"/> reside here.</summary>
     public class SymbolTable {
 		/// <summary>Prefix to use for memory blocks (heap)</summary>
-        public const string MemBlockName = "_mblk#";
+        public const string MemBlockName = "_mblk_num_";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.SymbolTable"/> class,

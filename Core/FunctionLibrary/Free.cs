@@ -61,9 +61,11 @@ namespace CSim.Core.FunctionLibrary {
 		public static Free Get(Machine m)
 		{
 			if ( instance == null ) {
-				instance = new Free( m, new Variable[] {
-										new VoidPtrVariable( new Id( m, @"ptr" ) )
-									} );
+				instance = new Free( m,
+                                     new Variable[] {
+								            new VoidPtrVariable(
+                                                    new Id( m, @"ptr" ) )
+                                     });
 			}
 
 			return instance;

@@ -183,7 +183,7 @@ namespace CSim.Core {
 		/// <summary>
 		/// Gets the value as an integer, if possible.
 		/// </summary>
-        /// <returns>The value as integer, specifically <see cref="T:System.Long"/>.</returns>
+        /// <returns>The value as integer.</returns>
 		public abstract BigInteger GetValueAsInteger();
 
 		/// <summary>

@@ -1,5 +1,6 @@
 
 namespace CSim.Ui {
+    using System.Linq;
     using System.Numerics;
 	using System.Drawing;
     using System.Collections.Generic;
@@ -29,7 +30,6 @@ namespace CSim.Ui {
 		public SchemaDrawer(Machine m)
         {
             this.Machine = m;
-			this.boxes = new Dictionary<BigInteger, List<GrphBoxedVariable>>();
 
 			var normalFont = new Font( FontFamily.GenericMonospace, 12 );
 			var smallFont = new Font( FontFamily.GenericMonospace, 10 );
@@ -50,35 +50,14 @@ namespace CSim.Ui {
             this.board = Graphics.FromImage( this.bmBoard );
 			this.GraphInfo.Graphics = this.board;
         }
+        
+        private IEnumerable<IEnumerable<Variable>> ClassifyMachineVariables()
+        {
+            return ClassifyVariables( this.Machine.TDS.Variables );
+        }
 
-		private void AddVariablesAsBoxes(IEnumerable<Variable> list)
-		{
-			foreach (Variable v in list) {
-                if ( v is TempVariable) {
-                    continue;
-                }
-            
-				var box = GrphBoxedVariable.Create( v, this.GraphInfo );
-
-				foreach(var boxInfo in box.GetInvolvedBoxes()) {
-                    List<GrphBoxedVariable> l;
-                    
-                    if ( this.boxes.TryGetValue( boxInfo.Key, out l) ) {
-                        l.Add( boxInfo.Value );
-                    } else {
-                        l = new List<GrphBoxedVariable>();
-                        l.Add( boxInfo.Value );
-    					this.boxes.Add( boxInfo.Key, l );
-                    }
-				}
-
-				this.rows.AddBox( box );
-			}
-
-			return;
-		}
-
-		private IEnumerable<IEnumerable<Variable>> ClassifyVariables()
+		private IEnumerable<IEnumerable<Variable>>
+        ClassifyVariables(IList<Variable> vbles)
 		{
 			var primitives = new List<Variable>();
 			var pointersByLevel = new Dictionary<int, List<Variable>>();
@@ -89,7 +68,7 @@ namespace CSim.Ui {
 			};
 
 			// Classify by type
-			foreach (Variable v in this.Machine.TDS.Variables) {
+			foreach (Variable v in vbles) {
 				var ptrVble = v as PtrVariable;
 
 				if ( ptrVble != null ) {
@@ -126,18 +105,46 @@ namespace CSim.Ui {
 		/// </summary>
 		public void CalculateSizes()
 		{
-			IEnumerable<IEnumerable<Variable>> lists = ClassifyVariables();
+			IEnumerable<IEnumerable<Variable>> lists = ClassifyMachineVariables();
 
-			this.boxes.Clear();
+			this.boxes = new GrphBoxesPerAddress();
 			this.rows = new GrphRows( HGap, VGap, MaxPerRow );
 
+            // Insert all "main" variables
 			foreach (IEnumerable<Variable> list in lists) {
-				this.AddVariablesAsBoxes( list );
+				foreach (Variable v in list) {
+	                if ( v is TempVariable) {
+	                    continue;
+	                }
+	            
+	                var box = GrphBoxedVariable.Create( v, this.GraphInfo );
+	                this.rows.AddBox( box );
+                    this.boxes.Add( box );
+                    
+                }
 				this.rows.ForceNewRow();
 			}
-
-
-			this.Size = this.rows.CalculateAreaSize();
+            
+            this.Size = this.rows.CalculateAreaSize();
+            
+            // Insert all array elements (not drawn, only for relationships)
+            var arrayElements = new List<GrphBoxedVariable>();
+            
+            foreach(GrphBoxedVariable box in this.boxes.AllBoxes) {
+	            var arrayBox = box as GrphBoxedArray;
+	                      
+	            if ( arrayBox != null
+	              && arrayBox.ArrayVariable.ElementsType is Ptr )
+	            {
+	                box.GetInvolvedBoxes().ForEach( (b) => {
+                        b.Y = box.Y;
+                        b.X += box.X;
+	                    arrayElements.Add( b );
+	                });
+	            }
+            }
+            
+            this.boxes.AddRange( arrayElements );
 			return;
 		}
 
@@ -151,24 +158,20 @@ namespace CSim.Ui {
 		/// </summary>
 		/// <param name="surface">The bitmap to draw on.</param>
         public void Draw(Bitmap surface)
-		{
+		{        
 			this.InitGraphics( surface );
 			this.Cls();
-
-			// Draw relationships
-			foreach(IList<GrphBoxedVariable> storedBoxes in this.boxes.Values) {
-                foreach(GrphBoxedVariable box in storedBoxes) {
-    				if ( box.Variable is PtrVariable ) {
-    					this.DrawRelationship( box );
-    				}
+  
+            // Draw relationships
+            foreach(GrphBoxedVariable box in this.boxes.AllBoxes) {
+                if ( box.Variable.IsPtr ) {
+                    this.DrawRelationship( box );
                 }
-			}
-
+            }
+            
 			// Draw the boxes themselves
-			foreach(IList<GrphBoxedVariable> storedBoxes in this.boxes.Values) {
-                foreach(GrphBoxedVariable box in storedBoxes) {
-				    box.Draw();
-                }
+			foreach(GrphBoxedVariable box in this.boxes.AllBoxes) {
+                box.Draw();
 			}
 
             return;
@@ -176,18 +179,14 @@ namespace CSim.Ui {
 
 		private void DrawRelationship(GrphBoxedVariable box)
 		{
-			var ptrVble = box.Variable as PtrVariable;
-
-			if ( ptrVble != null ) {
-				BigInteger address = ptrVble.IntValue.Value;
+			if ( box.Variable.IsPtr
+              && !( box is GrphBoxedArray ) )
+            {
+				BigInteger address = box.Variable.Value.ToBigInteger();
 				GrphBoxedVariable pointedBox = null;
-                List<GrphBoxedVariable> l;
-
-				if ( address == 0 ) {
-					this.DrawNullPointer( box );
-				}
-				else
-				if ( this.boxes.TryGetValue( address, out l ) ) {
+                IList<GrphBoxedVariable> l = this.boxes.GetBoxesForAddress( address );
+                
+				if ( l.Count > 0 ) {
                     pointedBox = l[0];
 				    float delta = 0;
 
@@ -200,13 +199,20 @@ namespace CSim.Ui {
 						pointedBox.X + pointedBox.BoxX + delta, pointedBox.Y + pointedBox.Height + 5
 					);
 				} else {
-					this.GraphInfo.Pen.Color = Color.OrangeRed;
-					var start = new Point( (int) ( box.X + box.BoxX + ( box.BoxWidth / 2 ) ), (int) ( box.Y - 5 ) );
-					var end = new Point( (int) ( box.X + box.BoxX + ( box.BoxWidth / 2 ) ), (int) ( box.Y - 25 ) );
-
-					this.board.DrawLine( this.GraphInfo.Pen, start, end );
-					this.board.DrawLine( this.GraphInfo.Pen, end.X - 10, end.Y, end.X + 10, end.Y );
-					this.GraphInfo.Pen.Color = Color.Black;
+                    if ( !( box is GrphBoxedArrayElement ) ) {
+	                    if ( address == 0 )
+	                    {
+	                        this.DrawNullPointer( box );
+	                    } else {
+							this.GraphInfo.Pen.Color = Color.OrangeRed;
+							var start = new Point( (int) ( box.X + box.BoxX + ( box.BoxWidth / 2 ) ), (int) ( box.Y - 5 ) );
+							var end = new Point( (int) ( box.X + box.BoxX + ( box.BoxWidth / 2 ) ), (int) ( box.Y - 25 ) );
+		
+							this.board.DrawLine( this.GraphInfo.Pen, start, end );
+							this.board.DrawLine( this.GraphInfo.Pen, end.X - 10, end.Y, end.X + 10, end.Y );
+							this.GraphInfo.Pen.Color = Color.Black;
+	                    }
+                    }
 				}
 			}
 
@@ -331,11 +337,10 @@ namespace CSim.Ui {
 			get; set;
 		}
 
-		private Dictionary<BigInteger, List<GrphBoxedVariable>> boxes;
-
         private Bitmap bmBoard;
         private Graphics board;
 		private GrphRows rows;
+        private GrphBoxesPerAddress boxes;
     }
 }
 

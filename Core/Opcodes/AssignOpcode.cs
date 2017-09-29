@@ -87,7 +87,7 @@ namespace CSim.Core.Opcodes {
 						+ toret.Type
 					);
 			}
-
+            
 			// Is lvalue a ref?
 			var r = toret as RefVariable;
 
@@ -103,7 +103,9 @@ namespace CSim.Core.Opcodes {
             // Assign rvalue
             var strRValue = rvalueVble.LiteralValue as StrLiteral;
             
-			if ( strRValue != null ) {
+			if ( !( rvalueVble is ArrayVariable )
+              && strRValue != null )
+            {
                 string s = strRValue.Value;
 				Variable mblock = new ArrayVariable(
 					    new Id( this.Machine, SymbolTable.GetNextMemoryBlockName() ),

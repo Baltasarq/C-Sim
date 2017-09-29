@@ -723,18 +723,19 @@ namespace CSim.Ui {
 
 		private string FromVbleToString(Variable x)
 		{
-			var ptrVble = x as PtrVariable;
-            var charPtr = this.machine.TypeSystem.GetPtrType( this.machine.TypeSystem.GetCharType() );
+            var charPtr = this.machine.TypeSystem.GetPtrType(
+                                        this.machine.TypeSystem.GetCharType() );
 			string toret = string.Format( "{0}({1} [{2}]) = ",
 				x.Name.Value,
 				x.Type,
 				FromIntToPrettyHex( x.Address, this.machine.WordSize ) );
 
 			// Es char *?
-			if ( ptrVble != null
-			  && ptrVble.Type == charPtr )
+			if ( x.IsPtr
+			  && x.Type == charPtr )
 			{
-                Variable str = this.machine.TDS.LookForAddress( ptrVble.IntValue.GetValueAsInteger() );
+                Variable str = this.machine.TDS.LookForAddress(
+                                                        x.Value.ToBigInteger() );
                 
 				if ( str != null ) {
 					toret += str.LiteralValue + " (" + x.LiteralValue + ")";

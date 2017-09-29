@@ -45,6 +45,7 @@ namespace CSim.Core {
         public static BigInteger ToBigInteger(this object value)
         {
             BigInteger toret = BigInteger.Zero;
+            var litValue = value as Literal;
 
             if ( value == null ) {
                 throw new ArgumentException( "trying to convert null to BigInteger" );
@@ -73,7 +74,12 @@ namespace CSim.Core {
               || value is double )
             {
                 toret = new BigInteger( Convert.ToDouble( value ) );
-            } else {
+            }
+            else
+            if ( litValue != null ) {
+                toret = litValue.GetValueAsInteger();
+            }
+            else {
                 throw new ArgumentException( "cannot convert to BigInteger from: " + value.GetType() );
             }
             

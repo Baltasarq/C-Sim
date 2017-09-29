@@ -16,7 +16,8 @@
 		/// <param name="ptrType">Ptr type.</param>
 		/// <param name="pos">Position.</param>
 		public ArrayElement(string id, BigInteger address, Ptr ptrType, BigInteger pos)
-			:base( new Id( ptrType.Machine, "_" + id + "_" + pos ), ptrType.DerreferencedType)
+			:base(  new Id( ptrType.Machine, "_" + id + "_elt_num_" + pos ),
+                    ptrType.DerreferencedType)
 		{
 			this.Offset = pos * this.Type.Size;
 			this.Address = address + this.Offset;

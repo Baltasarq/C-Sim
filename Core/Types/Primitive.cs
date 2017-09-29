@@ -39,6 +39,59 @@ namespace CSim.Core.Types {
             BuildPrimitiveNamesCollection();
             return primitives.Contains( strType );
         }
+        
+        /// <summary>
+        /// Gets the index of the <see cref="Primitive"/> type.
+        /// </summary>
+        /// <returns>The index, as an int.</returns>
+        /// <param name="strType">The type, as its name.</param>
+        /// <exception cref="T:System.ArgumentException">
+        ///     when <paramref name="strType"/>
+        ///     does not name a <see cref="Primitive"/>.
+        /// </exception>
+        public static byte GetPrimitiveNameIndex(string strType)
+        {
+            int toret;
+            
+            BuildPrimitiveNamesCollection();
+            
+            toret = primitives.IndexOf( strType );
+            
+            if ( toret < 0 ) {
+                throw new System.ArgumentException(
+                    "Type: '" + strType
+                    + "' was not found in the primitive index list."
+                );
+            }
+            
+            return (byte) toret;
+        }
+        
+        /// <summary>
+        /// Gets the primitive at the given index.
+        /// </summary>
+        /// <returns>The name (as a<see cref="T:System.String"/>), of the type.</returns>
+        /// <param name="index">The index, as an int.</param>
+        /// <seealso cref="GetPrimitiveNameIndex"/>
+        /// <seealso cref="PrimitiveNames"/>
+        /// <exception cref="T:System.ArgumentException">
+        /// When the <paramref name="index"/> is &lt; 0 or &gt;= # types.
+        /// </exception>
+        public static string GetPrimitiveNameAt(int index)
+        {
+            int MaxValue = primitives.Count;
+            
+            if ( index < byte.MinValue
+              || index >= MaxValue )
+	        {
+                throw new System.ArgumentException(
+                    "failed at trying primitive type name's index at: "
+                    + index + "' should be 0 < "
+                    + index + " < " + MaxValue );
+	        }
+        
+            return primitives[ (byte) index ];
+        }
 
         /// <summary>
         /// Gets all the <see cref="Primitive"/> <see cref="AType"/> names.
@@ -47,30 +100,37 @@ namespace CSim.Core.Types {
         public static string[] PrimitiveNames {
             get {
                 BuildPrimitiveNamesCollection();
-                var toret = new string[ primitives.Count ];
-                primitives.CopyTo( toret, 0 );
-                return toret;
+                return primitives.ToArray();
             }
         }
+        
 
         private static void BuildPrimitiveNamesCollection()
         {
-            primitives = new HashSet<string>();
-
-            // Add all primitive type instances
-            var asm = typeof( AType ).Assembly;
-
-            foreach(System.Type t in asm.GetTypes()) {
-                if ( t.IsClass
-                  && t.IsSubclassOf( typeof( Primitive ) ) )
-                {
-                    FieldInfo atrInfo = t.GetField( "TypeName" );
-                    primitives.Add( (string) atrInfo.GetValue( null ) );
-                }
+            if ( primitives == null ) {
+	            primitives = new List<string>();
+                                	
+	            // Add all primitive type instances
+	            var asm = typeof( AType ).Assembly;
+	
+	            foreach(System.Type t in asm.GetTypes()) {
+	                if ( t.IsClass
+	                  && t.IsSubclassOf( typeof( Primitive ) ) )
+	                {
+	                    FieldInfo atrInfo = t.GetField( "TypeName" );
+	                    primitives.Add( (string) atrInfo.GetValue( null ) );
+	                }
+	            }
             }
+            
+            if ( primitives.Count > byte.MaxValue ) {
+                throw new System.ApplicationException( "too many primitive types" );
+            }
+            
+            primitives.Sort();
+            return;
         }
 
-        private static ISet<string> primitives;
+        private static List<string> primitives;
     }
 }
-

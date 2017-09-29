@@ -312,8 +312,8 @@ namespace CSim.Ui {
                 this.resetIconBmp, this.openIconBmp,
                 this.saveIconBmp, this.hexIconBmp,
                 this.decIconBmp, this.zoomInIconBmp,
-                this.zoomOutIconBmp, this.memoryIconBmp,
-                this.diagramIconBmp, this.helpIconBmp,
+                this.zoomOutIconBmp, this.diagramIconBmp,
+                this.memoryIconBmp, this.helpIconBmp,
                 this.aboutIconBmp, this.settingsIconBmp,
                 this.playIconBmp, this.stopIconBmp
             } );
@@ -566,7 +566,7 @@ namespace CSim.Ui {
             this.pnlSettings.Controls.Add( pnlLocales );
 
             // Endianness
-            var gbEndianness = new GroupBox { Text = "Alignment", Dock = DockStyle.Top };
+            var gbEndianness = new GroupBox { Text = "Endianness", Dock = DockStyle.Top };
             gbEndianness.SuspendLayout();
             var pnlEndianness = new TableLayoutPanel { Dock = DockStyle.Fill };
             pnlEndianness.SuspendLayout();
