@@ -1,7 +1,7 @@
 ﻿
 namespace CSim.Core {
 	/// <summary>
-	/// Expression parser. It parser RValues
+	/// Expression parser. It parses RValues.
 	/// </summary>
 	public class ExpressionParser: Parser {
 		/// <summary>

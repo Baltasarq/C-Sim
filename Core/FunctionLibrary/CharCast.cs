@@ -51,10 +51,12 @@ namespace CSim.Core.FunctionLibrary {
 			Variable param = realParams[ 0 ].SolveToVariable();
 
 			if ( !( param.Type is Primitive ) ) {
-				throw new TypeMismatchException( param.ToString() );
+				throw new TypeMismatchException(
+                                        this.Machine.TypeSystem.GetCharType()
+                                        + " != " + param.Type );
 			}
 
-			char value = System.Convert.ToChar( param.LiteralValue.GetValueAsInteger() );
+			char value = param.LiteralValue.ToChar();
 			Variable result = new NoPlaceTempVariable( new CharLiteral( this.Machine, value ) );
 			this.Machine.ExecutionStack.Push( result );
 		}

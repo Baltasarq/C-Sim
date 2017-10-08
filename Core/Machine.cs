@@ -136,8 +136,10 @@ namespace CSim.Core {
 		/// Parses given input and executes its opcodes.
 		/// </summary>
 		/// <param name="input">The user's input, as a string.</param>
+        /// <returns>A variable representing the final result.</returns>
 		public Variable Execute(string input)
 		{
+        Console.WriteLine( input );
 			return this.Execute( new Parser( input, this ) );
 		}
 
@@ -145,6 +147,7 @@ namespace CSim.Core {
 		/// Executed the parser input.
 		/// </summary>
 		/// <param name="parser">A <see cref="Parser"/> to parse the input.</param>
+        /// <returns>A variable representing the final result.</returns>
 		public Variable Execute(Parser parser)
 		{
 			var er = new SnapshotManager( this );
@@ -157,7 +160,15 @@ namespace CSim.Core {
 
 			try {
 				// Execute opcodes
-				foreach(Opcode opcode in parser.Parse()) {
+                Opcode[] opcodes = parser.Parse();
+                
+                System.Console.WriteLine( "***" );
+                foreach(Opcode opcode in opcodes) {
+                    System.Console.WriteLine( opcode );
+                }
+                System.Console.WriteLine( "***" );
+                
+				foreach(Opcode opcode in opcodes) {
 					opcode.Execute();
 				}
 

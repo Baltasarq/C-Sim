@@ -11,7 +11,7 @@ namespace CSim.Core.Opcodes {
 	/// </summary>
 	public class AccessOpcode: Opcode {
 		/// <summary>The opcode id.</summary>
-		public const char OpcodeValue = (char) 0xE0;
+		public const byte OpcodeValue = 0xE0;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.AccessOpcode"/> class.
@@ -29,6 +29,11 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		public override void Execute()
 		{
+            // Check arguments in stack
+            if ( this.Machine.ExecutionStack.Count < 1 ) {
+                throw new EngineException( L18n.Get( L18n.Id.ErrMissingArguments ) );
+            }
+            
 			Variable vble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			if ( vble != null ) {
@@ -70,5 +75,17 @@ namespace CSim.Core.Opcodes {
 		public int Levels {
 			get; set;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.AccessOpcode"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.AccessOpcode"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format(
+                            "[AccessOpcode (0x{0,2:X}): *(Levels={1})(rvalue(POP)]",
+                            OpcodeValue,
+                            Levels );
+        }
 	}
 }

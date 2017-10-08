@@ -31,7 +31,6 @@ namespace CSim.Core {
     using System.Numerics;
     
 	using Core.Types;
-    using Core.Types.Primitives;
     using Core.Native;
 
 	/// <summary>
@@ -521,30 +520,27 @@ namespace CSim.Core {
                 toret = byte.MaxValue;
             }
             else
-			if ( t == Any.Get( t.Machine ) ) {
+            if ( t == Any.Get( t.Machine ) ) {
                 toret = 0;
             } else {
                 byte references = 0;
                 byte indirections = 0;
                 toret = 0;
-                
-				// Is it a reference?
-                var refType = t as Ref;
-				if ( refType != null )
-                {
-					t = refType.AssociatedType;
-					references = 1;
-				}
-				
-                // How many indirections?
-                var ptrType = t as Ptr;
-				if ( ptrType != null )
-                {
-					t = ptrType.AssociatedType;
-					indirections = (byte) ptrType.IndirectionLevel;
-				}
 
-				// Basic value
+                // Is it a reference?
+                if ( t is Ref refType ) {
+                    t = refType.AssociatedType;
+                    references = 1;
+                }
+
+                // How many indirections?
+                if ( t is Ptr ptrType )
+                {
+                    t = ptrType.AssociatedType;
+                    indirections = (byte) ptrType.IndirectionLevel;
+                }
+
+                // Basic value
                 if ( t != Any.Get( t.Machine ) ) {
                     toret += (byte) ( Primitive.GetPrimitiveNameIndex( t.Name ) + 1 );
                 }
@@ -553,9 +549,9 @@ namespace CSim.Core {
                 references <<= 7;
                 indirections <<= 5;
                 toret += (byte) ( references + indirections );
-			}
+            }
 
-			return new []{ toret };
+            return new []{ toret }; 
 		}
 
 		/// <summary>

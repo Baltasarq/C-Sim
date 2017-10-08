@@ -14,7 +14,7 @@ namespace CSim.Core.FunctionLibrary {
 		public const string Name = "zero";
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Core.FunctionLibrary.Zero"/> class.
+		/// Initializes a new instance of the <see cref="Zero"/> class.
 		/// </summary>
 		private Zero(Machine m)
 			:base( m, Name, m.TypeSystem.GetIntType() )

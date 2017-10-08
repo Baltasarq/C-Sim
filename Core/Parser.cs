@@ -38,6 +38,8 @@ namespace CSim.Core {
 		public virtual Opcode[] Parse()
 		{
 			Lexer.TokenType tokenType;
+            
+            this.Lexer.SkipSpaces();
 
 			if ( this.Lexer.GetCurrentChar() == Reserved.OpAccess[ 0 ] ) {
 	            this.ParseAssign();
@@ -49,7 +51,11 @@ namespace CSim.Core {
 					int oldPos = this.Lexer.Pos;
 					string id = this.Lexer.GetToken();
 
-                    if ( this.Machine.TypeSystem.IsBasicType( id ) ) {
+                    this.Lexer.SkipSpaces();
+                    
+                    if ( this.Machine.TypeSystem.IsBasicType( id )
+                      && this.Lexer.GetCurrentChar() != '(' )
+                    {
 						this.Lexer.Pos = oldPos;
                         this.ParseCreation();
                     }
@@ -72,6 +78,18 @@ namespace CSim.Core {
 						throw new ParsingException( id + "?" );
 					}
     			}
+                else
+                if ( Lexer.GetCurrentChar() == '('
+                  || ( tokenType != Lexer.TokenType.Invalid
+                    && tokenType != Lexer.TokenType.SpecialCharacter ) )
+                {
+                    this.ParseExpression();
+                }
+                else {
+                    throw new ParsingException(
+                        L18n.Get( L18n.Id.ErrUnexpected )
+                        + ": " + this.Lexer.GetCurrentChar() );
+                }
             }
 
             return this.Opcodes.ToArray();

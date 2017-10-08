@@ -45,7 +45,7 @@ namespace CSim.Core.Literals {
         /// <value>The value.</value>
         public new double Value {
             get {
-				return Convert.ToDouble( base.Value );
+				return base.Value.ToDouble();
             }
         }
 

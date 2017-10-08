@@ -52,8 +52,10 @@
 			Variable x = realParams[ 0 ].SolveToVariable();
 
 			if ( !( x.Type is Primitive ) ) {
-				throw new TypeMismatchException( x.LiteralValue + "?" );
-			}
+				throw new TypeMismatchException(
+                                this.Machine.TypeSystem.GetDoubleType()
+                                + " != " + x.Type );
+            }
 
 			Variable result = new NoPlaceTempVariable(
                                 new IntLiteral(

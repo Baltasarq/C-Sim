@@ -100,12 +100,10 @@ namespace CSim.Core {
 			bool toret = ( this is Any );
 
 			// "any" type (void*) or pointer to any.
-			if ( !toret ) {
-				var ptr = this as Ptr;
-
-				if ( ptr != null ) {
-					toret = ( ptr.AssociatedType is Any );
-				}
+			if ( !toret
+              && this is Ptr ptr )
+            {
+				toret = ( ptr.AssociatedType is Any );
 			}
 
 			return toret;

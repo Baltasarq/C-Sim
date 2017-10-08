@@ -51,12 +51,14 @@
 			Variable x = realParams[ 0 ].SolveToVariable();
 
 			if ( !( x.Type is Primitive ) ) {
-				throw new TypeMismatchException( x.LiteralValue + "?" );
+				throw new TypeMismatchException(
+                                this.Machine.TypeSystem.GetDoubleType()
+                                + " != " + x.Type );
 			}
 
 			var litResult = new DoubleLiteral(
 				this.Machine,
-				System.Math.Exp( System.Convert.ToDouble( x.LiteralValue.Value ) )
+				System.Math.Exp( x.LiteralValue.Value.ToDouble() )
 			);
             
 			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CSim.Core.Literals {
+﻿namespace CSim.Core.Literals {
     using System.Numerics;
     
     /// <summary>
@@ -13,7 +11,7 @@ namespace CSim.Core.Literals {
 		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="ch">A given char.</param>
 		public CharLiteral(Machine m, object ch)
-			:this( m, System.Convert.ToChar( ch ) )
+			:this( m, ch.ToChar() )
 		{
 		}
 
@@ -76,7 +74,7 @@ namespace CSim.Core.Literals {
 			var toret = string.Format( "{0}", this.ToHex() );
 
 			if ( !char.IsControl( value ) ) {
-				toret = String.Format( "{0}", char.ToString( value ) );
+				toret = string.Format( "{0}", char.ToString( value ) );
 			}
 
 			return toret;
@@ -92,7 +90,7 @@ namespace CSim.Core.Literals {
 			var toret = string.Format( "({0})", this.ToPrettyNumber() );
 
 			if ( !char.IsControl( value ) ) {
-				toret = String.Format( "'{0}' ", char.ToString( value ) ) + toret;
+				toret = string.Format( "'{0}' ", char.ToString( value ) ) + toret;
 			}
 
 			return toret;

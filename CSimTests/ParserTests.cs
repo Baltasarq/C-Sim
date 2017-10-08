@@ -5,7 +5,6 @@ namespace CSimTests {
 
 	using CSim.Core;
 	using CSim.Core.Variables;
-    using CSim.Core.Literals;
 
 	[TestFixture]
 	public class ParserTests {

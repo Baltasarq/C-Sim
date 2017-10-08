@@ -10,7 +10,7 @@
 	/// This is the fmod function.
 	/// Signature: double fmod(double x, double y);
 	/// </summary>
-	public sealed class Mod: EmbeddedFunction {
+	public sealed class Fmod: EmbeddedFunction {
 		/// <summary>
 		/// The identifier for the function.
 		/// </summary>
@@ -20,7 +20,7 @@
 		/// Initializes a new instance of the <see cref="EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
-		private Mod(Machine m)
+		private Fmod(Machine m)
 			: base( m, Name, m.TypeSystem.GetIntType(), modFormalParams )
 		{
 		}
@@ -28,7 +28,7 @@
 		/// <summary>
 		/// Returns the only instance of this function.
 		/// </summary>
-		public static Mod Get(Machine m)
+		public static Fmod Get(Machine m)
 		{
 			if ( instance == null ) {
 				modFormalParams = new Variable[] {
@@ -36,7 +36,7 @@
 					new Variable( new Id( m, @"y" ), m.TypeSystem.GetDoubleType() )
 				};
 
-				instance = new Mod( m );
+				instance = new Fmod( m );
 			}
 
 			return instance;
@@ -53,22 +53,25 @@
 			Variable y = realParams[ 1 ].SolveToVariable();
 			
 			if ( !( x.Type is Primitive ) ) {
-				throw new TypeMismatchException( x.LiteralValue + "?" );
+				throw new TypeMismatchException(
+                                this.Machine.TypeSystem.GetDoubleType()
+                                + " != " + x.Type );
 			}
 
 			if ( !( y.Type is Primitive ) ) {
-				throw new TypeMismatchException( y.LiteralValue + "?" );
+				throw new TypeMismatchException(
+                                this.Machine.TypeSystem.GetDoubleType()
+                                + " != " + y.Type );
 			}
 
 			var litResult = new DoubleLiteral(
 				this.Machine,
-				System.Convert.ToDouble( x.LiteralValue.Value )
-							% System.Convert.ToDouble( y.LiteralValue.Value )
+				x.LiteralValue.ToDouble() % y.LiteralValue.ToDouble()
 			);
 			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
 		}
 
-		private static Mod instance = null;
+		private static Fmod instance = null;
 		private static Variable[] modFormalParams;
 	}
 }

@@ -11,7 +11,7 @@ namespace CSim.Core.Opcodes {
 	/// </summary>
 	public class AddressOfOpcode: Opcode {
 		/// <summary>The opcode value.</summary>
-		public const char OpcodeValue = (char) 0xE0;
+		public const byte OpcodeValue = 0xE0;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.AddressOfOpcode"/> class.
@@ -53,6 +53,17 @@ namespace CSim.Core.Opcodes {
 
 			return;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.AddressOfOpcode"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.AddressOfOpcode"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format(
+                            "[AddressOfOpcode(0x{0,2:X}): &lvalue(POP)]",
+                            OpcodeValue );
+        }
 	}
 }
 

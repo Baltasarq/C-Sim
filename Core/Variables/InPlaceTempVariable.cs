@@ -30,7 +30,7 @@ namespace CSim.Core.Variables {
 	/// </summary>
 	public class InPlaceTempVariable: TempVariable {
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Core.Variables.InPlaceTempVariable"/> class.
+		/// Initializes a new instance of the <see cref="InPlaceTempVariable"/> class.
 		/// </summary>
 		/// <param name="t">A <see cref="AType"/> for this temporal variable.</param>
 		public InPlaceTempVariable(AType t)

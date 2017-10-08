@@ -7,8 +7,8 @@ namespace CSim.Core.FunctionLibrary {
 	using CSim.Core;
 
 	/// <summary>
-	/// This is the malloc function.
-	/// Signature: void * malloc(x);
+	/// This is the typed malloc function.
+	/// Signature: T * _new(T[x]);
 	/// </summary>
 	public sealed class TypedMalloc: EmbeddedFunction {
 		/// <summary>

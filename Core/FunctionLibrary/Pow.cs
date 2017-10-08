@@ -54,18 +54,21 @@ namespace CSim.Core.FunctionLibrary {
 			Variable y = realParams[ 1 ].SolveToVariable();
 
 			if ( !( x.Type is Primitive ) ) {
-				throw new TypeMismatchException( x.LiteralValue + "?" );
+				throw new TypeMismatchException(
+                                this.Machine.TypeSystem.GetDoubleType()
+                                + " != " + x.Type );
 			}
 
 			if ( !( y.Type is Primitive ) ) {
-				throw new TypeMismatchException( y.LiteralValue + "?" );
+				throw new TypeMismatchException(
+                                this.Machine.TypeSystem.GetDoubleType()
+                                + " != " + y.Type );
 			}
 
 			var litResult = new DoubleLiteral(
 				this.Machine,
-				System.Convert.ToDouble(
-					System.Math.Pow( System.Convert.ToDouble( x.LiteralValue.Value ),
-									 System.Convert.ToDouble( y.LiteralValue.Value ) ) )
+				System.Math.Pow( x.LiteralValue.ToDouble(),
+								 y.LiteralValue.ToDouble() )
 			);
 			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
 		}

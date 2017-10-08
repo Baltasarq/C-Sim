@@ -8,7 +8,7 @@ namespace CSim.Core.Opcodes {
 	/// </summary>
 	public class CreateOpcode: Opcode {
 		/// <summary>The opcode's representing value.</summary>
-		public static char OpcodeValue = (char) 0xE3;
+		public static byte OpcodeValue = 0xE3;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Opcodes.CreateOpcode"/> class.
@@ -60,5 +60,17 @@ namespace CSim.Core.Opcodes {
 		public AType Type {
 			get; set;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.CreateOpcode"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.CreateOpcode"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format( "[CreateOpcode(0x{0,2:X}): lvalue(PUSH): '{1} {2}']",
+                                    OpcodeValue,
+                                    this.Type,
+                                    this.Name );
+        }
 	}
 }

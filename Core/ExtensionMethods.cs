@@ -27,6 +27,7 @@
 namespace CSim.Core {
     using System;
     using System.Numerics;
+    using System.Globalization;
 
 	using Core.Native;
     
@@ -34,6 +35,59 @@ namespace CSim.Core {
     /// Contains all needed extension methods.
     /// </summary>
     public static class ExtensionMethods {
+        /// <summary>
+        /// Converts any object to a char, provided it
+        /// holds a numeric value.
+        /// </summary>
+        /// <returns>A <see cref="char"/>.</returns>
+        /// <param name="value">Any value.</param>
+        /// <exception cref="ArgumentException">When the object does not hold
+        /// a numeric value.</exception>
+        public static char ToChar(this object value)
+        {
+            char toret = '\0';
+            var litValue = value as Literal;
+
+            if ( value == null ) {
+                throw new ArgumentException( "trying to convert null to BigInteger" );
+            }
+
+            if ( value is BigInteger ) {
+                toret = (char) ((BigInteger)value).ToByteArray()[ 0 ];
+            }
+            else
+            if ( value is char ) {
+                toret = (char) value;
+            }
+            else
+            if ( value is string ) {
+                toret = ((string) value)[0];
+            }
+            else
+            if ( value is sbyte
+              || value is byte
+              || value is short
+              || value is ushort
+              || value is int
+              || value is uint
+              || value is long
+              || value is ulong
+              || value is float
+              || value is double )
+            {
+                toret = value.ToBigInteger().ToChar();
+            }
+            else
+            if ( litValue != null ) {
+                toret = (char) litValue.GetValueAsInteger();
+            }
+            else {
+                throw new ArgumentException( "cannot convert to char from: " + value.GetType() );
+            }
+            
+            return toret;
+        }
+        
         /// <summary>
         /// Converts any object to a BigInteger, provided it
         /// holds a numeric value.
@@ -55,19 +109,28 @@ namespace CSim.Core {
                 toret = (BigInteger) value;
             }
             else
+            if ( value is string ) {
+                if ( !BigInteger.TryParse( (string) value, out toret ) )
+                {
+                    throw new Exceptions.TypeMismatchException(
+                                                    "int != '" + value + "'" );
+                }
+            }
+            else
             if ( value is sbyte
               || value is byte
               || value is short
               || value is ushort
               || value is int
               || value is uint
-              || value is long )
+              || value is long
+              || value is ulong )
             {
                 toret = new BigInteger( Convert.ToInt64( value ) );
             }
             else
-            if ( value is ulong ) {
-                toret = new BigInteger( Convert.ToUInt64( value ) );
+            if ( value is char ) {
+                toret = (char) value;
             }
             else
             if ( value is float
@@ -100,10 +163,27 @@ namespace CSim.Core {
                 throw new ArgumentException( "trying to convert null to double" );
             }
 
-            if ( value is float
-              || value is double )
-            {
+            if ( value is double ) {
                 toret = (double) value;
+            }
+            else
+            if ( value is char ) {
+                toret = value.ToBigInteger().ToChar();
+            }
+            else
+            if ( value is Literal ) {
+                toret = ( (Literal) value ).Value.ToDouble();
+            }
+            else
+            if ( value is string ) {
+                if ( !double.TryParse( (string) value,
+                                        NumberStyles.Float,
+                                        NumberFormatInfo.InvariantInfo,
+                                        out toret ) )
+                {
+                    throw new Exceptions.TypeMismatchException(
+                                                    "double != '" + value + "'" );
+                }
             }
             else
             if ( value is sbyte
@@ -115,7 +195,7 @@ namespace CSim.Core {
               || value is long
               || value is ulong )
             {
-                toret = Convert.ToDouble( value );
+                toret = (double) value;
             }
             else
             if ( value is BigInteger ) {

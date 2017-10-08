@@ -122,7 +122,7 @@
     <Compile Include="Core\FunctionLibrary\Exp.cs" />
     <Compile Include="Core\FunctionLibrary\Log.cs" />
     <Compile Include="Core\FunctionLibrary\Log10.cs" />
-    <Compile Include="Core\FunctionLibrary\Mod.cs" />
+    <Compile Include="Core\FunctionLibrary\Fmod.cs" />
     <Compile Include="Core\FunctionLibrary\Pow.cs" />
     <Compile Include="Core\FunctionLibrary\Sqrt.cs" />
     <Compile Include="Core\FunctionLibrary\Sin.cs" />

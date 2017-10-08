@@ -50,8 +50,10 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			Variable param = realParams[ 0 ].SolveToVariable();
 
-			if ( param.Type is Primitive ) {
-				throw new TypeMismatchException( param.Name.Name );
+			if ( !( param.Type is Primitive ) ) {
+				throw new TypeMismatchException( 
+                                        this.Machine.TypeSystem.GetIntType()
+                                        + " != " + param.Type );
 			}
             
             var litSeed = new IntLiteral( this.Machine, param.LiteralValue.GetValueAsInteger() );

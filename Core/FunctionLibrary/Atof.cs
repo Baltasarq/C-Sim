@@ -46,9 +46,19 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
+            AType pchar_t = this.Machine.TypeSystem.GetPtrType(
+                                        this.Machine.TypeSystem.GetCharType() );
 			var param = realParams[ 0 ].SolveToVariable();
-			var valueFromStr = System.Convert.ToDouble( param.LiteralValue.Value );
-			var result = new NoPlaceTempVariable( new DoubleLiteral( this.Machine, valueFromStr ) );
+            
+            if ( pchar_t != param.Type ) {
+                throw new Exceptions.TypeMismatchException(
+                                                pchar_t
+                                                + " != " + param.Type );
+            }
+
+			var valueFromStr = param.LiteralValue.Value.ToDouble();
+			var result = new NoPlaceTempVariable(
+                             new DoubleLiteral( this.Machine, valueFromStr ) );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

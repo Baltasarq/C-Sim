@@ -11,7 +11,7 @@ namespace CSim.Core.Opcodes {
 	/// </summary>
 	public class ModOpcode: Opcode {
 		/// <summary>The opcode's representing value./// </summary>
-		public const char OpcodeValue = (char) 0xEA;
+		public const byte OpcodeValue = 0xEA;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Opcodes.ModOpcode"/> class.
@@ -75,5 +75,15 @@ namespace CSim.Core.Opcodes {
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.ModOpcode"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.ModOpcode"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format( "[ModOpcode (0x{0,2:X}): rvalue(POP) % rvalue(POP)]",
+                                    OpcodeValue );
+        }
 	}
 }

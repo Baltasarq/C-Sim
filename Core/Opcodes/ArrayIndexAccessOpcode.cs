@@ -9,7 +9,7 @@
 	/// </summary>
 	public class ArrayIndexAccessOpcode: Opcode {
 		/// <summary>The opcode id.</summary>
-		public const char OpcodeValue = (char) 0xE9;
+		public const byte OpcodeValue = 0xE9;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.ArrayIndexAccessOpcode"/> class.
@@ -51,7 +51,10 @@
 
 				// Chk
 				if ( !( offset.Type is Primitive ) ) {
-					throw new TypeMismatchException( offset.LiteralValue.ToString() );
+					throw new TypeMismatchException( 
+                                        this.Machine.TypeSystem.GetIntType()
+                                        + " != "
+                                        + offset.LiteralValue );
 				}		
 
 				// Store in the ArrayElement vble and end
@@ -68,5 +71,16 @@
 
 			return;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.ArrayIndexAccessOpcode"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.ArrayIndexAccessOpcode"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format(
+                    "[ArrayIndexAccessOpcode(0x{0,2:X}): lvalue(POP)[rvalue(POP)]",
+                    OpcodeValue );
+        }
 	}
 }

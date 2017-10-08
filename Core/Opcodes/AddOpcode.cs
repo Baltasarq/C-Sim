@@ -10,7 +10,7 @@ namespace CSim.Core.Opcodes {
 	/// </summary>
 	public class AddOpcode: Opcode {
 		/// <summary>An identifier for this opcode.</summary>
-		public const char OpcodeValue = (char) 0xEA;
+		public const byte OpcodeValue = 0xEA;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.AddOpcode"/> class.
@@ -67,8 +67,8 @@ namespace CSim.Core.Opcodes {
 			  || op2.Type is Core.Types.Primitives.Double )
 			{
 				litResult = new DoubleLiteral( this.Machine,
-				                              System.Convert.ToDouble( op1.LiteralValue.Value )
-				                              + System.Convert.ToDouble( op2.LiteralValue.Value ) );
+				                              op1.LiteralValue.Value.ToDouble()
+				                              + op2.LiteralValue.Value.ToDouble() );
 			} else {
 				litResult = new IntLiteral( this.Machine,
 				                           op1.LiteralValue.GetValueAsInteger()
@@ -80,5 +80,15 @@ namespace CSim.Core.Opcodes {
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.AddOpcode"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.AddOpcode"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format( "[AddOpcode (0x{0,2:X}): rvalue(POP) + rvalue(POP)]",
+                                    OpcodeValue );
+        }
 	}
 }

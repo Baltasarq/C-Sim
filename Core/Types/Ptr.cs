@@ -39,6 +39,7 @@ namespace CSim.Core.Types {
 
 		/// <summary>
 		/// Gets the associated basic type.
+        /// Note that, for int *** ptr, returns int.
 		/// </summary>
 		/// <value>A <see cref="AType"/>.</value>
         public AType AssociatedType {

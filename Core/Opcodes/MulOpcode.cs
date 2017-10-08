@@ -9,7 +9,7 @@ namespace CSim.Core.Opcodes {
 	/// </summary>
 	public class MulOpcode: Opcode {
 		/// <summary>The opcode's representing value.</summary>
-		public const char OpcodeValue = (char) 0xEA;
+		public const byte OpcodeValue = 0xEA;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Opcodes.MulOpcode"/> class.
@@ -61,13 +61,13 @@ namespace CSim.Core.Opcodes {
 
 			// Now yes, do it
 			Literal litResult;
-
-			if ( op1.Type is Core.Types.Primitives.Double
-		      || op2.Type is Core.Types.Primitives.Double )
+            
+			if ( op1.Type is Types.Primitives.Double
+		      || op2.Type is Types.Primitives.Double )
 			{
 				litResult = new DoubleLiteral( this.Machine,
-				                              System.Convert.ToDouble( op1.LiteralValue.Value )
-				                              * System.Convert.ToDouble( op2.LiteralValue.Value ) );
+				                              op1.LiteralValue.ToDouble()
+				                              * op2.LiteralValue.ToDouble() );
 			} else {
 				litResult = new IntLiteral( this.Machine,
 				                           op1.LiteralValue.GetValueAsInteger()
@@ -79,5 +79,15 @@ namespace CSim.Core.Opcodes {
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.MulOpcode"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.MulOpcode"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format( "[MulOpcode (0x{0,2:X}): rvalue(POP) * rvalue(POP)]",
+                                    OpcodeValue );
+        }
 	}
 }

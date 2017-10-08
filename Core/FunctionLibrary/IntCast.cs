@@ -33,7 +33,7 @@ namespace CSim.Core.FunctionLibrary {
 		{
 			if ( instance == null ) {
 				intCastFormalParams = new Variable[] {
-                    new Variable( new Id( m, @"x" ), CSim.Core.Types.Any.Get( m ) )
+                    new Variable( new Id( m, @"x" ), Any.Get( m ) )
 				};
 
 				instance = new IntCast( m );
@@ -52,11 +52,14 @@ namespace CSim.Core.FunctionLibrary {
 			Variable param = realParams[ 0 ].SolveToVariable();
 
 			if ( !( param.Type is Primitive ) ) {
-				throw new TypeMismatchException( param.ToString() );
+				throw new TypeMismatchException(
+                                        this.Machine.TypeSystem.GetIntType()
+                                        + " != " + param.Type );
 			}
 
 			BigInteger value = param.LiteralValue.GetValueAsInteger();
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( new IntLiteral( this.Machine, value ) ) );
+			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable(
+                                    new IntLiteral( this.Machine, value ) ) );
 		}
 
 		private static IntCast instance = null;

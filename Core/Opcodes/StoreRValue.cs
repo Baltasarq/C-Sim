@@ -5,7 +5,7 @@ namespace CSim {
 	/// <summary>Store RV value.</summary>
 	public class StoreRValue: Opcode {
 		/// <summary>The opcode's representing value.</summary>
-		public static char OpcodeValue = (char) 0xE4;
+		public static byte OpcodeValue = 0xE4;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.StoreRValue"/> class.
@@ -32,6 +32,18 @@ namespace CSim {
 		public RValue RValue {
 			get; set;
 		}
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.StoreRValue"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.StoreRValue"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format(
+                            "[StoreRValue(0x{0,2:X}): RValue={1}]",
+                            OpcodeValue,
+                            this.RValue );
+        }
 	}
 }
 

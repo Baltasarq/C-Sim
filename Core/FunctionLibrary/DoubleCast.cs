@@ -54,7 +54,7 @@ namespace CSim.Core.FunctionLibrary {
 				throw new TypeMismatchException( param.ToString() );
 			}
 
-			double value = System.Convert.ToDouble( param.LiteralValue.Value );
+			double value = param.LiteralValue.Value.ToDouble();
 			Variable result = new NoPlaceTempVariable( new DoubleLiteral( this.Machine, value ) );
 			this.Machine.ExecutionStack.Push( result );
 		}

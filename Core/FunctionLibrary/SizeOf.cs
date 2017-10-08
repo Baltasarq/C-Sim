@@ -50,7 +50,7 @@ namespace CSim.Core.FunctionLibrary {
 		public override void Execute(RValue[] realParams)
 		{
             var argVble = realParams[ 0 ].SolveToVariable();
-            var argType = argVble.Type as Types.TypeType;
+            var argType = argVble.Type as TypeType;
 
             BigInteger result = argVble.LiteralValue.GetValueAsInteger();
             if ( argType == null ) {

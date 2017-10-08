@@ -11,7 +11,7 @@ namespace CSim.Core.Opcodes {
 	/// </summary>
     public class AssignOpcode: Opcode {
 		/// <summary>The opcode id.</summary>
-        public static char OpcodeValue = (char) 0xE1;
+        public static byte OpcodeValue = 0xE1;
         
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.AssignOpcode"/> class.
@@ -133,6 +133,18 @@ namespace CSim.Core.Opcodes {
 			}
 
 			this.Machine.ExecutionStack.Push( toret );
+        }
+        
+        /// <summary>
+        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.AssignOpcode"/>.
+        /// </summary>
+        /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Opcodes.AssignOpcode"/>.</returns>
+        public override string ToString()
+        {
+            return string.Format(
+                            "[AssignOpcode ({0}) lvalue(POP) <- rvalue(POP)]",
+                            OpcodeValue
+            );
         }
     }
 }
