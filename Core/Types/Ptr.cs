@@ -38,15 +38,6 @@ namespace CSim.Core.Types {
         }
 
 		/// <summary>
-		/// Gets the associated basic type.
-        /// Note that, for int *** ptr, returns int.
-		/// </summary>
-		/// <value>A <see cref="AType"/>.</value>
-        public AType AssociatedType {
-			get; private set;
-        }
-
-		/// <summary>
 		/// Gets the type once a derreference is done.
 		/// If <see cref="IndirectionLevel"/> == 1, then the
 		/// result is the same as in <see cref="AssociatedType"/>.
@@ -113,6 +104,15 @@ namespace CSim.Core.Types {
         public override string ToString()
         {
             return this.Name;
+        }
+        
+        /// <summary>
+        /// Gets the associated basic type.
+        /// Note that, for int *** ptr, returns int.
+        /// </summary>
+        /// <value>A <see cref="AType"/>.</value>
+        public AType AssociatedType {
+            get; private set;
         }
 	}
 }

@@ -49,7 +49,7 @@ namespace CSim.Core {
             var litValue = value as Literal;
 
             if ( value == null ) {
-                throw new ArgumentException( "trying to convert null to BigInteger" );
+                throw new ArgumentException( "trying to convert null to char" );
             }
 
             if ( value is BigInteger ) {

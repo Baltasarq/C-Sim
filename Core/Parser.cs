@@ -50,29 +50,32 @@ namespace CSim.Core {
     			if ( tokenType == Lexer.TokenType.Id ) {
 					int oldPos = this.Lexer.Pos;
 					string id = this.Lexer.GetToken();
+                    bool isEOL;
 
                     this.Lexer.SkipSpaces();
+                    isEOL = this.Lexer.IsEOL();
+                    this.Lexer.Pos = oldPos;
                     
                     if ( this.Machine.TypeSystem.IsBasicType( id )
                       && this.Lexer.GetCurrentChar() != '(' )
                     {
-						this.Lexer.Pos = oldPos;
                         this.ParseCreation();
                     }
                     else
-                    if ( this.Machine.TDS.IsIdOfExistingVariable( new Id( this.Machine, id ) ) )
+                    if ( this.Machine.TDS.IsIdOfExistingVariable( id ) )
 					{
-						this.Lexer.Pos = oldPos;
-                        this.ParseAssign();
+                        if ( isEOL ) {
+                            this.ParseIntermediateExpression();
+                        } else {
+                            this.ParseAssign();
+                        }
                     }
                     else
                     if ( id == Reserved.OpDelete ) {
-						this.Lexer.Pos = oldPos;
                         this.ParseDelete();
                     }
 					else
 					if ( this.Machine.API.Match( id ) != null ) {
-						this.Lexer.Pos = oldPos;
 						this.ParseFunctionCall();
 					} else {
 						throw new ParsingException( id + "?" );
@@ -101,7 +104,7 @@ namespace CSim.Core {
 		/// </summary>
 		protected void ParseExpression()
 		{
-			ParseIntermediateExpression();
+			this.ParseIntermediateExpression();
 
 			this.Lexer.SkipSpaces();
 			if ( !this.Lexer.IsEOL() ) {
@@ -130,7 +133,7 @@ namespace CSim.Core {
 
 				this.Lexer.Advance();
 				this.Lexer.SkipSpaces();
-				ParseIntermediateExpression();
+				this.ParseIntermediateExpression();
 				this.Opcodes.Add( opr );
 			}
 

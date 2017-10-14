@@ -231,13 +231,29 @@ namespace CSim.Core {
 		/// <param name="t">The regular type to build the reference on.</param>
 		public Ref GetRefType(AType t)
 		{
-			if ( !( this.refTypeInstances.TryGetValue( t, out Ref toret ) ) ) {
-				toret = new Ref( t );
-				this.refTypeInstances.Add( t, toret );
-			}
+            Ref toret;
+            
+            if ( t is Ref reft ) {
+                toret = reft;
+            } else {
+				if ( !( this.refTypeInstances.TryGetValue( t, out toret ) ) ) {
+					toret = new Ref( t );
+	System.Console.WriteLine( "** Created: " + toret );
+					this.refTypeInstances.Add( t, toret );
+				}
+            }
 
 			return toret;
 		}
+        
+        /// <summary>
+        /// A convenience method that returns char *.
+        /// </summary>
+        /// <returns>The 'char *' <see cref="Ptr"/> <see cref="AType"/>.</returns>
+        public Ptr GetPCharType()
+        {
+            return this.GetPtrType( this.GetCharType() );
+        }
 
 		/// <summary>
 		/// Returns the type from a textual description.

@@ -26,15 +26,12 @@ namespace CSim.Core.Opcodes {
 		{
 			// Check rvalue
 			if ( rvalue is NoPlaceTempVariable ) {
-				throw new UnknownVbleException( string.Format(
-							"[{0}]",
+				throw new UnknownVbleException( string.Format( "[{0}]",
 					new IntLiteral( this.Machine, rvalue.Address ).ToPrettyNumber() ) );
 			}
 
-			var rvalueTypeAsRef = rvalue.Type as Ref;
-
 			// Assign to variable
-			if ( rvalueTypeAsRef != null ) {
+			if ( rvalue.Type is Ref ) {
 				var targetVbleAddress = rvalue.LiteralValue.GetValueAsInteger();
 				lvalue.PointedVble = this.Machine.TDS.LookForAddress( targetVbleAddress, lvalue.AssociatedType );
 

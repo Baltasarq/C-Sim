@@ -384,10 +384,20 @@ namespace CSim.Core {
 		/// Determines whether there is a variable with an identifier like the specified one.
 		/// </summary>
 		/// <returns><c>true</c> if there is a variable with that identifier; otherwise, <c>false</c>.</returns>
-		/// <param name="idVble">The identifier in question, as a string.</param>
+		/// <param name="idVble">The identifier in question, as an Id.</param>
 		public bool IsIdOfExistingVariable(Id idVble)
 		{
-			return ( this.LookForVariableOfId( idVble.Name ) != null );
+            return this.IsIdOfExistingVariable( idVble.Name );
+        }
+        
+        /// <summary>
+        /// Determines whether there is a variable with an identifier like the specified one.
+        /// </summary>
+        /// <returns><c>true</c> if there is a variable with that identifier; otherwise, <c>false</c>.</returns>
+        /// <param name="id">The identifier in question, as a string.</param>
+        public bool IsIdOfExistingVariable(string id)
+        {
+			return ( this.LookForVariableOfId( id ) != null );
 		}
 
 		/// <summary>

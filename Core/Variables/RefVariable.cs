@@ -1,20 +1,19 @@
 
 namespace CSim.Core.Variables {
 	using CSim.Core.Literals;
+    using CSim.Core.Types;
 
 	/// <summary>A reference <see cref="Variable"/>.</summary>
-    public class RefVariable: PtrVariable {
+    public class RefVariable: Variable {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Variables.RefVariable"/> class.
 		/// </summary>
 		/// <param name="id">The <see cref="Id"/> for this reference.</param>
         /// <param name="t">The associated <see cref="AType"/> for this reference.</param>
         public RefVariable(Id id, AType t)
-            : base( id, t )
+            : base( id, t.Machine.TypeSystem.GetRefType( t ) )
         {
-            this.SetType( t.Machine.TypeSystem.GetRefType( t ) );
             this.pointedVble = null;
-            this.Address = -1;
         }
 
 		/// <summary>
@@ -24,6 +23,16 @@ namespace CSim.Core.Variables {
         public bool IsSet()
         {
             return ( this.pointedVble != null );
+        }
+        
+        /// <summary>
+        /// Gets the type associated to this reference.
+        /// </summary>
+        /// <value>A <see cref="AType"/>.</value>
+        public AType AssociatedType {
+            get {
+                return ( (Ref) this.Type ).AssociatedType;
+            }
         }
 
 		/// <summary>

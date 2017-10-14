@@ -1,7 +1,8 @@
 ﻿namespace CSimTests {
+    using System;
+    using System.Numerics;
     using NUnit.Framework;
     
-    using System;
     using CSim.Core;
     using CSim.Core.Exceptions;
     
@@ -24,6 +25,106 @@
                 this.dbl_v = this.machine.TDS.LookUp( "dbl_v" );
                 this.chr_v = this.machine.TDS.LookUp( "chr_v" );
 	        });
+        }
+        
+        [Test]
+        public void TestStrCpy()
+        {
+            string msg = "hola";
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "strcpy('a', 2);" );
+            });
+            
+            Assert.Throws<IncorrectAddressException>( () => {
+                this.machine.Execute( "strcpy(\"a\", 2);" );
+            });
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "strcpy(1, \"2\");" );
+            });
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "char *s_strcpy=malloc(10)" );
+                this.machine.Execute( "strcpy(s_strcpy, \"" + msg + "\");" );
+            });
+            
+            Variable s = this.machine.TDS.LookUp( "s_strcpy" );
+            BigInteger addr = s.Value.ToBigInteger();
+            BigInteger start = addr;
+            byte value;
+            int msgPos = 0;
+            
+            while( msgPos < msg.Length ) {
+                value = this.machine.Memory.Read( addr, 1 )[ 0 ];
+                Assert.AreEqual( msg[ msgPos ], value );
+                
+                ++addr;
+                msgPos = (int) ( addr - start );
+            }
+            
+            value = this.machine.Memory.Read( addr, 1 )[ 0 ];
+            Assert.AreEqual( 0, value );
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "char *s_strcpy2 = malloc(10)" );
+                this.machine.Execute( "strcpy( s_strcpy2, \"" + msg + "\");" );
+                this.machine.Execute( "strcpy( s_strcpy, s_strcpy2 );" );
+            });
+            
+            Variable s1 = this.machine.TDS.LookUp( "s_strcpy" );
+            Variable s2 = this.machine.TDS.LookUp( "s_strcpy2" );
+            BigInteger addr1 = s1.Value.ToBigInteger();
+            BigInteger addr2 = s2.Value.ToBigInteger();
+            byte value1 = this.machine.Memory.Read( addr1, 1 )[ 0 ];
+            byte value2 = this.machine.Memory.Read( addr2, 1 )[ 0 ];
+            
+            while( value != 0 ) {
+                Assert.AreEqual( value2, value1 );
+                
+                ++addr1;
+                ++addr2;
+                value1 = this.machine.Memory.Read( addr1, 1 )[ 0 ];
+                value2 = this.machine.Memory.Read( addr2, 1 )[ 0 ];
+            }
+        }
+        
+        [Test]
+        public void TestStrLen()
+        {
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "int_v = strlen('a');" );
+            });
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "int_v = strlen(\"\");" );
+            });
+            
+            Assert.AreEqual( 0.ToBigInteger(), this.int_v.LiteralValue.Value );
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "int_v = strlen(\"a\");" );
+            });
+            
+            Assert.AreEqual( 1.ToBigInteger(), this.int_v.LiteralValue.Value );
+
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "int_v = strlen(\"aa\");" );
+            });
+            
+            Assert.AreEqual( 2.ToBigInteger(), this.int_v.LiteralValue.Value );
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "char *s_strlen = malloc(6)" );
+                this.machine.Execute( "s_strlen[0] = 'h'" );
+                this.machine.Execute( "s_strlen[1] = 'o'" );
+                this.machine.Execute( "s_strlen[2] = 'l'" );
+                this.machine.Execute( "s_strlen[3] = 'a'" );
+                this.machine.Execute( "s_strlen[4] = 0" );
+                this.machine.Execute( "int_v = strlen(s_strlen);" );
+            });
+            
+            Assert.AreEqual( 4.ToBigInteger(), this.int_v.LiteralValue.Value );
         }
     
         [Test]

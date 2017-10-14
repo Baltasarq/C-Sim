@@ -9,11 +9,10 @@ namespace CSim.Core {
 		/// <summary>Author of the app.</summary>
         public const string Author = "jbgarcia@uvigo.es";
 		/// <summary>Version of the app.</summary>
-        public const string Version = "1.7 20170922";
+        public const string Version = "1.7.1 20170922";
 		/// <summary>Website for this app.</summary>
 		public const string Web = "http://webs.uvigo.es/jbgarcia/prys/csim/";
 		/// <summary>Extension for files created by this app.</summary>
 		public const string FileExt = "csim";
     }
 }
-

@@ -61,7 +61,7 @@
             Assert.AreEqual( 1, vbles.Count );
             
             mblk = vbles[ 0 ];
-            Assert.AreSame( this.vm.TypeSystem.GetPtrType( this.char_t ), mblk.Type );
+            Assert.AreSame( this.vm.TypeSystem.GetPCharType(), mblk.Type );
             Assert.True( mblk is ArrayVariable );
             
             var array = mblk as ArrayVariable;

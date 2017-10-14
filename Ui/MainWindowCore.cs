@@ -723,23 +723,25 @@ namespace CSim.Ui {
 
 		private string FromVbleToString(Variable x)
 		{
-            var charPtr = this.machine.TypeSystem.GetPtrType(
-                                        this.machine.TypeSystem.GetCharType() );
+            var charPtr = this.machine.TypeSystem.GetPCharType();
+
 			string toret = string.Format( "{0}({1} [{2}]) = ",
 				x.Name.Value,
 				x.Type,
 				FromIntToPrettyHex( x.Address, this.machine.WordSize ) );
 
 			// Es char *?
-			if ( x.IsPtr
-			  && x.Type == charPtr )
+			if ( x.Type == charPtr
+              && !( x is NoPlaceTempVariable ) )
 			{
-                Variable str = this.machine.TDS.LookForAddress(
-                                                        x.Value.ToBigInteger() );
-                
+	            Variable str = this.machine.TDS.LookForAddress(
+	                                                    x.Value.ToBigInteger() );
+	            
 				if ( str != null ) {
 					toret += str.LiteralValue + " (" + x.LiteralValue + ")";
-				}	
+	            } else {
+	                throw new TypeMismatchException( charPtr.ToString() );
+	            }
 			} else {
 				toret += x.LiteralValue;
 			}		

@@ -112,8 +112,7 @@
     <Compile Include="Core\FunctionLibrary\IntCast.cs" />
     <Compile Include="Core\FunctionLibrary\DoubleCast.cs" />
     <Compile Include="Core\FunctionLibrary\CharCast.cs" />
-    <Compile Include="Core\FunctionLibrary\Atoi.cs" />
-    <Compile Include="Core\FunctionLibrary\Atof.cs" />
+    <Compile Include="Core\FunctionLibrary\StrCpy.cs" />
     <Compile Include="Core\FunctionLibrary\Malloc.cs" />
     <Compile Include="Core\FunctionLibrary\Floor.cs" />
     <Compile Include="Core\FunctionLibrary\Ceil.cs" />
@@ -135,7 +134,7 @@
     <Compile Include="Core\Opcodes\DivOpcode.cs" />
     <Compile Include="Core\Opcodes\ModOpcode.cs" />
     <Compile Include="Core\FunctionLibrary\Printf.cs" />
-    <Compile Include="Ui\MainWindow.cs" />
+    <Compile Include="Ui\MainWindowCore.cs" />
     <Compile Include="Ui\PPal.cs" />
     <Compile Include="Ui\SchemaDrawer.cs" />
     <Compile Include="Ui\MainWindowView.cs" />
@@ -190,6 +189,9 @@
     <Compile Include="Core\Literals\Int64Literal.cs" />
     <Compile Include="Ui\Drawer\GrphBoxesPerAddress.cs" />
     <Compile Include="Ui\Drawer\GrphBoxedArrayElement.cs" />
+    <Compile Include="Core\FunctionLibrary\StrLen.cs" />
+    <Compile Include="Core\FunctionLibrary\Atof.cs" />
+    <Compile Include="Core\FunctionLibrary\Atoi.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

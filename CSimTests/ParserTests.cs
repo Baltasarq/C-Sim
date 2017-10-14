@@ -27,9 +27,78 @@ namespace CSimTests {
 	
 				this.machine.Execute( @"int * ptrInt;" );
 				this.machine.Execute( @"char * ptrChar;" );
-				this.machine.Execute( @"double * ptrDouble;" );
+				this.machine.Execute( @"double * ptrDouble;" );                
             });
 		}
+        
+        [Test]
+        public void TestPtrExpression()
+        {
+            PtrVariable int_ptr = null;
+            Variable vble_x = null;
+        
+            Assert.DoesNotThrow( () => {
+                vble_x = this.machine.Execute( @"x = 42" );
+                this.machine.Execute( @"ptrInt = &x" );
+                this.machine.Execute( @"*ptrInt = *ptrInt + 1" );
+                this.machine.Execute( @"ptrInt = ptrInt + 1" );
+                int_ptr = (PtrVariable) this.machine.TDS.LookUp( @"ptrInt" );
+            });
+            
+            BigInteger pos = int_ptr.Address + 1;
+            Assert.AreEqual( 43.ToBigInteger(), vble_x.LiteralValue.ToBigInteger() );
+            Assert.AreEqual( pos, int_ptr.LiteralValue.ToBigInteger() );
+        }
+        
+        [Test]
+        public void TestRefAssign()
+        {
+            RefVariable int_ref = null;
+            RefVariable char_ref = null;
+            RefVariable double_ref = null;
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"int & refInt = x;" );
+                this.machine.Execute( @"char & refChar = ch;" );
+                this.machine.Execute( @"double & refDouble = d;" );
+                
+                int_ref = (RefVariable) this.machine.TDS.LookUp( @"refInt" );
+                char_ref = (RefVariable) this.machine.TDS.LookUp( @"refChar" );
+                double_ref = (RefVariable) this.machine.TDS.LookUp( @"refDouble" );
+            });
+            
+            Assert.AreSame( this.machine.TDS.LookUp( "x" ), int_ref.PointedVble );
+            Assert.AreSame( this.machine.TDS.LookUp( "ch" ), char_ref.PointedVble );
+            Assert.AreSame( this.machine.TDS.LookUp( "d" ), double_ref.PointedVble );
+
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"refInt = 42;" );
+                this.machine.Execute( @"refDouble = 1.0;" );
+                this.machine.Execute( @"refChar = 'a';" );
+            });
+
+            Assert.AreEqual( 42.ToBigInteger(), int_ref.PointedVble.Value.ToBigInteger() );
+            Assert.AreEqual( 'a'.ToBigInteger(), char_ref.PointedVble.Value.ToBigInteger() );
+            Assert.AreEqual( 1.ToBigInteger(), double_ref.PointedVble.Value.ToBigInteger() );
+        }
+        
+        [Test]
+        public void TestRefToRef()
+        {
+            RefVariable int_ref = null;
+            RefVariable int_ref_ref = null;
+        
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"int & refInt = x" );
+                this.machine.Execute( @"int & refrefInt = refInt" );
+                
+                int_ref = (RefVariable) this.machine.TDS.LookUp( @"refrefInt" );
+                int_ref_ref = (RefVariable) this.machine.TDS.LookUp( @"refrefInt" );
+            });
+            
+            Assert.AreSame( int_ref.PointedVble, int_ref_ref.PointedVble );
+            Assert.AreEqual( int_ref.PointedVble.Value, int_ref_ref.PointedVble.Value );
+        }
         
         [Test]
         public void TestPtrAssign()
@@ -159,7 +228,7 @@ namespace CSimTests {
 			// Locate variables
 			Assert.DoesNotThrow( () => {
 				ptrVble = (PtrVariable) this.machine.TDS.LookUp( @"ptrChar" ); } );
-			Assert.AreEqual( this.machine.TypeSystem.GetPtrType( this.char_t ), ptrVble.Type );
+			Assert.AreEqual( this.machine.TypeSystem.GetPCharType(), ptrVble.Type );
 
 			Assert.DoesNotThrow( () => {
 				charVble = this.machine.TDS.LookUp( "ch" );

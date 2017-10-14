@@ -60,15 +60,6 @@ namespace CSim.Core {
                   && address < this.Address + this.Size );
         }
 
-		/// <summary>
-		/// Sets the type, internally.
-		/// </summary>
-		/// <param name="t">The new type, as a Type object.</param>
-		protected void SetType(AType t)
-		{
-			this.type = t;
-		}
-        
         /// <summary>
         /// Solves the type to a variable with the <see cref="Literals.TypeLiteral"/> as value.
         /// </summary>
@@ -95,16 +86,6 @@ namespace CSim.Core {
             get; set;
         }
 
-		/// <summary>
-        /// Gets the <see cref="AType"/> of this <see cref="Variable"/>.
-		/// </summary>
-        /// <value>The corresponding <see cref="AType"/>.</value>
-        public override AType Type {
-            get {
-				return this.type;
-			}
-        }
-        
         /// <summary>
         /// Gets a value indicating whether
         /// this <see cref="T:CSim.Core.Variable"/> is a pointer.
@@ -114,15 +95,6 @@ namespace CSim.Core {
             get {
                 return this.Type is Types.Ptr;
             }
-        }
-
-		/// <summary>
-		/// Gets the size of the variable.
-		/// This size is normally totally dependent on the type.
-		/// </summary>
-		/// <value>The size, as an int.</value>
-        public int Size {
-			get; protected set;
         }
 
         /// <summary>
@@ -166,6 +138,25 @@ namespace CSim.Core {
             get {
 				return this.Machine.Memory;
 			}
+        }
+        
+        /// <summary>
+        /// Gets the size of the variable.
+        /// This size is normally totally dependent on the type.
+        /// </summary>
+        /// <value>The size, as an int.</value>
+        public int Size {
+            get; protected set;
+        }
+        
+        /// <summary>
+        /// Gets the <see cref="AType"/> of this <see cref="Variable"/>.
+        /// </summary>
+        /// <value>The corresponding <see cref="AType"/>.</value>
+        public override AType Type {
+            get {
+                return this.type;
+            }
         }
 
 		private AType type;
