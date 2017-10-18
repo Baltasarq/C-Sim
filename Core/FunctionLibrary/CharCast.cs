@@ -57,7 +57,8 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			char value = param.LiteralValue.ToChar();
-			Variable result = new NoPlaceTempVariable( new CharLiteral( this.Machine, value ) );
+			Variable result = Variable.CreateTempVariable(
+                                        new CharLiteral( this.Machine, value ) );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

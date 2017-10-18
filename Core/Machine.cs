@@ -139,7 +139,6 @@ namespace CSim.Core {
         /// <returns>A variable representing the final result.</returns>
 		public Variable Execute(string input)
 		{
-        Console.WriteLine( input );
 			return this.Execute( new Parser( input, this ) );
 		}
 
@@ -153,21 +152,12 @@ namespace CSim.Core {
 			var er = new SnapshotManager( this );
 			Variable toret = null;
 
-			this.TDS.CollectArrayElements();
-
 			er.SaveSnapshot();
 			this.ExecutionStack.Clear();
 
 			try {
 				// Execute opcodes
                 Opcode[] opcodes = parser.Parse();
-                
-                System.Console.WriteLine( "***" );
-                foreach(Opcode opcode in opcodes) {
-                    System.Console.WriteLine( opcode );
-                }
-                System.Console.WriteLine( "***" );
-                
 				foreach(Opcode opcode in opcodes) {
 					opcode.Execute();
 				}

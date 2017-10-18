@@ -57,8 +57,9 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			double x = param.LiteralValue.ToDouble();
-			var litResult = new DoubleLiteral( this.Machine, System.Math.Sqrt( x ) );
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
+			this.Machine.ExecutionStack.Push(
+                        Variable.CreateTempVariable(
+                                        this.Machine, System.Math.Sqrt( x ) ) );
 		}
 
 		private static Sqrt instance = null;

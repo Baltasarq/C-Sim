@@ -40,9 +40,27 @@ namespace CSim.Core {
 			Lexer.TokenType tokenType;
             
             this.Lexer.SkipSpaces();
-
+            
 			if ( this.Lexer.GetCurrentChar() == Reserved.OpAccess[ 0 ] ) {
-	            this.ParseAssign();
+                int oldPos = this.Lexer.Pos;
+                
+                this.Lexer.Advance();
+                if ( this.Lexer.GetNextTokenType() == Lexer.TokenType.Id ) {
+                    this.Lexer.SkipSpaces();
+                    this.Lexer.GetToken();
+                    this.Lexer.SkipSpaces();
+                    
+                    bool isExpression = this.Lexer.IsEOL();
+                    this.Lexer.Pos = oldPos;
+                    
+                    if ( isExpression ) {
+                        this.ParseIntermediateExpression();
+                    } else {
+                        this.ParseAssign();
+                    }
+                } else {
+	                this.ParseAssign();
+                }
             } else {
 				this.Lexer.SkipSpaces();
                 tokenType = this.Lexer.GetNextTokenType();
@@ -89,9 +107,16 @@ namespace CSim.Core {
                     this.ParseExpression();
                 }
                 else {
-                    throw new ParsingException(
-                        L18n.Get( L18n.Id.ErrUnexpected )
-                        + ": " + this.Lexer.GetCurrentChar() );
+                    char currentChar = Lexer.GetCurrentChar();
+                    string msg = L18n.Get( L18n.Id.ErrUnexpected ) + ": '";
+                    
+                    if ( currentChar == 0 ) {
+                        msg += "'";
+                    } else {
+                        msg += ": '" + currentChar + "'";
+                    }
+                    
+                    throw new ParsingException( msg );
                 }
             }
 
@@ -410,7 +435,7 @@ namespace CSim.Core {
 				currentChar = this.Lexer.GetCurrentChar();
 			}
 
-			this.ParseExpression();
+			this.ParseTerminal();
 			this.Opcodes.Add( new AccessOpcode( this.Machine, levels ) );
 		}
 

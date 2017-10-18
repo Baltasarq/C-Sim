@@ -86,7 +86,7 @@
 	                float posX = this.StartArrayElementsText + space;
 	                	                
                     var box = new GrphBoxedArrayElement(
-                                new ArrayElement(
+                                Variable.CreateTempVariableForArrayElement(
                                         this.ArrayVariable.Name.Name,
                                         this.ArrayVariable.Address,
                                         (Ptr) this.ArrayVariable.Type,

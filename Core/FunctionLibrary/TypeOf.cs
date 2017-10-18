@@ -80,7 +80,8 @@ namespace CSim.Core.FunctionLibrary {
                 typeLit = (TypeLiteral) argVble.LiteralValue;
             }
             
-            this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( typeLit ) );
+            this.Machine.ExecutionStack.Push(
+                                        Variable.CreateTempVariable( typeLit ) );
         }
 
         private static TypeOf instance = null;

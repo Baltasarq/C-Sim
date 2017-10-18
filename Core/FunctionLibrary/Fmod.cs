@@ -68,7 +68,8 @@
 				this.Machine,
 				x.LiteralValue.ToDouble() % y.LiteralValue.ToDouble()
 			);
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
+			this.Machine.ExecutionStack.Push(
+                                    Variable.CreateTempVariable( litResult ) );
 		}
 
 		private static Fmod instance = null;

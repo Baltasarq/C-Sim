@@ -58,7 +58,8 @@ namespace CSim.Core.FunctionLibrary {
 
 			var x = param.LiteralValue.Value.ToDouble();
 			var litResult = new DoubleLiteral( this.Machine, System.Math.Cos( x ) );
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
+			this.Machine.ExecutionStack.Push(
+                                    Variable.CreateTempVariable( litResult ) );
 		}
 
 		private static Cos instance = null;

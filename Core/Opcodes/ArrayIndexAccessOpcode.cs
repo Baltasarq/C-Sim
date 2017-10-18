@@ -36,15 +36,14 @@
 			  && offset != null )
 			{
 				BigInteger address = 0;
-				var ptrVble = vble.Type as Ptr;
 
 				// Find the address of the pointed array
-				if ( ptrVble != null ) {
-					address = vble.LiteralValue.GetValueAsInteger();
-				}
-				else
-				if ( vble is ArrayVariable ) {
-					address = vble.Address;
+                if ( vble is ArrayVariable ) {
+                    address = vble.Address;
+                }
+                else
+				if ( vble.IsIndirection() ) {
+					address = ( (IndirectVariable) vble ).PointedAddress;
 				} else {
 					throw new EngineException( vble.Name + "[x]??" );
 				}
@@ -58,11 +57,12 @@
 				}		
 
 				// Store in the ArrayElement vble and end
-				Variable result = new ArrayElement(
+				Variable result = Variable.CreateTempVariableForArrayElement(
 										vble.Name.Name,
 										address,
 										(Ptr) vble.Type,
-										offset.LiteralValue.GetValueAsInteger() );
+										(int) offset.LiteralValue.ToBigInteger()
+                );
 		
 				this.Machine.ExecutionStack.Push( result );
 			} else {

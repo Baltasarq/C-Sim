@@ -70,7 +70,8 @@ namespace CSim.Core.FunctionLibrary {
 				System.Math.Pow( x.LiteralValue.ToDouble(),
 								 y.LiteralValue.ToDouble() )
 			);
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
+			this.Machine.ExecutionStack.Push(
+                                    Variable.CreateTempVariable( litResult ) );
 		}
 
 		private static Pow instance = null;

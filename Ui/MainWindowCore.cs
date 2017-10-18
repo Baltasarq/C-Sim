@@ -536,7 +536,7 @@ namespace CSim.Ui {
 
 			this.tvSymbolTable.Nodes.Clear();
             foreach(Variable vble in variables) {
-                if ( vble is TempVariable ) {
+                if ( vble.IsTemp() ) {
                     continue;
                 }
 
@@ -723,29 +723,24 @@ namespace CSim.Ui {
 
 		private string FromVbleToString(Variable x)
 		{
-            var charPtr = this.machine.TypeSystem.GetPCharType();
-
-			string toret = string.Format( "{0}({1} [{2}]) = ",
+			string toret = string.Format( "{0}({1} [{2}]) = {3}",
 				x.Name.Value,
 				x.Type,
-				FromIntToPrettyHex( x.Address, this.machine.WordSize ) );
+				FromIntToPrettyHex( x.Address, this.machine.WordSize ),
+                x.LiteralValue );
 
 			// Es char *?
-			if ( x.Type == charPtr
-              && !( x is NoPlaceTempVariable ) )
+			if ( x.Type == this.machine.TypeSystem.GetPCharType()
+              && !( x.IsTemp() ) )
 			{
 	            Variable str = this.machine.TDS.LookForAddress(
 	                                                    x.Value.ToBigInteger() );
 	            
 				if ( str != null ) {
-					toret += str.LiteralValue + " (" + x.LiteralValue + ")";
-	            } else {
-	                throw new TypeMismatchException( charPtr.ToString() );
+					toret += ": " + str.LiteralValue;
 	            }
-			} else {
-				toret += x.LiteralValue;
-			}		
-
+			}
+            
 			return toret;
 		}
 

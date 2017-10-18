@@ -57,7 +57,9 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			var value = param.LiteralValue.ToDouble();
-			var result = new NoPlaceTempVariable( new DoubleLiteral( this.Machine, System.Math.Floor( value ) ) );
+			var result = Variable.CreateTempVariable(
+                                            this.Machine,
+                                            System.Math.Floor( value ) );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

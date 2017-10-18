@@ -59,7 +59,8 @@ namespace CSim.Core.FunctionLibrary {
             var litSeed = new IntLiteral( this.Machine, param.LiteralValue.GetValueAsInteger() );
 
 			this.Machine.SetRandomEngine( litSeed.Value );
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litSeed ) );
+			this.Machine.ExecutionStack.Push(
+                                    Variable.CreateTempVariable( litSeed ) );
 		}
 
 		private static SRand instance;

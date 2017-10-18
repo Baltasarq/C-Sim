@@ -61,7 +61,8 @@
 				System.Math.Log( x.LiteralValue.ToDouble() )
 			);
             
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
+			this.Machine.ExecutionStack.Push(
+                                    Variable.CreateTempVariable( litResult ) );
 		}
 
 		private static Log instance = null;

@@ -210,6 +210,32 @@ namespace CSim.Core {
         }
         
         /// <summary>
+        /// Switchs the endianness in bytes.
+        /// </summary>
+        /// <returns>The new sequence of bytes.</returns>
+        /// <param name="data">A raw sequence of bytes.</param>
+        /// <param name="wordSize">The size of the machine's word, in bytes.</param>
+        public static byte[] SwitchEndiannessInBytes(int wordSize, byte[] data)
+        {
+            byte[] toret = data;
+            int size = data.Length;
+
+            if ( size > 1 ) {
+                if ( data.Length < wordSize ) {
+                    wordSize = data.Length;
+                }
+
+                int i = 0;
+                do {
+                    Array.Reverse( toret, i, wordSize );
+                    i += wordSize;
+                } while( i < toret.Length );
+            }
+
+            return toret;
+        }
+        
+        /// <summary>
         /// Gets the whole memory.
         /// </summary>
         /// <value>
@@ -238,32 +264,6 @@ namespace CSim.Core {
 		/// <value>The machine.</value>
 		public Machine Machine {
 			get; private set;
-		}
-
-		/// <summary>
-		/// Switchs the endianness in bytes.
-		/// </summary>
-		/// <returns>The new sequence of bytes.</returns>
-		/// <param name="data">A raw sequence of bytes.</param>
-		/// <param name="wordSize">The size of the machine's word, in bytes.</param>
-		public static byte[] SwitchEndiannessInBytes(int wordSize, byte[] data)
-		{
-			byte[] toret = data;
-			int size = data.Length;
-
-			if ( size > 1 ) {
-				if ( data.Length < wordSize ) {
-					wordSize = data.Length;
-				}
-
-				int i = 0;
-				do {
-					Array.Reverse( toret, i, wordSize );
-					i += wordSize;
-				} while( i < toret.Length );
-			}
-
-			return toret;
 		}
 
         private byte[] raw;

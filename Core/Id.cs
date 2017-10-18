@@ -43,8 +43,7 @@ namespace CSim.Core {
 				throw new InvalidIdException( "''" );
 			}
 
-			if ( !id.StartsWith( SymbolTable.MemBlockName, StringComparison.InvariantCulture ) )
-			{
+			if ( !Reserved.IsReserved( id ) ) {
 				bool isValuableChar = Char.IsLetter( id[ 0 ] );
 
 				countRealChars += isValuableChar ? 1 : 0;
@@ -135,7 +134,8 @@ namespace CSim.Core {
 		/// <returns><c>true</c> if this instance is heap identifier; otherwise, <c>false</c>.</returns>
 		public bool IsHeapId()
 		{
-			return this.id.StartsWith( SymbolTable.MemBlockName, StringComparison.InvariantCulture );
+			return this.id.StartsWith( Reserved.PrefixMemBlockName,
+                                       StringComparison.InvariantCulture );
 		}
 
         /// <summary>

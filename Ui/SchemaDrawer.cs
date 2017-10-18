@@ -1,6 +1,5 @@
 
 namespace CSim.Ui {
-    using System.Linq;
     using System.Numerics;
 	using System.Drawing;
     using System.Collections.Generic;
@@ -57,7 +56,7 @@ namespace CSim.Ui {
         }
 
 		private IEnumerable<IEnumerable<Variable>>
-        ClassifyVariables(IList<Variable> vbles)
+                                        ClassifyVariables(IList<Variable> vbles)
 		{
 			var primitives = new List<Variable>();
 			var pointersByLevel = new Dictionary<int, List<Variable>>();
@@ -66,12 +65,17 @@ namespace CSim.Ui {
 				primitives,
 				arrays
 			};
+            
+            // Create first level of pointers
+            pointersByLevel[ 1 ] = new List<Variable>();
 
 			// Classify by type
 			foreach (Variable v in vbles) {
-				var ptrVble = v as PtrVariable;
-
-				if ( ptrVble != null ) {
+                if ( v is RefVariable ) {
+                    pointersByLevel[ 1 ].Add( v );
+                }
+                else
+				if ( v is PtrVariable ptrVble ) {
 					int level = ( (Ptr) ptrVble.Type ).IndirectionLevel;
 					List<Variable> ptrs;
 
@@ -113,10 +117,6 @@ namespace CSim.Ui {
             // Insert all "main" variables
 			foreach (IEnumerable<Variable> list in lists) {
 				foreach (Variable v in list) {
-	                if ( v is TempVariable) {
-	                    continue;
-	                }
-	            
 	                var box = GrphBoxedVariable.Create( v, this.GraphInfo );
 	                this.rows.AddBox( box );
                     this.boxes.Add( box );
@@ -131,17 +131,16 @@ namespace CSim.Ui {
             var arrayElements = new List<GrphBoxedVariable>();
             
             foreach(GrphBoxedVariable box in this.boxes.AllBoxes) {
-	            var arrayBox = box as GrphBoxedArray;
-	                      
-	            if ( arrayBox != null
-	              && arrayBox.ArrayVariable.ElementsType is Ptr )
-	            {
-	                box.GetInvolvedBoxes().ForEach( (b) => {
+                if ( box is GrphBoxedArray arrayBox
+                  && arrayBox.ArrayVariable.ElementsType is Indirection )
+                {
+                    box.GetInvolvedBoxes().ForEach( ( b ) =>
+                    {
                         b.Y = box.Y;
                         b.X += box.X;
-	                    arrayElements.Add( b );
-	                });
-	            }
+                        arrayElements.Add( b );
+                    });
+                }
             }
             
             this.boxes.AddRange( arrayElements );
@@ -164,7 +163,7 @@ namespace CSim.Ui {
   
             // Draw relationships
             foreach(GrphBoxedVariable box in this.boxes.AllBoxes) {
-                if ( box.Variable.IsPtr ) {
+                if ( box.Variable.IsIndirection() ) {
                     this.DrawRelationship( box );
                 }
             }
@@ -179,10 +178,11 @@ namespace CSim.Ui {
 
 		private void DrawRelationship(GrphBoxedVariable box)
 		{
-			if ( box.Variable.IsPtr
+			if ( box.Variable.IsIndirection()
               && !( box is GrphBoxedArray ) )
             {
-				BigInteger address = box.Variable.Value.ToBigInteger();
+                var indirectVble = (IndirectVariable) box.Variable;
+				BigInteger address = indirectVble.PointedAddress;
 				GrphBoxedVariable pointedBox = null;
                 IList<GrphBoxedVariable> l = this.boxes.GetBoxesForAddress( address );
                 
@@ -194,10 +194,13 @@ namespace CSim.Ui {
 						delta = ( pointedBox.Width / 2 ) - pointedBox.BoxX;
 					}
 
-					this.DrawConnection(
-						box.X + box.BoxX + ( box.BoxWidth / 2 ), box.Y - 5,
-						pointedBox.X + pointedBox.BoxX + delta, pointedBox.Y + pointedBox.Height + 5
-					);
+                    if ( pointedBox != box ) {
+						this.DrawConnection(
+							box.X + box.BoxX + ( box.BoxWidth / 2 ), box.Y - 5,
+							pointedBox.X + pointedBox.BoxX + delta,
+                            pointedBox.Y + pointedBox.Height + 5
+						);
+                    }
 				} else {
                     if ( !( box is GrphBoxedArrayElement ) ) {
 	                    if ( address == 0 )

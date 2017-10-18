@@ -58,7 +58,8 @@ namespace CSim.Core.FunctionLibrary {
             }
 
 			var litResult = new IntLiteral( this.Machine, result );
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
+			this.Machine.ExecutionStack.Push(
+                                    Variable.CreateTempVariable( litResult ) );
 		}
 
 		private static SizeOf instance;

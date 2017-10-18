@@ -147,7 +147,10 @@ namespace CSim.Core {
         /// <returns>A suitable <see cref="Variable"/>.</returns>
         public override Variable SolveToVariable()
         {
-            return new Variables.NoPlaceTempVariable( this );
+            Variable toret = Variable.CreateTempVariable( this.Type );
+            
+            toret.LiteralValue = this;
+            return toret;
         }
 
 		/// <summary>

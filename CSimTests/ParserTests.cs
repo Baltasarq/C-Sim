@@ -27,7 +27,8 @@ namespace CSimTests {
 	
 				this.machine.Execute( @"int * ptrInt;" );
 				this.machine.Execute( @"char * ptrChar;" );
-				this.machine.Execute( @"double * ptrDouble;" );                
+                this.machine.Execute( @"double * ptrDouble;" );
+                this.machine.Execute( @"int & refInt = x;" );
             });
 		}
         
@@ -35,19 +36,57 @@ namespace CSimTests {
         public void TestPtrExpression()
         {
             PtrVariable int_ptr = null;
+            PtrVariable int_ptr2 = null;
+            PtrVariable int_ptr3 = null;
+            Variable vble_x = null;
+            Variable vble_y = null;
+        
+            Assert.DoesNotThrow( () => {
+                vble_x = this.machine.Execute( @"x = 42" );
+                vble_y = this.machine.Execute( @"int y = 21" );
+                this.machine.Execute( @"int * ptrInt2 = &y" );
+                this.machine.Execute( @"int * ptrInt3 = &y" );
+                                
+                int_ptr = (PtrVariable) this.machine.TDS.LookUp( @"ptrInt" );
+                int_ptr2 = (PtrVariable) this.machine.TDS.LookUp( @"ptrInt2" );
+                int_ptr3 = (PtrVariable) this.machine.TDS.LookUp( @"ptrInt3" );
+                
+                this.machine.Execute( @"ptrInt = &x" );
+                this.machine.Execute( @"*ptrInt = *ptrInt + 1" );
+                this.machine.Execute( @"ptrInt = ptrInt + 1" );
+
+                this.machine.Execute( @"*ptrInt2 = *ptrInt3 + *ptrInt2" );
+                this.machine.Execute( @"y = *ptrInt2 / 2" );
+                this.machine.Execute( @"y = 2 * *ptrInt3" );
+                
+            });
+            
+            BigInteger pos = vble_x.Address + 1;
+            Assert.AreEqual( 43.ToBigInteger(), vble_x.LiteralValue.ToBigInteger() );
+            Assert.AreEqual( pos, int_ptr.LiteralValue.ToBigInteger() );
+            
+            Assert.AreEqual( vble_y.Address, int_ptr2.LiteralValue.ToBigInteger() );
+            Assert.AreEqual( vble_y.Address, int_ptr3.LiteralValue.ToBigInteger() );
+            Assert.AreEqual( 42.ToBigInteger(), vble_y.LiteralValue.ToBigInteger() );
+        }
+        
+        [Test]
+        public void TestRefExpression()
+        {
             Variable vble_x = null;
         
             Assert.DoesNotThrow( () => {
                 vble_x = this.machine.Execute( @"x = 42" );
-                this.machine.Execute( @"ptrInt = &x" );
-                this.machine.Execute( @"*ptrInt = *ptrInt + 1" );
-                this.machine.Execute( @"ptrInt = ptrInt + 1" );
-                int_ptr = (PtrVariable) this.machine.TDS.LookUp( @"ptrInt" );
+                this.machine.Execute( @"int &refInt2 = x" );
+                this.machine.Execute( @"refInt = refInt + x" );
+                this.machine.Execute( @"refInt = 1 + refInt" );
+                this.machine.Execute( @"x = 2 * refInt" );
+                this.machine.Execute( @"refInt2 = refInt / 2" );
+                this.machine.Execute( @"refInt = 2 * refInt" );
+                this.machine.Execute( @"refInt2 = refInt2 - (refInt/2)" );
             });
             
-            BigInteger pos = int_ptr.Address + 1;
-            Assert.AreEqual( 43.ToBigInteger(), vble_x.LiteralValue.ToBigInteger() );
-            Assert.AreEqual( pos, int_ptr.LiteralValue.ToBigInteger() );
+            Assert.AreEqual( 85.ToBigInteger(), vble_x.LiteralValue.ToBigInteger() );
         }
         
         [Test]
@@ -58,7 +97,6 @@ namespace CSimTests {
             RefVariable double_ref = null;
             
             Assert.DoesNotThrow( () => {
-                this.machine.Execute( @"int & refInt = x;" );
                 this.machine.Execute( @"char & refChar = ch;" );
                 this.machine.Execute( @"double & refDouble = d;" );
                 
@@ -83,13 +121,12 @@ namespace CSimTests {
         }
         
         [Test]
-        public void TestRefToRef()
+        public void TestRefToRefAssign()
         {
             RefVariable int_ref = null;
             RefVariable int_ref_ref = null;
         
             Assert.DoesNotThrow( () => {
-                this.machine.Execute( @"int & refInt = x" );
                 this.machine.Execute( @"int & refrefInt = refInt" );
                 
                 int_ref = (RefVariable) this.machine.TDS.LookUp( @"refrefInt" );
@@ -97,7 +134,8 @@ namespace CSimTests {
             });
             
             Assert.AreSame( int_ref.PointedVble, int_ref_ref.PointedVble );
-            Assert.AreEqual( int_ref.PointedVble.Value, int_ref_ref.PointedVble.Value );
+            Assert.AreEqual( int_ref.PointedVble.Value.ToBigInteger(),
+                             int_ref_ref.PointedVble.Value.ToBigInteger() );
         }
         
         [Test]
@@ -120,6 +158,16 @@ namespace CSimTests {
             Assert.AreEqual( BigInteger.Zero, int_ptr.Value.ToBigInteger() );
             Assert.AreEqual( BigInteger.Zero, char_ptr.Value.ToBigInteger() );
             Assert.AreEqual( BigInteger.Zero, double_ptr.Value.ToBigInteger() );
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"ptrInt = 1;" );
+                this.machine.Execute( @"ptrChar = 2;" );
+                this.machine.Execute( @"ptrDouble = 3;" );
+            });
+            
+            Assert.AreEqual( 1.ToBigInteger(), int_ptr.Value.ToBigInteger() );
+            Assert.AreEqual( 2.ToBigInteger(), char_ptr.Value.ToBigInteger() );
+            Assert.AreEqual( 3.ToBigInteger(), double_ptr.Value.ToBigInteger() );
         }
 
 		[Test]

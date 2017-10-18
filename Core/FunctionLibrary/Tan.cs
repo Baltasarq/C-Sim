@@ -57,8 +57,9 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			double x = param.LiteralValue.ToDouble();
-			var litResult = new DoubleLiteral( this.Machine, System.Math.Tan( x ) );
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( litResult ) );
+			var result = Variable.CreateTempVariable(
+                                        this.Machine, System.Math.Tan( x ) );
+			this.Machine.ExecutionStack.Push( result );
 		}
 
 		private static Tan instance = null;

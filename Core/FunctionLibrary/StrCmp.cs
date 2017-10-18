@@ -5,41 +5,40 @@ namespace CSim.Core.FunctionLibrary {
     using CSim.Core.Literals;
     
     using System.Numerics;
-    using System.Text;
 
 	/// <summary>
 	/// This is the atoi function.
 	/// Signature: int atoi(char * x);
 	/// </summary>
-	public sealed class StrCpy: EmbeddedFunction {
+	public sealed class StrCmp: EmbeddedFunction {
 		/// <summary>
 		/// The identifier for the function.
 		/// </summary>
-		public const string Name = "strcpy";
+		public const string Name = "strcmp";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EmbeddedFunction"/> class.
 		/// This is not intended to be used directly.
 		/// </summary>
-		private StrCpy(Machine m)
-			: base( m, Name, m.TypeSystem.GetPCharType(), strcpyFormalParams )
+		private StrCmp(Machine m)
+			: base( m, Name, m.TypeSystem.GetIntType(), strcmpFormalParams )
 		{
 		}
 
 		/// <summary>
 		/// Returns the only instance of this function.
 		/// </summary>
-		public static StrCpy Get(Machine m)
+		public static StrCmp Get(Machine m)
 		{       
 			if ( instance == null ) {
-				strcpyFormalParams = new Variable[] {
+				strcmpFormalParams = new Variable[] {
 					new PtrVariable( new Id( m, @"s1" ),
                                      m.TypeSystem.GetPCharType() ),
                     new PtrVariable( new Id( m, @"s2" ),
                                      m.TypeSystem.GetPCharType() )
 				};
 
-				instance = new StrCpy( m );
+				instance = new StrCmp( m );
 			}
 
 			return instance;
@@ -61,13 +60,6 @@ namespace CSim.Core.FunctionLibrary {
                                               + " != s1 - " + paramDst.Type );
             }
             
-            // Destination address must be valid
-            if ( paramDst.IsTemp() ) {
-                throw new Exceptions.IncorrectAddressException(
-                    L18n.Get( L18n.Id.ExcInvalidMemory ) + paramDst.Value
-                );
-            }
-            
             // Chk source type
             if ( pchar_t != paramSrc.Type ) {
                 throw new Exceptions.TypeMismatchException(
@@ -83,56 +75,70 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
+            int result = 0;
+            byte[] str1;
+            byte[] str2;
             var paramDst = realParams[ 0 ].SolveToVariable();
             var paramSrc = realParams[ 1 ].SolveToVariable();
             
             this.Chk( paramSrc, paramDst );
-            
-            // Do the copy from literal
-            byte value;
-            BigInteger dstIndex = paramDst.Value.ToBigInteger();
-            
+
+            // Get source            
             if ( paramSrc.IsTemp() ) {
                 if ( paramSrc.LiteralValue is StrLiteral strLit ) {
-                    string s2 = strLit.Value;
-                    BigInteger length = BigInteger.Min(
-                                    s2.Length,
-                                    ( this.Machine.Memory.Max - dstIndex ) );
-                                    
-                    this.Machine.Memory.CheckSizeFits( dstIndex, (int) length );
-                    this.Machine.Memory.Write(  dstIndex,
-                                                Encoding.ASCII.GetBytes( s2 ) );
-
-                    // End mark ('\0')
-                    this.Machine.Memory.Write( dstIndex + length, new byte[]{ 0 } );
+                    str1 = strLit.GetRawValue();
                 } else {
                     throw new Exceptions.TypeMismatchException( "s1 lit??" );
                 }
-            }
-            else {
-                // Copy from another memory address
-	            BigInteger srcIndex = paramSrc.Value.ToBigInteger();
-	            
-	            do {
-	                value = this.Machine.Memory.Read( srcIndex, 1 )[ 0 ];
-	                this.Machine.Memory.Write( dstIndex, new byte[]{ value } );
-	                
-	                ++srcIndex;
-	                ++dstIndex;
-                    
-                    if ( srcIndex >= this.Machine.Memory.Max ) {
-                        throw new Exceptions.IncorrectAddressException(
-                                        L18n.Get( L18n.Id.ExcInvalidMemory )
-                                        + this.Machine.Memory.Max );
-                    }
-	            } while( value != 0 );
+            } else {
+                if ( paramSrc.IsIndirection() ) {
+                    var ptr1 = (IndirectVariable) paramSrc;
+                    str1 = this.Machine.Memory.ReadStringFromMemory( ptr1.PointedAddress );
+                } else {
+                    throw new Exceptions.TypeMismatchException( "s1 char*??" );
+                }
             }
             
-			var result = Variable.CreateTempVariable( paramDst.LiteralValue );
-			this.Machine.ExecutionStack.Push( result );
+            // Get destination            
+            if ( paramDst.IsTemp() ) {
+                if ( paramDst.LiteralValue is StrLiteral strLit ) {
+                    str2 = strLit.GetRawValue();
+                } else {
+                    throw new Exceptions.TypeMismatchException( "s2 lit??" );
+                }
+            } else {
+                if ( paramDst.IsIndirection() ) {
+                    var ptr2 = (IndirectVariable) paramDst;
+                    str2 = this.Machine.Memory.ReadStringFromMemory( ptr2.PointedAddress );
+                } else {
+                    throw new Exceptions.TypeMismatchException( "s2 char*??" );
+                }
+            }
+            
+            // Compare
+            int str1Length = str1.Length;
+            int str2Length = str2.Length;
+            
+            if ( str1Length != str2Length ) {
+                result = str1Length - str2Length;
+            } else {
+                for(int i = 0; i < str1Length; ++i) {
+                    byte chr1 = str1[ i ];
+                    byte chr2 = str2[ i ];
+                    
+                    if ( chr1 != chr2 ) {
+                        result = chr1 - chr2;
+                        break;
+                    }
+                }
+            }
+            
+			var resultVble = Variable.CreateTempVariable( this.Machine,
+                                                          result.ToBigInteger() );
+			this.Machine.ExecutionStack.Push( resultVble );
 		}
 
-		private static StrCpy instance;
-		private static Variable[] strcpyFormalParams;
+		private static StrCmp instance;
+		private static Variable[] strcmpFormalParams;
 	}
 }

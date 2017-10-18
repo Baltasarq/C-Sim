@@ -28,9 +28,8 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			var toret = new NoPlaceTempVariable( this.Machine.TypeSystem.GetDoubleType() );
-			toret.LiteralValue = new DoubleLiteral( this.Machine, this.Machine.Random.NextDouble() );
-
+			var toret = Variable.CreateTempVariable( this.Machine,
+                                        this.Machine.Random.NextDouble() );
 			this.Machine.ExecutionStack.Push( toret );
 		}
 

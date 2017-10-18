@@ -71,7 +71,7 @@ namespace CSim.Core.FunctionLibrary {
             
             this.Chk( param );            
 
-            if ( param is TempVariable ) {
+            if ( param.IsTemp() ) {
                 if ( param.LiteralValue is StrLiteral strLit ) {
                     startAddress = 0;
                     address = strLit.Value.Length;
@@ -95,7 +95,8 @@ namespace CSim.Core.FunctionLibrary {
             }
 			
             var result = new IntLiteral( this.Machine, address - startAddress );
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( result ) );
+            var resultVble = Variable.CreateTempVariable( result );
+			this.Machine.ExecutionStack.Push( resultVble );
 		}
 
 		private static StrLen instance = null;

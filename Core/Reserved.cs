@@ -1,4 +1,6 @@
 namespace CSim.Core {
+    using System;
+    
 	/// <summary>Reserved keywords.</summary>
 	public static class Reserved {
 		/// <summary>C/C++'s NULL.</summary>
@@ -17,6 +19,17 @@ namespace CSim.Core {
         public const string OpAssign = "=";
 		/// <summary>Label for "end of sentence"</summary>
         public const string LblEOL = ";";
+        /// <summary>The prefix for labels for temp variables.</summary>
+        public const string PrefixTempVariable = "_aux__";
+        /// <summary>Prefix to use for memory blocks (heap)</summary>
+        public const string PrefixMemBlockName = "_mblk_num_";
+        
+        /// <summary>The reserved words.</summary>
+        public static readonly string[] ReservedWords = new []{
+            PtrNull, PtrNull2, OpNew, OpDelete,
+            "if", "while", "do", "for", "switch", "break", "case", "goto",
+            "var", "foreach", "static", "int", "double", "bool", "char"
+        };
 
 		/// <summary>
 		/// Determines whether the string is a null id or not.
@@ -28,5 +41,36 @@ namespace CSim.Core {
 			return ( id == Reserved.PtrNull
                   || id == Reserved.PtrNull2 );
 		}
+        
+        /// <summary>
+        /// Checks whether this identifier is reserved.
+        /// </summary>
+        /// <returns><c>true</c>, if reserved, <c>false</c> otherwise.</returns>
+        /// <param name="id">The identifier, as a string.</param>
+        public static bool IsReserved(string id)
+        {
+            bool toret = IsNullId( id );
+            
+            if ( !toret ) {
+                toret = id.StartsWith( PrefixTempVariable,
+                                       StringComparison.InvariantCulture );
+                                       
+                if ( !toret ) {
+                    toret = id.StartsWith( PrefixTempVariable,
+                                       StringComparison.InvariantCulture );
+                                       
+                    if ( !toret ) {
+                        foreach(string rw in ReservedWords) {
+                            if ( id == rw ) {
+                                toret = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return toret;
+        }
 	}
 }

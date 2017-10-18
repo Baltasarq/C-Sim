@@ -28,11 +28,11 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			var result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
-			result.LiteralValue = new IntLiteral(
+			var result = Variable.CreateTempVariable(
 				this.Machine,
 					System.Math.Ceiling(
-						System.DateTime.Now.TimeOfDay.TotalSeconds ).ToBigInteger() );
+						System.DateTime.Now.TimeOfDay.TotalSeconds )
+                    .ToBigInteger() );
 
 			this.Machine.ExecutionStack.Push( result );
 		}

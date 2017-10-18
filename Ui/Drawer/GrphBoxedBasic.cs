@@ -27,7 +27,15 @@ namespace CSim.Ui.Drawer {
 		/// </summary>
 		protected override void CalculateSize()
 		{
-			this.StrValue = this.Variable.LiteralValue.ToPrettyNumber();
+            if ( this.Variable.IsIndirection() ) {
+                this.StrValue = new IntLiteral(
+                        this.Variable.Machine,
+                        ( (IndirectVariable) this.Variable ).PointedAddress )
+                        .ToPrettyNumber();
+            } else {
+			    this.StrValue = this.Variable.LiteralValue.ToPrettyNumber();
+            }
+            
 			this.StrName = this.Variable.Name.Name;
 			this.StrType = this.Variable.Type
 				+ " :" + this.Variable.Type.Size
@@ -72,7 +80,7 @@ namespace CSim.Ui.Drawer {
 			    this.StrName );
 
 			// Draw surrounding rectangle
-			if ( this.Variable.IsPtr ) {
+			if ( this.Variable.IsIndirection() ) {
 				this.GraphInfo.Pen.Color = Color.Black;
 			} else {
 				this.GraphInfo.Pen.Color = Color.Navy;

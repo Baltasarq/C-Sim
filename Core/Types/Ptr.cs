@@ -2,12 +2,11 @@ using CSim.Core.Variables;
 
 namespace CSim.Core.Types {
     using System.Linq;
-    using CSim.Core.Literals;
 
 	/// <summary>
 	/// Represents the pointer type.
 	/// </summary>
-	public class Ptr: AType {
+	public class Ptr: Indirection {
 		/// <summary>The ptr's type name part.</summary>
 		public const string PtrTypeNamePart = "*";
 
@@ -17,7 +16,7 @@ namespace CSim.Core.Types {
 		/// <param name="n">The name of the type.</param>
 		/// <param name="associatedType">The associated type.</param>
 		internal Ptr(string n, AType associatedType)
-			:base( associatedType.Machine, n, associatedType.Machine.WordSize )
+			:base( associatedType.Machine, n )
 		{
 			this.AssociatedType = associatedType;
 			this.IndirectionLevel = 1;
@@ -40,7 +39,7 @@ namespace CSim.Core.Types {
 		/// <summary>
 		/// Gets the type once a derreference is done.
 		/// If <see cref="IndirectionLevel"/> == 1, then the
-		/// result is the same as in <see cref="AssociatedType"/>.
+		/// result is the same as in <see cref="T:Indirection.AssociatedType"/>.
 		/// Otherwise, the result is a <see cref="Ptr"/>.
 		/// </summary>
 		/// <value>The type of the derreferenced.</value>
@@ -65,26 +64,6 @@ namespace CSim.Core.Types {
 		}
 
 		/// <summary>
-		/// Creates a literal for this type, given a byte sequence.
-		/// </summary>
-		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
-		/// <param name="raw">The sequence of bytes containing the value in memory.</param>
-		public override Literal CreateLiteral(byte[] raw)
-		{
-			return new IntLiteral( this.Machine, this.Machine.Bytes.FromBytesToInt( raw ) );
-		}
-
-		/// <summary>
-		/// Creates a literal for this type, given a value.
-		/// </summary>
-		/// <returns>The literal, as an appropriate object of a class inheriting from Literal.</returns>
-		/// <param name="v">The given value.</param>
-		public override Literal CreateLiteral(object v)
-		{
-			return new IntLiteral( this.Machine, v );
-		}
-
-		/// <summary>
 		/// Creates a corresponding variable.
 		/// </summary>
 		/// <returns>A <see cref="Variable"/> with this <see cref="AType"/>.</returns>
@@ -96,24 +75,6 @@ namespace CSim.Core.Types {
                             this,
                             this.IndirectionLevel );
 		}
-        
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents the current <see cref="CSim.Core.Types.Ptr"/>.
-        /// </summary>
-        /// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Types.Ptr"/>.</returns>
-        public override string ToString()
-        {
-            return this.Name;
-        }
-        
-        /// <summary>
-        /// Gets the associated basic type.
-        /// Note that, for int *** ptr, returns int.
-        /// </summary>
-        /// <value>A <see cref="AType"/>.</value>
-        public AType AssociatedType {
-            get; private set;
-        }
 	}
 }
 

@@ -28,6 +28,105 @@
         }
         
         [Test]
+        public void TestStrCmp()
+        {
+            string msg1 = "hola";
+            string msg2 = "adios";
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "strcmp('a', 2);" );
+            });
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "strcmp(1, \"2\");" );
+            });
+            
+            Assert.DoesNotThrow( () => {
+                var vble1 = this.machine.Execute( "strcmp(\"" + msg1 + "\", \"" + msg1 + "\");" );
+                var vble2 = this.machine.Execute( "strcmp(\"" + msg1 + "\", \"" + msg2 + "\");" );
+                
+                Assert.AreEqual( 0.ToBigInteger(), vble1.LiteralValue.ToBigInteger() );
+                Assert.AreNotEqual( 0.ToBigInteger(), vble2.LiteralValue.ToBigInteger() );
+            });
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "char *s_strcmp=malloc(10)" );
+                this.machine.Execute( "strcpy(s_strcmp, \"" + msg1 + "\");" );
+
+                var vble1 = this.machine.Execute( "strcmp(s_strcmp, " + "\"" + msg1 + "\");" );
+                var vble2 = this.machine.Execute( "strcmp(\"" +  msg2 + "\", s_strcmp);" );
+                var vble3 = this.machine.Execute( "strcmp(s_strcmp, \"" +  msg1 + "\");" );
+                
+                Assert.AreEqual( 0.ToBigInteger(), vble1.LiteralValue.ToBigInteger() );
+                Assert.AreNotEqual( 0.ToBigInteger(), vble2.LiteralValue.ToBigInteger() );
+                Assert.AreEqual( 0.ToBigInteger(), vble3.LiteralValue.ToBigInteger() );
+            });
+        }
+        
+        [Test]
+        public void TestStrCat()
+        {
+            string msg1 = "hola, ";
+            string msg2 = "mundo!";
+            string msgComplete = msg1 + msg2; 
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "strcat('a', 2);" );
+            });
+            
+            Assert.Throws<IncorrectAddressException>( () => {
+                this.machine.Execute( "strcat(\"a\", 2);" );
+            });
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "strcat(1, \"2\");" );
+            });
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "char *s_strcat=malloc(10)" );
+                this.machine.Execute( "strcpy(s_strcat, \"" + msg1 + "\");" );
+                this.machine.Execute( "strcat(s_strcat, \"" + msg2 + "\");" );
+            });
+
+            Variable s = this.machine.TDS.LookUp( "s_strcat" );
+            BigInteger addr = s.Value.ToBigInteger();
+            BigInteger start = addr;
+            byte value;
+            int msgPos = 0;
+            
+            while( msgPos < msgComplete.Length ) {
+                value = this.machine.Memory.Read( addr, 1 )[ 0 ];
+                Assert.AreEqual( msgComplete[ msgPos ], (char) value );
+                
+                ++addr;
+                msgPos = (int) ( addr - start );
+            }
+            
+            value = this.machine.Memory.Read( addr, 1 )[ 0 ];
+            Assert.AreEqual( 0, value );
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( "char *s_strcat2 = malloc(10)" );
+                this.machine.Execute( "strcpy( s_strcat2, \"" + msg2 + "\");" );
+                this.machine.Execute( "strcpy( s_strcat, \"" + msg1 + "\");" );
+                this.machine.Execute( "strcat( s_strcat, s_strcat2 );" );
+            });
+            
+            msgPos = 0;
+            addr = s.Value.ToBigInteger();
+            while( msgPos < msgComplete.Length ) {
+                value = this.machine.Memory.Read( addr, 1 )[ 0 ];
+                Assert.AreEqual( msgComplete[ msgPos ], (char) value );
+                
+                ++addr;
+                msgPos = (int) ( addr - start );
+            }
+            
+            value = this.machine.Memory.Read( addr, 1 )[ 0 ];
+            Assert.AreEqual( 0, value );
+        }
+        
+        [Test]
         public void TestStrCpy()
         {
             string msg = "hola";

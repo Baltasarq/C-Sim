@@ -12,9 +12,6 @@ namespace CSim.Core {
 
 	/// <summary>All the variables in the <see cref="Machine"/> reside here.</summary>
     public class SymbolTable {
-		/// <summary>Prefix to use for memory blocks (heap)</summary>
-        public const string MemBlockName = "_mblk_num_";
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.SymbolTable"/> class,
 		/// for a given <see cref="Machine"/>.
@@ -172,53 +169,12 @@ namespace CSim.Core {
 		/// </summary>
 		public void Collect()
 		{
-			var spurious = new List<Variable>();
-
-			// Find
 			foreach (Variable v in this.Variables) {
-				var tempVble = v as TempVariable;
-				var refVble = v as RefVariable;
-
-				if ( tempVble != null ) {
-					spurious.Add( tempVble );
-				}
-				else
-				if ( refVble != null
+				if ( v is RefVariable refVble
 				  && !( refVble.IsSet() ) )
 				{
-					spurious.Add( refVble );
+                    this.Remove( v.Name.Name );
 				}
-			}
-
-			// Remove
-			foreach(Variable r in spurious) {
-				this.Remove( r.Name.Name );
-			}
-
-			return;
-		}
-
-		/// <summary>
-		/// Collects the array elements.
-		/// It is not part of garbage collection, since array elements
-		/// can be used to draw the diagram.
-		/// </summary>
-		public void CollectArrayElements()
-		{
-			var arrayElements = new List<ArrayElement>();
-
-			// Find
-			foreach (Variable v in this.Variables) {
-				var r = v as ArrayElement;
-
-				if ( r != null ) {
-					arrayElements.Add( r );
-				}
-			}
-
-			// Remove
-			foreach(ArrayElement r in arrayElements) {
-				this.Remove( r.Name.Name );
 			}
 
 			return;
@@ -502,7 +458,7 @@ namespace CSim.Core {
         public static string GetNextMemoryBlockName()
         {
             ++numMemBlock;
-            return ( MemBlockName + numMemBlock );
+            return ( Reserved.PrefixMemBlockName + numMemBlock );
         }
 
         /// <summary>

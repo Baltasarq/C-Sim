@@ -55,8 +55,8 @@ namespace CSim.Core.FunctionLibrary {
                                               pchar_t + " != " + param.Type );
             }
             
-			var valueFromStr = param.LiteralValue.Value.ToBigInteger();
-			var result = new NoPlaceTempVariable( new IntLiteral( this.Machine, valueFromStr ) );
+			var intResult = param.LiteralValue.Value.ToBigInteger();
+			var result = Variable.CreateTempVariable( this.Machine, intResult );
 			this.Machine.ExecutionStack.Push( result );
 		}
 

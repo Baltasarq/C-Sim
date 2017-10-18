@@ -27,25 +27,15 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		public override void Execute()
 		{
-			Variable toret = null;
-			BigInteger address = 0;
 			var vble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			if ( vble != null
-			  && !( vble is NoPlaceTempVariable ) )
+			  && !( vble.IsTemp() ) )
 			{
-				toret = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
-				var vbleAsRef = vble as RefVariable;
-				address = vble.Address;
-
-				// If the vble at the right is a reference, dereference it
-				if ( vbleAsRef != null  ) {
-					vble = vbleAsRef.PointedVble;
-					address = vble.Address;
-				}
+				BigInteger address = vble.SolveToVariable().Address;
 
 				// Store in the temp vble and end
-				toret.LiteralValue = new IntLiteral( this.Machine, address );
+				var toret = Variable.CreateTempVariable( this.Machine, address );
 				this.Machine.ExecutionStack.Push( toret );
 			} else {
 				throw new EngineException( "rvalue should be a variable" );

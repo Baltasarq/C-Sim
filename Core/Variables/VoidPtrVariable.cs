@@ -29,26 +29,18 @@ namespace CSim.Core.Variables {
 		}
 
 		/// <summary>
-		/// Gets the associated type, which is <see cref="Any"/>.
-		/// </summary>
-		/// <value>The associated <see cref="AType"/>.</value>
-		public override AType AssociatedType {
-			get {
-                return Any.Get( this.Machine );
-			}
-		}
-
-		/// <summary>
 		/// Access the memory pointed by the value of this variable.
 		/// This is not possible for this type.
 		/// </summary>
 		/// <value>The memory read or written.</value>
 		public override BigInteger Access {
 			get {
-				throw new TypeMismatchException( L18n.Get( L18n.Id.ErrDerreferencedVoid ) );
+				throw new TypeMismatchException(
+                                    L18n.Get( L18n.Id.ErrDerreferencedVoid ) );
 			}
 			set {
-				throw new TypeMismatchException( L18n.Get( L18n.Id.ErrDerreferencedVoid ) );
+				throw new TypeMismatchException(
+                                    L18n.Get( L18n.Id.ErrDerreferencedVoid ) );
 			}
 		}
 	}

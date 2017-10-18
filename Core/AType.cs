@@ -1,4 +1,3 @@
-
 namespace CSim.Core {
 	using Types;
 
@@ -86,8 +85,10 @@ namespace CSim.Core {
         /// <returns>A suitable <see cref="Variable"/>.</returns>
         public override Variable SolveToVariable()
         {
-            var lit = new Literals.TypeLiteral( this );
-            return new Variables.NoPlaceTempVariable( lit );
+            var toret = Variable.CreateTempVariable( this );
+            
+            toret.LiteralValue = new Literals.TypeLiteral( this );
+            return toret;
         }
 
 		/// <summary>
@@ -116,27 +117,40 @@ namespace CSim.Core {
 		/// <param name="other">The other <see cref="AType"/>.</param>
 		public bool IsCompatibleWith(AType other)
 		{
-			bool toret = ( this.IsAny() || other.IsAny() );
-
+            AType t1 = this;
+            AType t2 = other;
+			bool toret = ( t1.IsAny() || t2.IsAny() );
+            
+            // Maybe one of them is a reference
+            if ( !toret ) {
+	            if ( t1 is Ref refType1 ) {
+	                t1 = refType1.AssociatedType;
+	            }
+	            
+	            if ( t2 is Ref refType2 ) {
+	                t2 = refType2.AssociatedType;
+	            }
+            }
+            
 			// Maybe they are just the same
 			if ( !toret ) {
-				toret = ( this == other );
+				toret = ( t1 == t2 );
 			}
 
 			// They are both pointers
 			if ( !toret ) {
-				toret = ( this is Ptr && other is Ptr );
+				toret = ( t1 is Ptr && t2 is Ptr );
 			}
 
 			// One of them is a pointer and the other a numeric value
 			if ( !toret ) {
-				toret = ( ( this is Ptr && other is Primitive )
-				  	   || ( this is Primitive && other is Ptr ) );
+				toret = ( ( t1 is Ptr && t2 is Primitive )
+				  	   || ( t1 is Primitive && t2 is Ptr ) );
 			}
 
 			// Compatibility between arithmetic types
 			if ( !toret ) {
-				toret = ( this is Primitive || other is Primitive );
+				toret = ( this is Primitive || t2 is Primitive );
 			}
  
 			return toret;
@@ -161,6 +175,6 @@ namespace CSim.Core {
             return ( Primitive.IsPrimitive( id )
                   || id == TypeType.TypeName
                   || id == Any.TypeName );
-        }
+        }        
     }
 }

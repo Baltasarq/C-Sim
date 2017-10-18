@@ -58,8 +58,8 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			BigInteger value = param.LiteralValue.GetValueAsInteger();
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable(
-                                    new IntLiteral( this.Machine, value ) ) );
+			this.Machine.ExecutionStack.Push( Variable.CreateTempVariable(
+                                                        this.Machine, value ) );
 		}
 
 		private static IntCast instance = null;

@@ -138,7 +138,6 @@
     <Compile Include="Ui\PPal.cs" />
     <Compile Include="Ui\SchemaDrawer.cs" />
     <Compile Include="Ui\MainWindowView.cs" />
-    <Compile Include="Core\Variables\ArrayElement.cs" />
     <Compile Include="Ui\Drawer\FontInfo.cs" />
     <Compile Include="Ui\Drawer\GrphRows.cs" />
     <Compile Include="Ui\Drawer\GrphBoxedBasic.cs" />
@@ -147,9 +146,6 @@
     <Compile Include="Core\Variables\ArrayVariable.cs" />
     <Compile Include="Ui\Drawer\GraphInfo.cs" />
     <Compile Include="Core\ExpressionParser.cs" />
-    <Compile Include="Core\Variables\InPlaceTempVariable.cs" />
-    <Compile Include="Core\Variables\NoPlaceTempVariable.cs" />
-    <Compile Include="Core\Variables\TempVariable.cs" />
     <Compile Include="Core\FunctionLibrary\TypedMalloc.cs" />
     <Compile Include="Core\Variables\TypeVariable.cs" />
     <Compile Include="Core\Types\TypeType.cs" />
@@ -192,6 +188,10 @@
     <Compile Include="Core\FunctionLibrary\StrLen.cs" />
     <Compile Include="Core\FunctionLibrary\Atof.cs" />
     <Compile Include="Core\FunctionLibrary\Atoi.cs" />
+    <Compile Include="Core\Types\Indirection.cs" />
+    <Compile Include="Core\Variables\IndirectVariable.cs" />
+    <Compile Include="Core\FunctionLibrary\StrCmp.cs" />
+    <Compile Include="Core\FunctionLibrary\StrCat.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

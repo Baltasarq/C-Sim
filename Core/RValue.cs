@@ -9,7 +9,7 @@ namespace CSim.Core {
         /// Initializes a new instance of the <see cref="T:CSim.Core.RValue"/> class.
         /// </summary>
         /// <param name="m">The <see cref="Machine"/> this RValue will be evaluated for.</param>
-        public RValue(Machine m)
+        protected RValue(Machine m)
         {
             this.Machine = m;
         }
@@ -37,9 +37,8 @@ namespace CSim.Core {
         }
 
         /// <summary>
-        /// Returns a <see cref="Variable"/> (<see cref="Variables.TempVariable"/> or not), with the same value.
+        /// Returns a <see cref="Variable"/>.
         /// </summary>        
         public abstract Variable SolveToVariable();
     }
 }
-    

@@ -52,7 +52,8 @@ namespace CSim.Core.FunctionLibrary {
 			}
 
 			this.Machine.TDS.DeleteBlk( address );
-			this.Machine.ExecutionStack.Push( new NoPlaceTempVariable( new IntLiteral( this.Machine, 0 ) ) );
+			this.Machine.ExecutionStack.Push(
+                Variable.CreateTempVariable( this.Machine, BigInteger.Zero ) );
 		}
 
 		/// <summary>

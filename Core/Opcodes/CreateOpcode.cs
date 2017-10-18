@@ -30,20 +30,11 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		public override void Execute()
 		{
-			this.Variable = this.Type.CreateVariable( this.Name.Name );
-            this.Machine.TDS.Add( this.Variable );
-            this.Machine.ExecutionStack.Push( this.Variable );
+            var result = this.Type.CreateVariable( this.Name.Name );
+            this.Machine.TDS.Add( result );
+            
+            this.Machine.ExecutionStack.Push( result );
 		}
-
-        /// <summary>
-        /// Gets the variable that has been created, after execution.
-        /// <seealso cref="Execute()"/>
-        /// </summary>
-        /// <value>The variable created, or null
-        /// if <see cref="Execute"/> hasn't been executed.</value>
-        public Variable Variable {
-            get; private set;
-        }
 
 		/// <summary>
 		/// Gets or sets the name of the new <see cref="Variable"/>

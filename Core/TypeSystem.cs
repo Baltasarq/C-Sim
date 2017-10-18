@@ -238,7 +238,6 @@ namespace CSim.Core {
             } else {
 				if ( !( this.refTypeInstances.TryGetValue( t, out toret ) ) ) {
 					toret = new Ref( t );
-	System.Console.WriteLine( "** Created: " + toret );
 					this.refTypeInstances.Add( t, toret );
 				}
             }

@@ -25,34 +25,26 @@ namespace CSim.Core.Opcodes {
 		private void SetRef(RefVariable lvalue, Variable rvalue)
 		{
 			// Check rvalue
-			if ( rvalue is NoPlaceTempVariable ) {
-				throw new UnknownVbleException( string.Format( "[{0}]",
-					new IntLiteral( this.Machine, rvalue.Address ).ToPrettyNumber() ) );
+			if ( rvalue.IsTemp() ) {
+				throw new UnknownVbleException(
+                    string.Format( "{0} ({1}) == {2}",
+                    rvalue.Name.Name,
+					new IntLiteral( this.Machine, rvalue.Address )
+                                                            .ToPrettyNumber(),
+                    rvalue.LiteralValue ) );
 			}
 
-			// Assign to variable
-			if ( rvalue.Type is Ref ) {
-				var targetVbleAddress = rvalue.LiteralValue.GetValueAsInteger();
-				lvalue.PointedVble = this.Machine.TDS.LookForAddress( targetVbleAddress, lvalue.AssociatedType );
-
-				if ( lvalue.PointedVble == null ) {
-					throw new UnknownVbleException( string.Format(
-						"[{0}]",
-						new IntLiteral( this.Machine, targetVbleAddress ).ToPrettyNumber() ) );
-				}
-			} else {
-				lvalue.PointedVble = rvalue;
-			}
+			lvalue.PointedVble = rvalue;
 
 			// Chk
-			this.Machine.Memory.CheckSizeFits( lvalue.PointedVble.Address, lvalue.AssociatedType.Size );
+            AType lType = lvalue.AssociatedType;
+            AType rType = lvalue.PointedVble.Type;
+			this.Machine.Memory.CheckSizeFits(
+                                            lvalue.PointedVble.Address,
+                                            lvalue.AssociatedType.Size );
 
-			if ( lvalue.PointedVble.Type != rvalue.Type ) {
-				throw new TypeMismatchException(
-					lvalue.PointedVble.Type
-					+ " != "
-					+ rvalue.Type
-				);
+			if ( lType != rType ) {
+				throw new TypeMismatchException( lType + " != " + rType );
 			}
 
 			return;
@@ -70,38 +62,33 @@ namespace CSim.Core.Opcodes {
 			var lvalueVble = this.Machine.ExecutionStack.Pop().SolveToVariable();
 
 			// Prepare assign parts
-			if ( lvalueVble is NoPlaceTempVariable ) {
+			if ( lvalueVble.IsTemp() ) {
 				throw new UnknownVbleException( "temp vble: " + lvalueVble.Name.Name + "??" );
 			}
 
-			Variable toret = lvalueVble;
+            // Chk types
+            if ( !lvalueVble.Type.IsCompatibleWith( rvalueVble.Type ) ) {
+                throw new TypeMismatchException(
+                        rvalueVble.Name.Name + "? : "
+                        + rvalueVble.Type + " != "
+                        + lvalueVble.Type
+                    );
+            }            
 
-			// Chk types
-			if ( !toret.Type.IsCompatibleWith( rvalueVble.Type ) ) {
-				throw new TypeMismatchException(
-						rvalueVble.Name.Name + "? : "
-						+ rvalueVble.Type + " != "
-						+ toret.Type
-					);
-			}
-            
-			// Is lvalue a ref?
-			var r = toret as RefVariable;
+            Variable toret = lvalueVble;
 
-			if ( r != null ) {
+            // Is lvalue a ref?            
+			if ( toret is RefVariable r ) {
 				if ( !r.IsSet() ) {
 					this.SetRef( r, rvalueVble );
-					toret = r.PointedVble;
-				} else {
-					toret = r.PointedVble;
+                    goto End;
 				}
+                
+                toret = r.PointedVble;
 			}
-            
-            // Assign rvalue
-            var strRValue = rvalueVble.LiteralValue as StrLiteral;
-            
+                        
 			if ( !( rvalueVble is ArrayVariable )
-              && strRValue != null )
+              && rvalueVble.LiteralValue is StrLiteral strRValue )
             {
                 string s = strRValue.Value;
 				Variable mblock = new ArrayVariable(
@@ -126,9 +113,12 @@ namespace CSim.Core.Opcodes {
 			if ( rvalueVble is ArrayVariable ) {
 				toret.LiteralValue = new IntLiteral( this.Machine, rvalueVble.Address );
 			} else {
-				toret.LiteralValue = rvalueVble.LiteralValue;
+                if ( toret != rvalueVble ) {
+				    toret.LiteralValue = rvalueVble.LiteralValue;
+                }
 			}
 
+            End:
 			this.Machine.ExecutionStack.Push( toret );
         }
         

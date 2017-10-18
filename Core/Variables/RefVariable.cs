@@ -1,10 +1,11 @@
 
 namespace CSim.Core.Variables {
 	using CSim.Core.Literals;
-    using CSim.Core.Types;
+    
+    using System.Numerics;
 
 	/// <summary>A reference <see cref="Variable"/>.</summary>
-    public class RefVariable: Variable {
+    public class RefVariable: IndirectVariable {
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:CSim.Core.Variables.RefVariable"/> class.
 		/// </summary>
@@ -25,16 +26,6 @@ namespace CSim.Core.Variables {
             return ( this.pointedVble != null );
         }
         
-        /// <summary>
-        /// Gets the type associated to this reference.
-        /// </summary>
-        /// <value>A <see cref="AType"/>.</value>
-        public AType AssociatedType {
-            get {
-                return ( (Ref) this.Type ).AssociatedType;
-            }
-        }
-
 		/// <summary>
 		/// Gets or sets the pointed vble,
 		/// honoring the value of this reference.
@@ -50,12 +41,63 @@ namespace CSim.Core.Variables {
             }
             set {
                 if ( this.pointedVble == null ) {
-                    this.pointedVble = value;
-					this.LiteralValue = new IntLiteral( this.Machine, value.Address );
+                    this.pointedVble = ReachRealVariable( value );
+					base.LiteralValue = new IntLiteral( this.Machine,
+                                                        this.PointedVble.Address );
                 } else {
                     throw new EngineException( L18n.Get( L18n.Id.ErrRefDoubleSet ) );
                 }
             }
+        }
+        
+        /// <summary>
+        /// Reachs the real variable, in case of referencing a reference.
+        /// </summary>
+        /// <returns>The real <see cref="Variable"/>.</returns>
+        /// <param name="vble">The given <see cref="Variable"/>,
+        /// maybe a reference.</param>
+        private Variable ReachRealVariable(Variable vble)
+        {
+            while( vble is RefVariable refVble
+                && refVble.IsSet() )
+            {
+                vble = refVble.PointedVble;
+            }
+            
+            return vble;
+        }
+        
+        /// <summary>
+        /// Gets the address this pointer points to.
+        /// </summary>
+        /// <value>The pointed address, as a <see cref="BigInteger"/>.</value>
+        public override BigInteger PointedAddress {
+            get {
+                return this.PointedVble.Address;
+            }
+        }
+        
+        /// <summary>
+        /// Gets or sets the value associated to this variable,
+        /// reading or writing in memory.
+        /// </summary>
+        /// <value>The value, as a literal.</value>
+        public override Literal LiteralValue {
+            get {
+                return this.PointedVble.LiteralValue;
+            }
+            set {
+                this.PointedVble.LiteralValue = value;
+            }
+        }
+        
+        /// <summary>
+        /// Solves the type to a variable with the <see cref="Literals.TypeLiteral"/> as value.
+        /// </summary>
+        /// <returns>A suitable <see cref="Variable"/>.</returns>
+        public override Variable SolveToVariable()
+        {
+            return this.PointedVble;
         }
 
         private Variable pointedVble;

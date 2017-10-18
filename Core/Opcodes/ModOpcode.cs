@@ -35,31 +35,8 @@ namespace CSim.Core.Opcodes {
 			// Take ops
 			Variable op2 = this.Machine.ExecutionStack.Pop().SolveToVariable();
 			Variable op1 = this.Machine.ExecutionStack.Pop().SolveToVariable();
-
-			// Check ops
-			if ( op1 == null
-	  	      || !( op1.Type is Primitive ) )
-			{
-				throw new TypeMismatchException( ": op1: " + op1.Type );
-			}
-
-			if ( op2 == null
-	   	      || !( op2.Type is Primitive ) )
-			{
-				throw new TypeMismatchException( ": op2: " + op2.Type );
-			}
-
-			// If the operands are references, dereference it
-			var refOp1 = op1 as RefVariable;
-			var refOp2 = op2 as RefVariable;
-
-			if ( refOp1 != null ) {
-				op1 = refOp1.PointedVble;
-			}
-
-			if ( refOp2 != null ) {
-				op2 = refOp2.PointedVble;
-			}
+            
+            ChkTypeCompatibility( op1, op2 );
 
 			// Now yes, do it
 			BigInteger op2Value = op2.LiteralValue.GetValueAsInteger();
@@ -71,7 +48,7 @@ namespace CSim.Core.Opcodes {
 			BigInteger modRes = op1.LiteralValue.GetValueAsInteger() % op2Value;
 
 			// Store in the temp vble and end
-			Variable result = new NoPlaceTempVariable( new IntLiteral( this.Machine, modRes ) );
+			var result = Variable.CreateTempVariable( this.Machine, modRes );
 			this.Machine.ExecutionStack.Push( result );
 			return;
 		}

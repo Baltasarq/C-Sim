@@ -1,11 +1,9 @@
-
 namespace CSim.Core.Variables {
     using System.Numerics;
-    using CSim.Core.Types;
     using CSim.Core.Literals;
 
 	/// <summary>Ptr <see cref="Variable"/>s.</summary>
-	public class PtrVariable: Variable {
+	public class PtrVariable: IndirectVariable {
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Variables.PtrVariable"/> class.
@@ -18,17 +16,6 @@ namespace CSim.Core.Variables {
 		{
 		}
 
-		/// <summary>
-		/// Gets the associated type. If this is "int *",
-		/// then the answer is "int".
-		/// </summary>
-		/// <value>The associated <see cref="AType"/>.</value>
-        public virtual AType AssociatedType {
-			get {
-				return ( (Ptr) this.Type ).AssociatedType;
-			}
-		}
-
         /// <summary>
         /// Gets or sets the value associated to this pointer,
         /// reading or writing in memory.
@@ -38,11 +25,26 @@ namespace CSim.Core.Variables {
         /// <value>The value, as an <see cref="IntLiteral"/>.</value>
         public override Literal LiteralValue {
             get {
-                return (IntLiteral)
-						this.Memory.CreateLiteral( this.Address, this.Machine.TypeSystem.GetIntType() );
+                Literal toret;
+                
+                if ( this.IsTemp() ) {
+                    toret = base.LiteralValue;
+                } else {
+                    toret = this.Memory.CreateLiteral(
+                                        this.Address,
+                                        this.Machine.TypeSystem.GetIntType() );
+                }
+                
+                return toret;
             }
             set {
-                this.Memory.Write( this.Address, value.GetRawValue() );
+                if ( this.IsTemp() ) {
+                    base.LiteralValue = value;
+                } else {
+                    this.Memory.Write( this.Address, value.GetRawValue() );
+                }
+                
+                return;
             }
         }
 
@@ -58,6 +60,16 @@ namespace CSim.Core.Variables {
 				this.LiteralValue = value;
 			}
 		}
+        
+        /// <summary>
+        /// Gets the address this pointer points to.
+        /// </summary>
+        /// <value>The pointed address, as a <see cref="BigInteger"/>.</value>
+        public override BigInteger PointedAddress {
+            get {
+                return this.IntValue.ToBigInteger();
+            }
+        }
 
         /// <summary>
         /// Access the memory pointed by the value of this variable.

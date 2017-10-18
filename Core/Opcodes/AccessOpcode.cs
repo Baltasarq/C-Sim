@@ -25,7 +25,7 @@ namespace CSim.Core.Opcodes {
 		}
 
 		/// <summary>
-		/// Returns the a variable, accessing its address with '*'
+		/// Returns a new variable, accessing an address with '*'
 		/// </summary>
 		public override void Execute()
 		{
@@ -38,21 +38,14 @@ namespace CSim.Core.Opcodes {
 
 			if ( vble != null ) {
 				for(int i = 0; i < this.Levels; ++i) {
-					var vbleAsRef = vble as RefVariable;
-					var vbleType = vble.Type as Ptr;
-
-					// If the vble at the right is a reference, dereference it
-					if ( vbleAsRef != null  ) {
-						vble = vbleAsRef.PointedVble;
-						vbleType = vble.Type as Ptr;
-					}
-
 					// Access the pointed value
-					if ( vbleType != null ) {
+					if ( vble.Type is Ptr vbleType ) {
 						BigInteger address = vble.LiteralValue.Value.ToBigInteger();
-						vble = new InPlaceTempVariable( vbleType.DerreferencedType );
+                        
+                        
+						vble = Variable.CreateTempVariable(
+                                                    vbleType.DerreferencedType );
 						vble.Address = address;
-						this.Machine.TDS.AddVariableInPlace( vble );
 					}
 					else {
 						throw new TypeMismatchException( vble.ToString() );

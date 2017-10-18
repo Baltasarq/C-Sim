@@ -1,9 +1,9 @@
 
 namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
-	using CSim.Core.Variables;
-	using CSim.Core.Literals;
 
+    using System.Numerics;
+    
 	/// <summary>
 	/// An standard function that always returns zero.
 	/// </summary>
@@ -28,10 +28,9 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			var result = new NoPlaceTempVariable( this.Machine.TypeSystem.GetIntType() );
-			result.LiteralValue = new IntLiteral( this.Machine, 0 );
-
-			this.Machine.ExecutionStack.Push( result );
+			this.Machine.ExecutionStack.Push(
+                                Variable.CreateTempVariable( this.Machine, 
+                                                             BigInteger.Zero ) );
 		}
 
 		/// <summary>

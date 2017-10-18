@@ -57,11 +57,10 @@
                                 + " != " + x.Type );
             }
 
-			Variable result = new NoPlaceTempVariable(
-                                new IntLiteral(
-									this.Machine,
-									BigInteger.Abs( x.LiteralValue.GetValueAsInteger() ) )
-			);
+			Variable result = Variable.CreateTempVariable(
+								this.Machine,
+								BigInteger.Abs( x.LiteralValue.ToBigInteger() )
+            );
             
 			this.Machine.ExecutionStack.Push( result );
 		}
