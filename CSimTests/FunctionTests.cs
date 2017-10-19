@@ -28,6 +28,19 @@
         }
         
         [Test]
+        public void TestFree()
+        {
+            Assert.Throws<IncorrectAddressException>( () => {
+                this.machine.Execute( @"free(1)" );
+            });
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"int * v = malloc(2)" );
+                this.machine.Execute( @"free(v)" );
+            });
+        }
+        
+        [Test]
         public void TestStrCmp()
         {
             string msg1 = "hola";

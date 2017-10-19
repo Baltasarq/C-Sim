@@ -5,7 +5,6 @@ namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
 	using CSim.Core.Types;
 	using CSim.Core.Variables;
-	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
 
 	/// <summary>
@@ -32,26 +31,18 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			BigInteger address = this.Machine.Memory.Max;
 			Variable vble = realParams[ 0 ].SolveToVariable();
-			var ptrVbleType = vble.Type as Ptr;
-
-			if ( ptrVbleType != null ) {
-				address = vble.LiteralValue.GetValueAsInteger();
-			}
-			else
-			if ( vble.Type == this.Machine.TypeSystem.GetIntType() ) {
-				address = vble.LiteralValue.GetValueAsInteger();
-			}
-			else {
-				throw new TypeMismatchException(
-					L18n.Get( L18n.Id.LblPointer ).ToLower()
-					+ " (" + L18n.Get( L18n.Id.ErrNotAPointer )
-					+ ": " + this.Id + ")"
-					);
-			}
-
-			this.Machine.TDS.DeleteBlk( address );
+            
+            if ( !( vble.Type is Ptr )
+              && !( vble.Type is Primitive ) )
+            {
+                throw new TypeMismatchException( 
+                    L18n.Get( L18n.Id.LblPointer ).ToLower()
+                    + " (" + L18n.Get( L18n.Id.ErrNotAPointer )
+                    + ": " + vble.Name.Name + ")" );
+            }
+            
+			this.Machine.TDS.DeleteBlk( vble.Value.ToBigInteger() );
 			this.Machine.ExecutionStack.Push(
                 Variable.CreateTempVariable( this.Machine, BigInteger.Zero ) );
 		}

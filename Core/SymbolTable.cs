@@ -4,6 +4,7 @@ namespace CSim.Core {
     using System.Numerics;
 	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
+    using System.Linq;
 
 	using CSim.Core.Exceptions;
 	using CSim.Core.Variables;
@@ -136,9 +137,7 @@ namespace CSim.Core {
 		/// </param>
 		public void Remove(string id)
 		{
-            Variable vbleToRemove;
-
-            if ( this.tdsIds.TryGetValue( id, out vbleToRemove ) ) {
+            if ( this.tdsIds.TryGetValue( id, out Variable vbleToRemove ) ) {
 			    this.tdsIds.Remove( id );
                 this.tdsAddresses.Remove( vbleToRemove.Address );
 
@@ -226,7 +225,10 @@ namespace CSim.Core {
             int address = this.Machine.WordSize;
 
             while( address < this.Memory.Max ) {
-                if ( this.LookForAllVblesInAddress( address ) == null
+                IEnumerable<Variable> lVbles =
+                                    this.LookForAllVblesInAddress( address );
+                
+                if ( !lVbles.Any()
                   && this.IsLocationFree( address, v.Size ) )
                 {
                     toret = address;
@@ -371,7 +373,7 @@ namespace CSim.Core {
 
             if ( !this.tdsAddresses.TryGetValue( address, out toret ) )
             {
-                toret = null;
+                toret = new List<Variable>();
             }
 
 			return toret;
@@ -426,7 +428,8 @@ namespace CSim.Core {
 		public void DeleteBlk(BigInteger address)
 		{
             bool removed = false;
-			IEnumerable<Variable> pointedVbles = this.LookForAllVblesInAddress( address );
+			IEnumerable<Variable> pointedVbles =
+                                    this.LookForAllVblesInAddress( address );
 
             // Look for variable in heap
             foreach (Variable pointedVble in pointedVbles) {
@@ -469,9 +472,7 @@ namespace CSim.Core {
         public void SwitchEndianness()
         {
             foreach (Variable vble in this.Variables) {
-                var arrayVble = vble as ArrayVariable;
-
-                if ( arrayVble != null ) {
+                if ( vble is ArrayVariable arrayVble ) {
                     BigInteger address = arrayVble.Address;
 					var elementSize = ( (Ptr) arrayVble.Type ).DerreferencedType.Size;
                     var endAddress = address + arrayVble.Size;

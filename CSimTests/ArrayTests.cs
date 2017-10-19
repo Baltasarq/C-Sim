@@ -16,9 +16,42 @@
             Assert.DoesNotThrow( () => {
                 this.int_t = this.vm.TypeSystem.GetIntType();
                 this.char_t = this.vm.TypeSystem.GetCharType();
-                this.vm.Execute( @"int * x" );
-                this.vble_x = this.vm.TDS.LookUp( @"x" );
+                this.vm.Execute( @"int * v" );
+                this.vble_v = this.vm.TDS.LookUp( @"v" );
             });
+        }
+        
+        [Test]
+        public void AccessArrayElements()
+        {
+            const int NumElements = 5;
+            Variable vble_x;
+            Variable mblk;
+            var vbles = new List<Variable>();
+
+            
+            Assert.DoesNotThrow( () => {
+                vble_x = this.vm.Execute( @"int x" );
+                this.vm.Execute( @"v = new int[" + NumElements + "]" );
+                vbles.AddRange( this.vm.TDS.LookForAllVblesInAddress(
+                            this.vble_v.LiteralValue.GetValueAsInteger() ) );
+            });
+            
+            Assert.AreEqual( 1, vbles.Count );
+            
+            mblk = vbles[ 0 ];
+            
+            Assert.DoesNotThrow( () => {
+                for(int i = 0; i < NumElements; ++i) {
+                    this.vm.Execute( @"v[ " + i + " ] = " + ( NumElements - i ) );
+                }
+            });
+                
+            for(int i = 0; i < NumElements; ++i) {
+                vble_x = this.vm.Execute( @"x = v[" + i + "]" );
+                Assert.AreEqual( ( NumElements - i ).ToBigInteger(),
+                                 vble_x.Value.ToBigInteger() );
+            }
         }
         
         [Test]
@@ -29,9 +62,9 @@
             var vbles = new List<Variable>();
             
             Assert.DoesNotThrow( () => {
-                this.vm.Execute( @"x = new int[" + NumElements + "]" );
+                this.vm.Execute( @"v = new int[" + NumElements + "]" );
                 vbles.AddRange( this.vm.TDS.LookForAllVblesInAddress(
-                            this.vble_x.LiteralValue.GetValueAsInteger() ) );
+                            this.vble_v.LiteralValue.GetValueAsInteger() ) );
             });
             
             Assert.AreEqual( 1, vbles.Count );
@@ -53,9 +86,9 @@
             var vbles = new List<Variable>();
             
             Assert.DoesNotThrow( () => {
-                this.vm.Execute( @"x = malloc(" + NumElements + "*" + this.int_t.Size +")" );
+                this.vm.Execute( @"v = malloc(" + NumElements + "*" + this.int_t.Size +")" );
                 vbles.AddRange( this.vm.TDS.LookForAllVblesInAddress(
-                            this.vble_x.LiteralValue.GetValueAsInteger() ) );
+                            this.vble_v.LiteralValue.GetValueAsInteger() ) );
             });
             
             Assert.AreEqual( 1, vbles.Count );
@@ -70,7 +103,7 @@
         }
         
         private Machine vm;
-        private Variable vble_x;
+        private Variable vble_v;
         private AType int_t;
         private AType char_t;
     }
