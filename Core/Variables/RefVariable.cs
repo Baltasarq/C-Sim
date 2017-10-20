@@ -42,7 +42,7 @@ namespace CSim.Core.Variables {
             set {
                 if ( this.pointedVble == null ) {
                     this.pointedVble = ReachRealVariable( value );
-					base.LiteralValue = new IntLiteral( this.Machine,
+                    base.LiteralValue = new IntLiteral( this.Machine,
                                                         this.PointedVble.Address );
                 } else {
                     throw new EngineException( L18n.Get( L18n.Id.ErrRefDoubleSet ) );
@@ -58,9 +58,13 @@ namespace CSim.Core.Variables {
         /// maybe a reference.</param>
         private Variable ReachRealVariable(Variable vble)
         {
-            while( vble is RefVariable refVble
-                && refVble.IsSet() )
-            {
+            while( vble is RefVariable refVble ) {
+                if ( !refVble.IsSet() ) {
+                    throw new EngineException(
+                                            L18n.Get( L18n.Id.ErrRefNotSet )
+                                            + ": " + refVble.Name.Name );
+                }
+                
                 vble = refVble.PointedVble;
             }
             
