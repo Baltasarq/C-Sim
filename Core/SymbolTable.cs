@@ -1,3 +1,4 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
 	using System;
@@ -6,10 +7,10 @@ namespace CSim.Core {
 	using System.Collections.Generic;
     using System.Linq;
 
-	using CSim.Core.Exceptions;
-	using CSim.Core.Variables;
-    using CSim.Core.Literals;
-	using CSim.Core.Types;
+	using Exceptions;
+	using Variables;
+    using Literals;
+	using Types;
 
 	/// <summary>All the variables in the <see cref="Machine"/> reside here.</summary>
     public class SymbolTable {
@@ -24,6 +25,8 @@ namespace CSim.Core {
             this.tdsIds = new Dictionary<string, Variable>();
             this.tdsAddresses = new Dictionary<BigInteger, List<Variable>>();
             this.addresses = new List<BigInteger>();
+            
+            this.CreateSysVariables();
         }
 
 		/// <summary>
@@ -36,7 +39,29 @@ namespace CSim.Core {
 			this.tdsIds.Clear();
             this.tdsAddresses.Clear();
 			this.addresses.Clear();
+            
+            this.CreateSysVariables();
 		}
+        
+        /// <summary>Creates system variables.</summary>
+        private void CreateSysVariables()
+        {
+            var int_t = this.Machine.TypeSystem.GetIntType();
+            
+            var vblStdIn = new Variable( this.Machine, "stdin", int_t ) {
+                LiteralValue = new IntLiteral( this.Machine, 0 )
+            };
+            var vblStdOut = new Variable( this.Machine, "stdout", int_t ) {
+                LiteralValue = new IntLiteral( this.Machine, 1 )
+            };
+            var vblStdErr = new Variable( this.Machine, "stderr", int_t ) {
+                LiteralValue = new IntLiteral( this.Machine, 2 )
+            };
+            
+            this.tdsIds.Add( vblStdIn.Name.Text, vblStdIn );
+            this.tdsIds.Add( vblStdOut.Name.Text, vblStdOut );
+            this.tdsIds.Add( vblStdErr.Name.Text, vblStdErr );
+        }
 
         /// <summary>
         /// Creates the addresses to fill array,
@@ -84,7 +109,7 @@ namespace CSim.Core {
             List<Variable> vbleList;
             
             // Register by id
-            this.tdsIds.Add( v.Name.Name, v );
+            this.tdsIds.Add( v.Name.Text, v );
                         
             // Register by variable address
             if ( !this.tdsAddresses.TryGetValue( v.Address, out vbleList ) )
@@ -118,7 +143,7 @@ namespace CSim.Core {
 		{
             // Chk
 			if ( this.IsIdOfExistingVariable( v.Name ) ) {
-				throw new AlreadyExistingVbleException( v.Name.Name );
+				throw new AlreadyExistingVbleException( v.Name.Text );
 			}
 
             // Store
@@ -172,7 +197,7 @@ namespace CSim.Core {
 				if ( v is RefVariable refVble
 				  && !( refVble.IsSet() ) )
 				{
-                    this.Remove( v.Name.Name );
+                    this.Remove( v.Name.Text );
 				}
 			}
 
@@ -345,7 +370,7 @@ namespace CSim.Core {
 		/// <param name="idVble">The identifier in question, as an Id.</param>
 		public bool IsIdOfExistingVariable(Id idVble)
 		{
-            return this.IsIdOfExistingVariable( idVble.Name );
+            return this.IsIdOfExistingVariable( idVble.Text );
         }
         
         /// <summary>
@@ -436,7 +461,7 @@ namespace CSim.Core {
     			if ( pointedVble != null ) {
     				if ( pointedVble.IsInHeap ) {
                         removed = true;
-    					this.Remove( pointedVble.Name.Name );
+    					this.Remove( pointedVble.Name.Text );
                         break;
     				}
     			}
@@ -526,7 +551,7 @@ namespace CSim.Core {
         private Dictionary<BigInteger, List<Variable>> tdsAddresses;
 		private List<BigInteger> addresses;
 
-        private static int numMemBlock = 0;
+        private static int numMemBlock;
     }
 }
 

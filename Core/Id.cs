@@ -1,8 +1,10 @@
-using System;
-
-using CSim.Core.Exceptions;
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
+    using System;
+    
+    using Exceptions;
+    
 	/// <summary>
 	/// Represents identifiers.
 	/// </summary>
@@ -18,7 +20,7 @@ namespace CSim.Core {
 		public Id(Machine m, string id)
             :base( m )
 		{
-			this.Name = id;
+			this.Text = id;
 		}
 
 		/// <summary>
@@ -85,10 +87,10 @@ namespace CSim.Core {
 		}
 
 		/// <summary>
-		/// Gets or sets the id name.
+		/// Gets or sets the id text.
 		/// </summary>
 		/// <value>The name, as string.</value>
-		public string Name {
+		public string Text {
 			get {
 				return this.id;
 			}
@@ -104,7 +106,7 @@ namespace CSim.Core {
 		/// <value>The id, as a string.</value>
 		public override object Value {
 			get {
-				return this.Name;
+				return this.Text;
 			}
 		}
 
@@ -144,7 +146,7 @@ namespace CSim.Core {
         /// <returns>A <see cref="T:System.String"/> that represents the current <see cref="T:CSim.Core.Id"/>.</returns>
         public override string ToString()
         {
-            return this.Name;
+            return this.Text;
         }
         
         /// <summary>
@@ -153,7 +155,7 @@ namespace CSim.Core {
         /// <returns>The to variable.</returns>
         public override Variable SolveToVariable()
         {
-            return this.Machine.TDS.LookUp( this.Name );
+            return this.Machine.TDS.LookUp( this.Text );
         }
 
 		private string id;

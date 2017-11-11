@@ -1,8 +1,11 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
 	using System;
 	using System.Text;
     using System.Numerics;
+    
+    using Literals;
 
     /// <summary>
     /// Represents the target machine emulated
@@ -22,23 +25,46 @@ namespace CSim.Core {
 			/// <summary>Little endianness.</summary>
 			LittleEndian
 		}
+        
+        /// <summary>
+        /// Initializes a new <see cref="Machine"/>.
+        /// By default, 32 bit machine with 512 bytes RAM.
+        /// </summary>
+        public Machine()
+            :this(inputter: (s) => "", outputter: (s) => {})
+        {
+        }
 		
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Core.Machine"/> class.
+		/// Initializes a new <see cref="Machine"/>.
 		/// By default, 32 bit machine with 512 bytes RAM.
 		/// </summary>
-		public Machine()
-			:this( DefaultWordSize, MemoryManager.DefaultMaxMemory, Endianness.LittleEndian )
+        /// <param name="outputter">
+        /// A function admitting a string to write to standard output.
+        /// </param>
+        /// <param name="inputter">
+        /// A function returning a string read from standard output.
+        /// </param>
+		public Machine(Func<string, string> inputter, Action<string> outputter)
+			:this( DefaultWordSize, MemoryManager.DefaultMaxMemory,
+                   Endianness.LittleEndian, inputter, outputter )
 		{
 		}
-
+               
 		/// <summary>
 		/// Initializes a new instance of the <see cref="CSim.Core.Machine"/> class.
 		/// </summary>
 		/// <param name="wordSize">The word size, in bytes.</param>
 		/// <param name="maxMemory">Max memory.</param>
 		/// <param name="endianness">The endiannes of the machine.</param>
-		public Machine(int wordSize, int maxMemory, Endianness endianness)
+       /// <param name="outputter">
+        /// A function admitting a string to write to standard output.
+        /// </param>
+        /// <param name="inputter">
+        /// A function returning a string read from standard output.
+        /// </param>
+		public Machine(int wordSize, int maxMemory, Endianness endianness,
+                        Func<string, string> inputter, Action<string> outputter)
 		{
 			this.endianness = endianness;
 			this.wordSize = CalculateWordSize( wordSize );
@@ -51,8 +77,10 @@ namespace CSim.Core {
 			this.ExecutionStack = new ExecutionStack();
 			this.SnapshotManager = new SnapshotManager( this );
 			this.Bytes = new ByteConverter( this );
+            this.Inputter = inputter;
+            this.Outputter = outputter;
 		}
-
+        
 		/// <summary>
 		/// Prepares the machine for execution
 		/// from a new, clear status.
@@ -152,23 +180,28 @@ namespace CSim.Core {
 			var er = new SnapshotManager( this );
 			Variable toret = null;
 
-			er.SaveSnapshot();
-			this.ExecutionStack.Clear();
-
 			try {
 				// Execute opcodes
                 Opcode[] opcodes = parser.Parse();
-				foreach(Opcode opcode in opcodes) {
-					opcode.Execute();
-				}
+                
+                if ( opcodes.Length > 0 ) {
+                    er.SaveSnapshot();
+                    this.ExecutionStack.Clear();
+                    
+					foreach(Opcode opcode in opcodes) {
+						opcode.Execute();
+					}
+	
+					toret = this.ExecutionStack.Pop().SolveToVariable();
+                    this.SnapshotManager.SaveSnapshot();
+                }
 
-				toret = this.ExecutionStack.Pop().SolveToVariable();
-
-				// Create snapshot
-				this.SnapshotManager.SaveSnapshot();
 			}
 			catch(EngineException) {
-				er.ApplySnapshot( 0 );
+                if ( er.Count > 0 ) {
+				    er.ApplySnapshot( 0 );
+                }
+                
 				throw;
 			}
 			finally {
@@ -178,6 +211,29 @@ namespace CSim.Core {
 			return toret;
 		}
         
+        /// <summary>
+        /// The inputter is capable to read data from the user.
+        /// </summary>
+        /// <value>
+        /// The input function, as a Func&lt;string, string&gt;,
+        /// returning a string with the data read, and accepting another one
+        /// with a explanatory message to the user.
+        /// </value>
+        public Func<string, string> Inputter {
+            get; private set;
+        }
+        
+        /// <summary>
+        /// The outputter is able to write data for the user to see it.
+        /// </summary>
+        /// <value>
+        /// The output function, as an Action&lt;string&gt;,
+        /// accepting a string to be written to standard output.
+        /// </value>
+        public Action<string> Outputter {
+            get; private set;
+        }
+                
         /// <summary>
         /// Gets or sets the size of a word (in bytes) for this system.
         /// Setting the word size implies a full reset of the machine.
@@ -319,7 +375,7 @@ namespace CSim.Core {
                 return Encoding.GetEncoding( "ISO-8859-1" );
             }
         }
-
+        
 		private int wordSize;
 		private Endianness endianness;
     }

@@ -1,4 +1,6 @@
-﻿namespace CSim.Core.Literals {
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
+namespace CSim.Core.Literals {
     using System.Text;
     using System.Numerics;
 
@@ -77,7 +79,7 @@
         /// <exception cref="EngineException">Always.</exception>
         public override BigInteger GetValueAsInteger()
         {
-            throw new EngineException( "cannot transform literal to int" );
+            throw new Exceptions.RuntimeException( "[] -> \"\"??" );
         }
 
         /// <summary>

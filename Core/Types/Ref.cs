@@ -1,5 +1,7 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Core.Types {
-	using CSim.Core.Variables;
+	using Variables;
 
     /// <summary>
     /// Represents references. References are a kind of pointer,

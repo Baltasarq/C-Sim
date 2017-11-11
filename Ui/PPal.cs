@@ -1,9 +1,9 @@
-// Main.cs
-
-using System;
-using System.Windows.Forms;
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Ui {
+    using System;
+    using System.Windows.Forms;
+    
     /// <summary>
     /// The entry point of the application
     /// </summary>
@@ -14,7 +14,7 @@ namespace CSim.Ui {
         [STAThread]
         public static void Main()
         {
-			Application.Run( new MainWindow() );
+            Application.Run( new MainWindow() );
         }
     }
 }

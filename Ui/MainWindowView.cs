@@ -1,11 +1,12 @@
-﻿
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Ui {
     using System;
     using System.Drawing;
     using System.Globalization;
     using System.Windows.Forms;
 
-    using CSim.Core;
+    using Core;
 
     /// <summary>The main window for the application. This builds the view.</summary>
     public partial class MainWindow {
@@ -35,7 +36,7 @@ namespace CSim.Ui {
 
             for(int i = 0; i < NumWatches; ++i) {
                 var lblWatch = this.lblWatchesValue[ i ] = new Label {
-                    Text = "0",
+                    Text = DefaultWatchText,
                     Dock = DockStyle.Right,
                     ForeColor = SystemColors.InfoText,
                     BackColor = SystemColors.Info
@@ -47,6 +48,11 @@ namespace CSim.Ui {
                 lblWatch.Font = new Font( FontFamily.GenericMonospace, 11 );
                     
                 edWatch.LostFocus += (obj, args) => this.UpdateWatches();
+                edWatch.KeyUp += (object sender, KeyEventArgs e) => {
+                    if ( e.KeyCode == Keys.Enter ) {
+                        this.UpdateWatches();
+                    }
+                };
                 lblWatch.Font = new Font( FontFamily.GenericMonospace, 11 );
             }
 
@@ -75,7 +81,8 @@ namespace CSim.Ui {
         {
             this.lbHistory = new ListBox() {
                 Font = new Font( FontFamily.GenericMonospace, 8 ),
-                Dock = DockStyle.Fill
+                Dock = DockStyle.Fill,
+                HorizontalScrollbar = true
             };
 
             this.gbHistory = new GroupBox { Text = "History", Dock = DockStyle.Fill };

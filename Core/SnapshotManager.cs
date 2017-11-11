@@ -1,4 +1,5 @@
-﻿
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Core {
 	using System;
 	using System.Collections.ObjectModel;
@@ -45,7 +46,9 @@ namespace CSim.Core {
 
 			this.Machine.TDS.Reset();
 			foreach(Variable vble in this.vbles[ i ]) {
-				this.Machine.TDS.AddVariableInPlace( vble );
+                if ( !vble.IsTemp() ) {
+				    this.Machine.TDS.AddVariableInPlace( vble );
+                }
 			}
 
 			return;

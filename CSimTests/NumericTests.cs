@@ -1,9 +1,9 @@
-﻿namespace CSimTests {
-    using System.Numerics;
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
+namespace CSimTests {
     using NUnit.Framework;
 
     using CSim.Core;
-    using CSim.Core.Variables;
 
     [TestFixture]
     public class NumericTests {

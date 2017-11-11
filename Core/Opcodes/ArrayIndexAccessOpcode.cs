@@ -1,4 +1,6 @@
-﻿namespace CSim.Core.Opcodes {
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
+namespace CSim.Core.Opcodes {
     using System.Numerics;
 	using CSim.Core.Variables;
 	using CSim.Core.Types;
@@ -45,7 +47,7 @@
 				if ( vble.IsIndirection() ) {
 					address = ( (IndirectVariable) vble ).PointedAddress;
 				} else {
-					throw new EngineException( vble.Name + "[x]??" );
+					throw new RuntimeException( vble.Name + "[x]??" );
 				}
 
 				// Chk
@@ -58,7 +60,7 @@
 
 				// Store in the ArrayElement vble and end
 				Variable result = Variable.CreateTempVariableForArrayElement(
-										vble.Name.Name,
+										vble.Name.Text,
 										address,
 										(Ptr) vble.Type,
 										(int) offset.LiteralValue.ToBigInteger()
@@ -66,7 +68,7 @@
 		
 				this.Machine.ExecutionStack.Push( result );
 			} else {
-				throw new EngineException( "missing or invalid rvalue" );
+				throw new RuntimeException( "rvalue?" );
 			}
 
 			return;

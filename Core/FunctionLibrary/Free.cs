@@ -1,3 +1,4 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.FunctionLibrary {
     using System.Numerics;
@@ -39,7 +40,7 @@ namespace CSim.Core.FunctionLibrary {
                 throw new TypeMismatchException( 
                     L18n.Get( L18n.Id.LblPointer ).ToLower()
                     + " (" + L18n.Get( L18n.Id.ErrNotAPointer )
-                    + ": " + vble.Name.Name + ")" );
+                    + ": " + vble.Name.Text + ")" );
             }
             
 			this.Machine.TDS.DeleteBlk( vble.Value.ToBigInteger() );

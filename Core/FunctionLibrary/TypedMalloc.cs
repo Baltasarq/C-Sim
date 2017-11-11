@@ -1,10 +1,12 @@
+// Prys CSim - Copyright (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.FunctionLibrary {
-	using CSim.Core.Functions;
-    using CSim.Core.Variables;
-    using CSim.Core.Literals;
-    using CSim.Core.Types;
-	using CSim.Core;
+	using Functions;
+    using Variables;
+    using Exceptions;
+    using Literals;
+    using Types;
+	using Core;
 
 	/// <summary>
 	/// This is the typed malloc function.
@@ -14,7 +16,7 @@ namespace CSim.Core.FunctionLibrary {
 		/// <summary>
 		/// The identifier for the function.
 		/// </summary>
-		public const string Name = "_new";
+		public const string Name = "tmalloc";
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="EmbeddedFunction"/> class.
@@ -54,11 +56,11 @@ namespace CSim.Core.FunctionLibrary {
 
             // Chk
             if ( !( countVble.Type is Primitive ) ) {
-                throw new EngineException( string.Format( "size == {0}??", countVble ) );
+                throw new RuntimeException( string.Format( "size == {0}??", countVble ) );
             }
 
             if ( typeVble.Type != Types.TypeType.Get( this.Machine ) ) {
-                throw new EngineException( string.Format( "type == {0}??", typeVble ) );
+                throw new RuntimeException( string.Format( "type == {0}??", typeVble ) );
             }
 
             // Build

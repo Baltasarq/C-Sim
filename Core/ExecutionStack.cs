@@ -1,6 +1,9 @@
-﻿
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Core {
 	using System.Collections.Generic;
+    
+    using Exceptions;
 
 	/// <summary>
 	/// The stack to use while executing <see cref="Opcode"/>'s in a <see cref="Machine"/>.
@@ -49,7 +52,7 @@ namespace CSim.Core {
 				toret = this.Peek();
 				this.stack.RemoveAt( this.stack.Count - 1 );
 			} else {
-				throw new EngineException( "empty stack: cannot pop" );
+				throw new RuntimeException( "empty stack: cannot pop" );
 			}
 
 			return toret;

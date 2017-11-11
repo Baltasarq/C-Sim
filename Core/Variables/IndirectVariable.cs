@@ -1,4 +1,6 @@
-﻿namespace CSim.Core.Variables {
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
+namespace CSim.Core.Variables {
     using Types;
     
     using System.Numerics;
@@ -17,7 +19,7 @@
             : base( id, t )
         {
             if ( !( t is Indirection ) ) {
-                throw new EngineException(
+                throw new Exceptions.RuntimeException(
                     "Indirect variable without indirect type" );
             }
         }

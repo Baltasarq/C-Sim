@@ -1,6 +1,10 @@
-﻿namespace CSimTests {
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
+namespace CSimTests {
     using System;
     using System.Numerics;
+    using System.Text;
+    using System.Globalization;
     using NUnit.Framework;
     
     using CSim.Core;
@@ -14,7 +18,8 @@
             Console.WriteLine( "Tests pass individually, but not globally, "
                                + "due to static contents of functions." );
                                
-            this.machine = new Machine();
+            this.machine = new Machine( outputter: (s) => {},
+                                        inputter: (s) => "Baltasar" );
             
             Assert.DoesNotThrow( () => {
                 this.machine.Execute( @"int int_v;" );
@@ -38,6 +43,73 @@
                 this.machine.Execute( @"int * v = malloc(2)" );
                 this.machine.Execute( @"free(v)" );
             });
+        }
+        
+        [Test]
+        public void TestFGets()
+        {
+            const int Max = 20;
+            string cmd = "fgets(str, " + Max + ", stdin);";
+            string expectedResult = "Baltasar";
+            Variable str = null;
+            Variable vble= null;
+            
+            Assert.DoesNotThrow( () => {
+                str = this.machine.Execute( "char *str = malloc(" + Max + ")" );
+                this.machine.Memory.CheckAddressFits( str.LiteralValue.ToBigInteger() );
+            });
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "fgets(1, 2, 3);" );
+            });
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "fgets(str, \"a\", \"b\" );" );
+            });
+            
+            Assert.Throws<TypeMismatchException>( () => {
+                this.machine.Execute( "fgets(str, 2, \"b\" );" );
+            });
+            
+            Assert.DoesNotThrow( () => {
+                vble = this.machine.Execute( cmd );
+            });
+            
+            int address = (int) vble.LiteralValue.ToBigInteger();
+            byte[] result = this.machine.Memory.ReadStringFromMemory( address );
+            string dest = Encoding.ASCII.GetString( result );
+            Assert.AreEqual( (int) str.LiteralValue.ToBigInteger(), address );
+            Assert.AreEqual( expectedResult, dest );
+        }
+        
+        [Test]
+        public void TestSPrintf()
+        {
+            const int Max = 20;
+            string msgFormat = "%s %d %f %c";
+            string msg = "hola";
+            int val1 = 42;
+            string val2 = 42.51.ToString( CultureInfo.InvariantCulture );
+            char val3 = (char) 42;
+            Variable str = null;
+            Variable vble = null;
+            string cmd = "sprintf(s, \""
+                         + msgFormat + "\", \"" + msg + "\", "
+                         + val1 + ", " + val2 + ", '" + val3 + "');";
+            string expectedResult = "hola 42 42.51 *";
+
+            Assert.DoesNotThrow( () => {
+                str = this.machine.Execute( "char *s = malloc(" + Max + ")" );
+                vble = this.machine.Execute( cmd );
+                this.machine.Memory.CheckAddressFits( str.LiteralValue.ToBigInteger() );
+            });
+
+            byte[] result = this.machine.Memory.ReadStringFromMemory(
+                                                str.Value.ToBigInteger() );
+                                                
+            string dest = Encoding.ASCII.GetString( result );
+            Assert.AreEqual( expectedResult.Length, (int) vble.LiteralValue.ToBigInteger() );
+            Assert.AreEqual( expectedResult, dest );
         }
         
         [Test]

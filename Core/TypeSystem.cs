@@ -1,11 +1,12 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
     using System.Reflection;
 	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
 
-	using CSim.Core.Types;
-	using CSim.Core.Types.Primitives;
+	using Types;
+	using Types.Primitives;
 
 	/// <summary>
 	/// Represents the type system.

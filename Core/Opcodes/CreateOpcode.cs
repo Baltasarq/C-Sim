@@ -1,8 +1,6 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.Opcodes {
-	using CSim.Core.Types;
-	using CSim.Core.Variables;
-
 	/// <summary>
 	/// Create opcode. Allows to create different kinds of variables.
 	/// </summary>
@@ -30,7 +28,7 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		public override void Execute()
 		{
-            var result = this.Type.CreateVariable( this.Name.Name );
+            var result = this.Type.CreateVariable( this.Name.Text );
             this.Machine.TDS.Add( result );
             
             this.Machine.ExecutionStack.Push( result );

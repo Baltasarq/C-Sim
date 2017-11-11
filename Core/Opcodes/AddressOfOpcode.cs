@@ -1,8 +1,9 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.Opcodes {
     using System.Numerics;
-	using CSim.Core.Variables;
-	using CSim.Core.Literals;
+	
+    using Exceptions;
 
 	/// <summary>
 	/// Represents the rol of ampersand at the left of a variable.
@@ -38,7 +39,7 @@ namespace CSim.Core.Opcodes {
 				var toret = Variable.CreateTempVariable( this.Machine, address );
 				this.Machine.ExecutionStack.Push( toret );
 			} else {
-				throw new EngineException( "rvalue should be a variable" );
+				throw new RuntimeException( "rvalue should be a variable" );
 			}
 
 			return;

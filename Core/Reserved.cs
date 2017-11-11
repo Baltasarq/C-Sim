@@ -1,3 +1,5 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Core {
     using System;
     
@@ -19,6 +21,8 @@ namespace CSim.Core {
         public const string OpAssign = "=";
 		/// <summary>Label for "end of sentence"</summary>
         public const string LblEOL = ";";
+        /// <summary>Label for comments prefix</summary>
+        public const string LblComment = "//";
         /// <summary>The prefix for labels for temp variables.</summary>
         public const string PrefixTempVariable = "_aux__";
         /// <summary>Prefix to use for memory blocks (heap)</summary>

@@ -1,3 +1,5 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Ui {
 	using System;
     using System.Numerics;
@@ -7,14 +9,17 @@ namespace CSim.Ui {
     using System.Windows.Forms;
 	using System.Collections.ObjectModel;
 
-	using CSim.Core;
-	using CSim.Core.Exceptions;
-	using CSim.Core.Variables;
+	using Core;
+	using Core.Exceptions;
 
     /// <summary>
     /// The main window of the application.
     /// </summary>
     public partial class MainWindow: Form {
+        /// <summary>Text to show when there is no vble to watch.</summary>
+        public const string DefaultWatchText = "[]";
+        /// <summary>Text to show when the watch was not found.</summary>
+        public const string ErrorWatchText = "??";
 		/// <summary>The maximum number of watches.</summary>
 		public const int NumWatches = 10;
 		/// <summary>The step in which fonts are increased or decreased in size.</summary>
@@ -29,11 +34,13 @@ namespace CSim.Ui {
 		public readonly Size DefaultDrawingAreaSize = new Size( 640, 640 );
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Ui.MainWindow"/> class.
+		/// Initializes a new <see cref="MainWindow"/>.
 		/// </summary>
         public MainWindow()
         {
-			this.machine = new Machine();
+			this.machine = new Machine(
+                            inputter: (msg) => this.DoUserInput( msg ),
+                            outputter: (string s) => this.rtbOutput.Text += s);
 			this.ReadConfiguration();
 
             // Prepare UI
@@ -168,8 +175,7 @@ namespace CSim.Ui {
 			DateTime t = DateTime.Now;
 			DateTime tf = t.AddSeconds( seconds );
 
-			while ( t < tf )
-			{
+			while ( t < tf ) {
 				Application.DoEvents();
 				t = DateTime.Now;
 			}
@@ -472,6 +478,18 @@ namespace CSim.Ui {
 		{
 			System.Diagnostics.Process.Start( AppInfo.Web );
 		}
+        
+        private string DoUserInput(string msg)
+        {
+            string toret = "";
+            var dlgInput = new InputDialog( msg );
+            
+            if ( dlgInput.ShowDialog( this ) == DialogResult.OK ) {
+                toret = dlgInput.Input;
+            }
+            
+            return toret;
+        }
 
         private void DoReset(MemoryManager.ResetType rt)
         {
@@ -500,36 +518,36 @@ namespace CSim.Ui {
 			this.FocusOnInput();
 		}
 
-
 		private void UpdateWatches()
 		{
 			for (int i = 0; i < this.edWatchesLabel.Length; ++i) {
-				Variable result;
 				Label lblWatch = this.lblWatchesValue[ i ];
-				string input = this.edWatchesLabel[ i ].Text.Trim();
+				string id = this.edWatchesLabel[ i ].Text.Trim();
 
-				if ( !string.IsNullOrEmpty( input ) ) {
-					try {
-						result = this.machine.Execute(
-                                    new ExpressionParser( input, this.machine ) );
+				if ( !string.IsNullOrEmpty( id ) ) {
+	                if ( this.machine.TDS.IsIdOfExistingVariable( id ) ) {
+	                    Variable vble = this.machine.TDS.LookUp( id );
 
-						// Update output
                         lblWatch.ForeColor = SystemColors.InfoText;
                         lblWatch.BackColor = SystemColors.Info;
-						lblWatch.Text = result.Value.ToString();
-					}
-					catch(EngineException)
-					{
-						lblWatch.ForeColor = SystemColors.GrayText;
+						lblWatch.Text = vble.Value.ToString();
+					} else {
+                        lblWatch.ForeColor = SystemColors.GrayText;
                         lblWatch.BackColor = SystemColors.Window;
-						lblWatch.Text = "ERROR";
-					}
-				}
-			}
+                        lblWatch.Text = ErrorWatchText;
+	                }
+                } else {
+                    if ( lblWatch.Text != DefaultWatchText ) {
+	                    lblWatch.ForeColor = SystemColors.InfoText;
+	                    lblWatch.BackColor = SystemColors.Info;
+	                    lblWatch.Text = DefaultWatchText;
+                    }
+                }
+            }
 
 			return;
 		}
-			
+
         private void UpdateSymbolTable()
         {
             ReadOnlyCollection<Variable> variables = this.machine.TDS.Variables;
@@ -545,7 +563,7 @@ namespace CSim.Ui {
 					+ FromIntToPrettyHex( vble.Address, this.machine.WordSize )
 					+ ']';
 
-                var vbleNode = new TreeNode( vble.Name.Name );
+                var vbleNode = new TreeNode( vble.Name.Text );
                 var typeNode = new TreeNode( varTypeAddr );
                 var contentsNode = new TreeNode( " = " + vble.LiteralValue );
 
@@ -753,10 +771,13 @@ namespace CSim.Ui {
 
 			try {
 				result = this.machine.Execute( input );
-				this.AddToHistory( input );
-
-				// Update output
-				this.PrintOutput( this.FromVbleToString( result ) );
+                
+                if ( result != null ) {
+					this.AddToHistory( input );
+	
+					// Update output
+					this.PrintOutput( this.FromVbleToString( result ) );
+                }
 			}
 			catch(EngineException exc)
 			{

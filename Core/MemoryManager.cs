@@ -1,13 +1,13 @@
-// MemoryManager.cs
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Core {
 	using System;
     using System.Numerics;
 	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
 
-	using CSim.Core.Exceptions;
-	using CSim.Core.Types;
-	using CSim.Core.Literals;
+	using Exceptions;
+	using Literals;
 
     /// <summary>
     /// Represents system memory.
@@ -104,6 +104,23 @@ namespace CSim.Core {
             
             return;
         }
+        
+        /// <summary>
+        /// Checks whether 0 &lt; address &lt; <see cref="MemoryManager.Max"/>.
+        /// </summary>
+        /// <param name="pos">Position.</param>
+        public void CheckAddressFits(BigInteger pos)
+        {
+            if ( pos < 0
+              || pos >= this.Max )
+            {
+                throw new IncorrectAddressException(
+                    L18n.Get( L18n.Id.ErrAccessingAt )
+                    + " " + new IntLiteral( this.Machine, pos ).ToHex() );
+            }
+            
+            return;
+        }
 
 		/// <summary>
 		/// Read size bytes from position pos.
@@ -160,20 +177,19 @@ namespace CSim.Core {
 		public Literal CreateLiteral(BigInteger address, AType type)
 		{
 			Literal toret = null;
-			var ptrType = type as Ptr;
 
 			// Special case: char* is a StringLiteral
-			if ( ptrType != null
-			  && ptrType.AssociatedType == this.Machine.TypeSystem.GetCharType() )
-			{
+			if ( type == this.Machine.TypeSystem.GetPCharType() ) {
 				byte[] str = this.ReadStringFromMemory( address );
-				toret = new StrLiteral( this.Machine, new string( Machine.TextEncoding.GetChars( str ) ) );
+				toret = new StrLiteral(
+                            this.Machine,
+                            new string( Machine.TextEncoding.GetChars( str ) ) );
 			} else {
 				toret = type.CreateLiteral( this.Read( address, type.Size ) );
 			}
 
 			if ( toret == null ) {
-				throw new EngineException( L18n.Get( L18n.Id.ExcUnknownType ) );
+				throw new RuntimeException( L18n.Get( L18n.Id.ExcUnknownType ) );
 			}
 
 			return toret;

@@ -1,0 +1,8 @@
+// Persona?
+
+int max_persona = 20
+char * persona = malloc(max_persona)
+printf("Persona: ")
+fgets(persona, max_persona, stdin)
+printf("Hola, %s.\n", persona)
+printf("Hi, %s!\n", persona)

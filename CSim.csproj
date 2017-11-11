@@ -40,7 +40,6 @@
     <Folder Include="Res\" />
     <Folder Include="Core\Types\" />
     <Folder Include="Core\Opcodes\" />
-    <Folder Include="Core\Exceptions\" />
     <Folder Include="Core\Types\Primitives\" />
     <Folder Include="Core\Variables\" />
     <Folder Include="Core\Functions\" />
@@ -58,30 +57,21 @@
     <Compile Include="Core\AType.cs" />
     <Compile Include="Core\Opcode.cs" />
     <Compile Include="Core\Lexer.cs" />
-    <Compile Include="Core\Exceptions\UnknownTypeException.cs" />
     <Compile Include="Core\Parser.cs" />
-    <Compile Include="Core\Exceptions\UnknownVbleException.cs" />
-    <Compile Include="Core\Exceptions\TypeMismatchException.cs" />
-    <Compile Include="Core\EngineException.cs" />
-    <Compile Include="Core\Exceptions\AlreadyExistingVbleException.cs" />
-    <Compile Include="Core\Exceptions\ExhaustedMemoryException.cs" />
+    <Compile Include="Core\exceptions.cs" />
     <Compile Include="Core\Types\Ptr.cs" />
     <Compile Include="Core\Reserved.cs" />
     <Compile Include="Core\Types\Ref.cs" />
-    <Compile Include="Core\Exceptions\InvalidIdException.cs" />
     <Compile Include="Core\Types\Primitives\Char.cs" />
     <Compile Include="Core\Types\Primitives\Int.cs" />
     <Compile Include="Core\Types\Primitive.cs" />
     <Compile Include="Core\Variables\RefVariable.cs" />
     <Compile Include="Core\Locale.cs" />
     <Compile Include="Core\L18n.cs" />
-    <Compile Include="Core\Exceptions\InvalidMaxMemoryException.cs" />
-    <Compile Include="Core\Exceptions\IncorrectAddressException.cs" />
     <Compile Include="Core\Function.cs" />
     <Compile Include="Core\Functions\EmbeddedFunction.cs" />
     <Compile Include="Core\Functions\UserFunction.cs" />
     <Compile Include="Core\StdLib.cs" />
-    <Compile Include="Core\Exceptions\ParsingException.cs" />
     <Compile Include="Core\RValue.cs" />
     <Compile Include="Core\Literal.cs" />
     <Compile Include="Core\Literals\IntLiteral.cs" />
@@ -145,7 +135,6 @@
     <Compile Include="Ui\Drawer\GrphBoxedArray.cs" />
     <Compile Include="Core\Variables\ArrayVariable.cs" />
     <Compile Include="Ui\Drawer\GraphInfo.cs" />
-    <Compile Include="Core\ExpressionParser.cs" />
     <Compile Include="Core\FunctionLibrary\TypedMalloc.cs" />
     <Compile Include="Core\Variables\TypeVariable.cs" />
     <Compile Include="Core\Types\TypeType.cs" />
@@ -192,6 +181,9 @@
     <Compile Include="Core\Variables\IndirectVariable.cs" />
     <Compile Include="Core\FunctionLibrary\StrCmp.cs" />
     <Compile Include="Core\FunctionLibrary\StrCat.cs" />
+    <Compile Include="Ui\InputDialog.cs" />
+    <Compile Include="Core\FunctionLibrary\SPrintf.cs" />
+    <Compile Include="Core\FunctionLibrary\Fgets.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -218,6 +210,8 @@
     <EmbeddedResource Include="Res\back.png" />
     <EmbeddedResource Include="Res\play.png" />
     <EmbeddedResource Include="Res\stop.png" />
+    <EmbeddedResource Include="Res\no.png" />
+    <EmbeddedResource Include="Res\yes.png" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>

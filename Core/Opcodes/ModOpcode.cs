@@ -1,10 +1,9 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Core.Opcodes {
     using System.Numerics;
 
-	using CSim.Core.Variables;
-	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
-    using CSim.Core.Types;
 
 	/// <summary>
 	/// Mod opcode, allowing operations like 10%3.
@@ -29,7 +28,7 @@ namespace CSim.Core.Opcodes {
 		{
 			// Check arguments in stack
 			if ( this.Machine.ExecutionStack.Count < 2 ) {
-				throw new EngineException( L18n.Get( L18n.Id.ErrMissingArguments ) );
+				throw new RuntimeException( L18n.Get( L18n.Id.ErrMissingArguments ) );
 			}
 
 			// Take ops
@@ -42,7 +41,7 @@ namespace CSim.Core.Opcodes {
 			BigInteger op2Value = op2.LiteralValue.GetValueAsInteger();
 
 			if ( op2Value == 0 ) {
-				throw new EngineException( "/0??" );
+				throw new RuntimeException( "/0??" );
 			}
 
 			BigInteger modRes = op1.LiteralValue.GetValueAsInteger() % op2Value;

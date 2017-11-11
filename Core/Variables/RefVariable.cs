@@ -1,6 +1,8 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.Variables {
-	using CSim.Core.Literals;
+	using Literals;
+    using Exceptions;
     
     using System.Numerics;
 
@@ -36,7 +38,7 @@ namespace CSim.Core.Variables {
                 if ( this.pointedVble != null ) {
                     return this.pointedVble;
                 } else {
-                    throw new EngineException( L18n.Get( L18n.Id.ErrRefNotSet ) );
+                    throw new RuntimeException( L18n.Get( L18n.Id.ErrRefNotSet ) );
                 }
             }
             set {
@@ -45,7 +47,7 @@ namespace CSim.Core.Variables {
                     base.LiteralValue = new IntLiteral( this.Machine,
                                                         this.PointedVble.Address );
                 } else {
-                    throw new EngineException( L18n.Get( L18n.Id.ErrRefDoubleSet ) );
+                    throw new RuntimeException( L18n.Get( L18n.Id.ErrRefDoubleSet ) );
                 }
             }
         }
@@ -60,9 +62,9 @@ namespace CSim.Core.Variables {
         {
             while( vble is RefVariable refVble ) {
                 if ( !refVble.IsSet() ) {
-                    throw new EngineException(
+                    throw new RuntimeException(
                                             L18n.Get( L18n.Id.ErrRefNotSet )
-                                            + ": " + refVble.Name.Name );
+                                            + ": " + refVble.Name.Text );
                 }
                 
                 vble = refVble.PointedVble;

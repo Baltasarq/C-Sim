@@ -1,7 +1,9 @@
-using CSim.Core.Variables;
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.Types {
     using System.Linq;
+    
+    using Variables;
 
 	/// <summary>
 	/// Represents the pointer type.

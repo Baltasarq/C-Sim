@@ -1,14 +1,14 @@
-﻿namespace CSim.Ui.Drawer {
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
+namespace CSim.Ui.Drawer {
 	using System;
-    using System.Linq;
-    using System.Numerics;
 	using System.Drawing;
 	using System.Collections.Generic;
 
-	using CSim.Core;
-	using CSim.Core.Literals;
-	using CSim.Core.Types;
-	using CSim.Core.Variables;
+	using Core;
+	using Core.Literals;
+	using Core.Types;
+	using Core.Variables;
 
 
 	/// <summary>
@@ -61,7 +61,7 @@
 			}
 
 			// Determine other sizes
-			this.StrName = this.Variable.Name.Name;
+			this.StrName = this.Variable.Name.Text;
 			this.StrType = elementsType
 				+ "[" + this.ArrayVariable.Count
 				+ "] :" + elementsType.Size * this.ArrayVariable.Count
@@ -87,7 +87,7 @@
 	                	                
                     var box = new GrphBoxedArrayElement(
                                 Variable.CreateTempVariableForArrayElement(
-                                        this.ArrayVariable.Name.Name,
+                                        this.ArrayVariable.Name.Text,
                                         this.ArrayVariable.Address,
                                         (Ptr) this.ArrayVariable.Type,
                                         i ),

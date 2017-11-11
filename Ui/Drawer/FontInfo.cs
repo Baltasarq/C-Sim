@@ -1,7 +1,8 @@
-﻿using System;
-using System.Drawing;
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Ui.Drawer {
+    using System.Drawing;
+    
 	/// <summary>
 	/// Holds all the needed info about a font in order to calculate sizes.
 	/// </summary>

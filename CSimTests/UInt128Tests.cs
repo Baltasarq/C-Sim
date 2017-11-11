@@ -1,4 +1,5 @@
-﻿
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSimTests {
     using System;
 	using System.Numerics;

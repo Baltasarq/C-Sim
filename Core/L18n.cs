@@ -1,7 +1,9 @@
-using System.Globalization;
-using System.Collections.ObjectModel;
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
+    using System.Globalization;
+    using System.Collections.ObjectModel;
+
     /// <summary>
     /// L18n.
     /// Contains all strings needed in the app
@@ -70,7 +72,9 @@ namespace CSim.Core {
             ExcUnknownType,
 			///<summary>Exception: "unknown variable."</summary>
             ExcUnknownVble,
-			///<summary>Exception: "accessing at address."</summary>
+			///<summary>Exception: "error at runtime."</summary>
+            ExcRuntime,
+            ///<summary>Exception: "accessing at address."</summary>
             ErrAccessingAt,
 			///<summary>Exception: "reserving memory."</summary>
             ErrReserving,
@@ -151,6 +155,7 @@ namespace CSim.Core {
                 "type mismatch; expected type",
                 "unknown type",
                 "unknown variable",
+                "during run-time",
                 "accessing memory at",
                 "reserving memory for",
                 "char not allowed",
@@ -167,7 +172,7 @@ namespace CSim.Core {
                 "memory address incorrect or not in heap",
 				"expected begin of parameters with '('",
 				"expected end of parameters with ')'",
-				"{0}() does not exist with {1} arguments.",
+				"{0}() does not exist with {1} arguments, needs {2}.",
 				"param #{0}:'{1}' for {2}() should be of type {3}, instead of {4}",
 				"function {0}() was not found",
 				"expected number as in: 0, 0.0 or 0x0",
@@ -211,6 +216,7 @@ namespace CSim.Core {
                 "error de tipos; tipo incorrecto",
                 "tipo desconocido",
                 "variable desconocida",
+                "durante la ejecuc.",
                 "accediendo a la memoria en",
                 "reservando memoria para",
                 "char no permitido",
@@ -227,13 +233,13 @@ namespace CSim.Core {
                 "pos. de memoria incorrecta o no es del heap",
 				"se esperaba comienzo de argumentos con '('",
 				"se esperaba fin de argumentos con ')'",
-				"no existe {0}() con {1} argumentos.",
+				"no existe {0}() con {1} argumentos, necesita {2}.",
 				"el argumento #{0}:'{1}' de {2}() debe ser del tipo {3}, y no del tipo {4}",
 				"{0}() no encontrada",
 				"se esperaba un número como: 0, 0.0 o 0x0",
 				"no se puede acceder a void *",
 				"faltan argumentos en llamada a fn."
-			}
+    		}
 		);
 
         /// <summary>

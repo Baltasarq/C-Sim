@@ -1,5 +1,6 @@
-namespace CSim.Core.Functions {
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
+namespace CSim.Core.Functions {
 	/// <summary>
 	/// Represents functions which are provided by the interpreter.
 	/// </summary>

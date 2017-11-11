@@ -1,3 +1,4 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
     using System.Numerics;
@@ -15,6 +16,17 @@ namespace CSim.Core {
             :base( m )
 		{
 			this.Address = -1;
+        }
+        
+        /// <summary>
+        /// Initializes a new <see cref="T:Variable"/>.
+        /// </summary>
+        /// <param name="m">The <see cref="Machine"/> this vble is for.</param>
+        /// <param name="id">The id, as a string.</param>
+        /// <param name="t">The <see cref="AType"/> for the variable.</param>
+        public Variable(Machine m, string id, AType t)
+            :this( new Id( m, id ), t )
+        {
         }
 
 		/// <summary>
@@ -76,7 +88,7 @@ namespace CSim.Core {
         /// <returns>A <see cref="System.String"/> that represents the current <see cref="CSim.Core.Variable"/>.</returns>
         public override string ToString()
         {
-            return this.Type + " " + this.Name.Name;
+            return this.Type + " " + this.Name.Text;
         }        
 
         /// <summary>
@@ -158,7 +170,7 @@ namespace CSim.Core {
             
             toret.Address = arrayAddress + ( elementType.Size * pos );
             
-            toret.Name.Name += "_" + arrayId + "_" + pos;
+            toret.Name.Text += "_" + arrayId + "_" + pos;
             return toret;
         }
         

@@ -1,3 +1,4 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSimTests {
     using System.Numerics;
@@ -68,6 +69,109 @@ namespace CSimTests {
             Assert.AreEqual( vble_y.Address, int_ptr2.LiteralValue.ToBigInteger() );
             Assert.AreEqual( vble_y.Address, int_ptr3.LiteralValue.ToBigInteger() );
             Assert.AreEqual( 42.ToBigInteger(), vble_y.LiteralValue.ToBigInteger() );
+        }
+        
+        [Test]
+        public void TestPtrPtrExpression()
+        {
+            PtrVariable int_ptr = null;
+            PtrVariable int_ptrptr = null;
+            PtrVariable int_ptrptrptr = null;
+            Variable vble_x = null;
+            Variable vble_y = null;
+            
+            Assert.DoesNotThrow( () => {
+                vble_x = this.machine.Execute( @"x = -1" );
+                vble_y = this.machine.Execute( @"int xx = -1" );
+                this.machine.Execute( @"ptrInt = &x" );
+                this.machine.Execute( @"int ** ptrptrInt = &ptrInt" );
+                this.machine.Execute( @"int *** ptrptrptrInt = &ptrptrInt" );
+                int_ptrptr = (PtrVariable) this.machine.TDS.LookUp( @"ptrptrInt" );
+                int_ptr = (PtrVariable) this.machine.TDS.LookUp( @"ptrInt" );
+                int_ptrptrptr = (PtrVariable) this.machine.TDS.LookUp( @"ptrptrptrInt" );
+            });
+            
+            int addrX = (int) vble_x.Address;
+            int addrPtr = (int) int_ptr.Address;
+            int addrPtrPtr = (int) int_ptrptr.Address;
+            
+            int valPtr = (int) int_ptr.LiteralValue.ToBigInteger();
+            int valPtrPtr = (int) int_ptrptr.LiteralValue.ToBigInteger();
+            int valPtrPtrPtr = (int) int_ptrptrptr.LiteralValue.ToBigInteger();
+            
+            Assert.AreEqual( addrX, valPtr );
+            Assert.AreEqual( addrPtr, valPtrPtr );
+            Assert.AreEqual( addrPtrPtr, valPtrPtrPtr );
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"*ptrInt = 42" );
+            });
+            
+            addrX = (int) vble_x.Address;
+            addrPtr = (int) int_ptr.Address;
+            addrPtrPtr = (int) int_ptrptr.Address;
+            
+            valPtr = (int) int_ptr.LiteralValue.ToBigInteger();
+            valPtrPtr = (int) int_ptrptr.LiteralValue.ToBigInteger();
+            valPtrPtrPtr = (int) int_ptrptrptr.LiteralValue.ToBigInteger();
+            
+            Assert.AreEqual( addrX, valPtr );
+            Assert.AreEqual( addrPtr, valPtrPtr );
+            Assert.AreEqual( addrPtrPtr, valPtrPtrPtr );
+            Assert.AreEqual( 42, (int) vble_x.LiteralValue.ToBigInteger() );            
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"**ptrptrInt = 84" );
+            });
+            
+            addrX = (int) vble_x.Address;
+            addrPtr = (int) int_ptr.Address;
+            addrPtrPtr = (int) int_ptrptr.Address;
+            
+            valPtr = (int) int_ptr.LiteralValue.ToBigInteger();
+            valPtrPtr = (int) int_ptrptr.LiteralValue.ToBigInteger();
+            valPtrPtrPtr = (int) int_ptrptrptr.LiteralValue.ToBigInteger();  
+                      
+            Assert.AreEqual( addrX, valPtr );
+            Assert.AreEqual( addrPtr, valPtrPtr );
+            Assert.AreEqual( addrPtrPtr, valPtrPtrPtr );
+            Assert.AreEqual( 84, (int) vble_x.LiteralValue.ToBigInteger() );
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"***ptrptrptrInt = 96" );
+            });
+            
+            addrX = (int) vble_x.Address;
+            addrPtr = (int) int_ptr.Address;
+            addrPtrPtr = (int) int_ptrptr.Address;
+            
+            valPtr = (int) int_ptr.LiteralValue.ToBigInteger();
+            valPtrPtr = (int) int_ptrptr.LiteralValue.ToBigInteger();
+            valPtrPtrPtr = (int) int_ptrptrptr.LiteralValue.ToBigInteger();            
+            
+            Assert.AreEqual( addrX, valPtr );
+            Assert.AreEqual( addrPtr, valPtrPtr );
+            Assert.AreEqual( addrPtrPtr, valPtrPtrPtr );
+            Assert.AreEqual( 96, (int) vble_x.LiteralValue.ToBigInteger() );
+            
+            Assert.DoesNotThrow( () => {
+                this.machine.Execute( @"ptrInt = &xx" );
+                this.machine.Execute( @"***ptrptrptrInt = 128" );
+            });
+            
+            int addrY = (int) vble_y.Address;
+            addrPtr = (int) int_ptr.Address;
+            addrPtrPtr = (int) int_ptrptr.Address;
+            
+            valPtr = (int) int_ptr.LiteralValue.ToBigInteger();
+            valPtrPtr = (int) int_ptrptr.LiteralValue.ToBigInteger();
+            valPtrPtrPtr = (int) int_ptrptrptr.LiteralValue.ToBigInteger();            
+            
+            Assert.AreEqual( addrY, valPtr );
+            Assert.AreEqual( addrPtr, valPtrPtr );
+            Assert.AreEqual( addrPtrPtr, valPtrPtrPtr );
+            Assert.AreEqual( 96, (int) vble_x.LiteralValue.ToBigInteger() );
+            Assert.AreEqual( 128, (int) vble_y.LiteralValue.ToBigInteger() );            
         }
         
         [Test]

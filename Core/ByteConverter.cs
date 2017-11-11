@@ -1,28 +1,4 @@
-﻿//
-// ByteConverter.cs
-//
-// Author:
-//       baltasarq <baltasarq@gmail.com>
-//
-// Copyright (c) 2017 baltasarq
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
     using Convert = System.Convert;
@@ -30,8 +6,9 @@ namespace CSim.Core {
     using BitConverter = System.BitConverter;
     using System.Numerics;
     
-	using Core.Types;
-    using Core.Native;
+	using Types;
+    using Native;
+    using Exceptions;
 
 	/// <summary>
 	/// Byte converter.
@@ -162,7 +139,7 @@ namespace CSim.Core {
             BigInteger toret = 0;
             
             if ( data.Length != length ) {
-				throw new EngineException(
+				throw new RuntimeException(
                             "incompatible raw bytes length with passed length" );
             }
             
@@ -206,7 +183,7 @@ namespace CSim.Core {
             BigInteger toret = 0;
             
             if ( data.Length != length ) {
-                throw new EngineException(
+                throw new RuntimeException(
                             "incompatible raw bytes length with passed length" );
             }
             
@@ -334,7 +311,9 @@ namespace CSim.Core {
             }
             
             if ( toret == null ) {
-                throw new EngineException( "asked for missing conversion, int" + length * 8 );
+                throw new RuntimeException(
+                                "asked for missing conversion, int"
+                                + length * 8 );
             }
             
 			if ( BitConverter.IsLittleEndian != this.Machine.IsLittleEndian )
@@ -377,7 +356,9 @@ namespace CSim.Core {
             }
             
             if ( toret == null ) {
-                throw new EngineException( "asked for missing conversion, int" + length * 8 );
+                throw new RuntimeException(
+                            "asked for missing conversion, int"
+                            + length * 8 );
             }
             
             if ( BitConverter.IsLittleEndian != this.Machine.IsLittleEndian )
@@ -597,7 +578,7 @@ namespace CSim.Core {
     
     			// Chk
     			if ( toret == null ) {
-    				throw new EngineException( "inconvertible type: " + x );
+    				throw new RuntimeException( "inconvertible type: " + x );
     			}
             }
 

@@ -1,8 +1,8 @@
-﻿
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Core.Opcodes {
     using System.Numerics;
     
-	using CSim.Core.Variables;
 	using CSim.Core.Types;
 	using CSim.Core.Exceptions;
 
@@ -14,10 +14,14 @@ namespace CSim.Core.Opcodes {
 		public const byte OpcodeValue = 0xE0;
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="CSim.Core.Opcodes.AccessOpcode"/> class.
+		/// Initializes a new <see cref="T:AccessOpcode"/>.
 		/// </summary>
-		/// <param name="m">The <see cref="Machine"/> this opcode will be executed in.</param>
-		/// <param name="levels">Number of indirection levels, i.e. **x, *X or ***x</param>
+		/// <param name="m">
+        /// The <see cref="Machine"/> this opcode will be executed in.
+        /// </param>
+		/// <param name="levels">
+        /// Number of indirection levels, i.e. 1: *x, 2: **x, 3:***x...
+        /// </param>
 		public AccessOpcode(Machine m, int levels)
 			:base(m)
 		{
@@ -31,10 +35,13 @@ namespace CSim.Core.Opcodes {
 		{
             // Check arguments in stack
             if ( this.Machine.ExecutionStack.Count < 1 ) {
-                throw new EngineException( L18n.Get( L18n.Id.ErrMissingArguments ) );
+                throw new RuntimeException( L18n.Get( L18n.Id.ErrMissingArguments ) );
             }
             
 			Variable vble = this.Machine.ExecutionStack.Pop().SolveToVariable();
+            Variable orgVble = vble;
+System.Console.WriteLine( "Accessing: " + vble );
+System.Console.WriteLine( "\tIndirections: " + this.Levels );
 
 			if ( vble != null ) {
 				for(int i = 0; i < this.Levels; ++i) {
@@ -46,16 +53,20 @@ namespace CSim.Core.Opcodes {
 						vble = Variable.CreateTempVariable(
                                                     vbleType.DerreferencedType );
 						vble.Address = address;
+System.Console.WriteLine( "\tStep: " + vble );
 					}
 					else {
-						throw new TypeMismatchException( vble.ToString() );
+						throw new TypeMismatchException(
+                            this.Machine.TypeSystem.GetPtrType( vble.Type, this.Levels )
+                            + " != " + orgVble.Type
+                            + " (" + vble + ")" );
 					}
 				}
 
-				// Store in the temp vble and end
+				// Store the temp vble and end
 				this.Machine.ExecutionStack.Push( vble );
 			} else {
-				throw new EngineException( "invalid rvalue" );
+				throw new RuntimeException( "invalid rvalue" );
 			}
 
 			return;

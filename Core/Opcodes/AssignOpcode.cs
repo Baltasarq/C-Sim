@@ -1,7 +1,7 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.Opcodes {
 	using CSim.Core;
-	using CSim.Core.Types;
 	using CSim.Core.Variables;
 	using CSim.Core.Exceptions;
 	using CSim.Core.Literals;
@@ -28,7 +28,7 @@ namespace CSim.Core.Opcodes {
 			if ( rvalue.IsTemp() ) {
 				throw new UnknownVbleException(
                     string.Format( "{0} ({1}) == {2}",
-                    rvalue.Name.Name,
+                    rvalue.Name.Text,
 					new IntLiteral( this.Machine, rvalue.Address )
                                                             .ToPrettyNumber(),
                     rvalue.LiteralValue ) );
@@ -63,13 +63,13 @@ namespace CSim.Core.Opcodes {
 
 			// Prepare assign parts
 			if ( lvalueVble.IsTemp() ) {
-				throw new UnknownVbleException( "temp vble: " + lvalueVble.Name.Name + "??" );
+				throw new UnknownVbleException( "temp vble: " + lvalueVble.Name.Text + "??" );
 			}
 
             // Chk types
             if ( !lvalueVble.Type.IsCompatibleWith( rvalueVble.Type ) ) {
                 throw new TypeMismatchException(
-                        rvalueVble.Name.Name + "? : "
+                        rvalueVble.Name.Text + "? : "
                         + rvalueVble.Type + " != "
                         + lvalueVble.Type
                     );

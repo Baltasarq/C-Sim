@@ -1,7 +1,7 @@
-﻿
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Ui.Drawer {
 	using System.Drawing;
-    using System.Linq;
     using System.Text;
 	using System.Collections.Generic;
 

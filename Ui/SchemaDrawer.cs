@@ -1,13 +1,14 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Ui {
     using System.Numerics;
 	using System.Drawing;
     using System.Collections.Generic;
 
-	using CSim.Core;
-	using CSim.Core.Variables;
-	using CSim.Core.Types;
-	using CSim.Ui.Drawer;
+	using Core;
+	using Core.Variables;
+	using Core.Types;
+	using Ui.Drawer;
 
 	/// <summary>
 	/// Draws the schema of the variables present in memory
@@ -71,6 +72,10 @@ namespace CSim.Ui {
 
 			// Classify by type
 			foreach (Variable v in vbles) {
+                if ( v.IsTemp() ) {
+                    continue;
+                }
+            
                 if ( v is RefVariable ) {
                     pointersByLevel[ 1 ].Add( v );
                 }

@@ -1,9 +1,11 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
 	using System.Reflection;
 	using System.Collections.ObjectModel;
 	using System.Collections.Generic;
-	using CSim.Core.Functions;
+    
+	using Functions;
 
 	/// <summary>
 	/// Represents the standard library for the machine.
@@ -30,7 +32,10 @@ namespace CSim.Core {
                     MethodInfo mthInfo = t.GetMethod( "Get" );
 
                     if ( mthInfo != null ) {
-    					this.fns.Add( (EmbeddedFunction) mthInfo.Invoke( null, new object[] { this.Machine } ) );
+    					this.fns.Add(
+                            (EmbeddedFunction) mthInfo.Invoke(
+		                            null,
+		                            new object[] { this.Machine } ) );
                     }
 				}
 			}

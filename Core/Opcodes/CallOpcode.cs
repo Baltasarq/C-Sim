@@ -1,3 +1,4 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.Opcodes {
     using CSim.Core.Exceptions;
@@ -18,7 +19,8 @@ namespace CSim.Core.Opcodes {
 		/// </summary>
 		/// <param name="m">The <see cref="Machine"/>.</param>
 		/// <param name="id">The identifier of the function to call, as a string.</param>
-		public CallOpcode(Machine m, string id)
+        /// <param name="numArgs">The number of parameters for this function call.</param>
+		public CallOpcode(Machine m, string id, int numArgs)
             : base( m )
 		{
             if ( id != null ) {
@@ -29,7 +31,8 @@ namespace CSim.Core.Opcodes {
 				throw new System.ArgumentException( "void id in fn. call" );
 			}
 
-			this.id = id;
+			this.Id = id;
+            this.NumArgs = numArgs;
 		}
 
 		/// <summary>
@@ -38,12 +41,28 @@ namespace CSim.Core.Opcodes {
 		public override void Execute()
 		{
 			Function f = this.Function;
+            int numArgs = f.FormalParams.Count;
+            
+            // Decide how many parameters
+            if ( numArgs > 0
+              && f.FormalParams[ 0 ].Name.Text == "..." )
+            {
+                numArgs = this.NumArgs;
+            }
+            else
+            if ( this.NumArgs != numArgs ) {
+                throw new RuntimeException(
+                    string.Format(
+                        L18n.Get( L18n.Id.ErrParamCount ),
+                        this.Id, this.NumArgs, f.FormalParams.Count )
+                );
+            }
 
 			// Take params
-			RValue[] args = new RValue[ f.FormalParams.Count ];
-
-			if ( this.Machine.ExecutionStack.Count < args.Length ) {
-				throw new EngineException(
+			RValue[] args = new RValue[ numArgs ];
+            
+			if ( this.Machine.ExecutionStack.Count < numArgs ) {
+				throw new RuntimeException(
 					L18n.Get( L18n.Id.ErrMissingArguments ) + ": " + this.Id
 				);
 			}
@@ -53,22 +72,23 @@ namespace CSim.Core.Opcodes {
 			}
 
 			// Check types
-			for(int i = 0; i < args.Length; ++i) {
-                var t1 = args[ i ].Type;
-				var t2 = f.FormalParams[ i ].Type;
-
-				if ( !t1.IsCompatibleWith( t2 ) ) {
-					throw new TypeMismatchException(
-						string.Format( L18n.Get( L18n.Id.ErrParamType ),
-							i,
-							f.FormalParams[ i ].Name.Name,
-							id,
-							t2.ToString(),
-							t1.ToString()
-						));
+            if ( this.NumArgs == f.FormalParams.Count ) {
+				for(int i = 0; i < args.Length; ++i) {
+	                var t1 = args[ i ].Type;
+					var t2 = f.FormalParams[ i ].Type;
+	
+					if ( !t1.IsCompatibleWith( t2 ) ) {
+						throw new TypeMismatchException(
+							string.Format( L18n.Get( L18n.Id.ErrParamType ),
+								i,
+								f.FormalParams[ i ].Name.Text,
+								this.Id,
+								t2.ToString(),
+								t1.ToString()
+							));
+					}
 				}
-			}
-
+            }
 
 			// Execute
 			f.Execute( args );
@@ -86,21 +106,11 @@ namespace CSim.Core.Opcodes {
                     if ( fn == null ) {
                         throw new InvalidIdException(
                                     L18n.Get( L18n.Id.ErrFunctionNotFound )
-                                    + ": " + this.id );
+                                    + ": " + this.Id );
                     }
                 }
                 
                 return this.fn;
-            }
-        }
-        
-        /// <summary>
-        /// Gets the identifier of the function to call.
-        /// </summary>
-        /// <value>The identifier, as a string.</value>
-        public string Id {
-            get {
-                return this.id;
             }
         }
         
@@ -116,8 +126,23 @@ namespace CSim.Core.Opcodes {
                             this.Id,
                             this.Function.FormalParams.Count );
         }
+        
+        /// <summary>
+        /// Gets the identifier of the function to call.
+        /// </summary>
+        /// <value>The identifier, as a string.</value>
+        public string Id {
+            get; private set;
+        }
+        
+        /// <summary>
+        /// Gets the number of arguments that were pushed into the stack.
+        /// </summary>
+        /// <value>The number of arguments, as an int.</value>
+        public int NumArgs {
+            get; private set;
+        }
 
-		private string id;
         private Function fn;
 	}
 }

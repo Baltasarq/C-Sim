@@ -1,9 +1,8 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.Opcodes {
-	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
-    using CSim.Core.Types;
 
 	/// <summary>
 	/// The opcode for additions: '+'
@@ -28,7 +27,7 @@ namespace CSim.Core.Opcodes {
 		{
 			// Check arguments in stack
 			if ( this.Machine.ExecutionStack.Count < 2 ) {
-				throw new EngineException( L18n.Get( L18n.Id.ErrMissingArguments ) );
+				throw new RuntimeException( L18n.Get( L18n.Id.ErrMissingArguments ) );
 			}
 
 			// Take ops

@@ -1,9 +1,20 @@
+// Vbles
 int x = 55
 int y = 66
-int **v = new int*[6]
+
+// v[0] -> x, v[1] -> y
+int **v = new int*[2]
 v[0]=&x
 v[1]=&y
+
+// pv1 -> v[1] -> y
 int ** pv1 = &v[1]
 printf(**v)
 printf(**pv1)
 printf(*v[1])
+
+// Inc
+**v = **v + 1
+*v[ 0 ] = *v[ 0 ] + 1
+**pv1 = **pv1 + 1
+*v[ 1 ] = *v[ 1 ] + 1

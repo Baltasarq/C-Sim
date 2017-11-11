@@ -1,6 +1,7 @@
-﻿namespace CSim.Core.FunctionLibrary {
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
+namespace CSim.Core.FunctionLibrary {
 	using CSim.Core.Functions;
-	using CSim.Core.Variables;
 	using CSim.Core.Literals;
 	using CSim.Core.Exceptions;
     using CSim.Core.Types;

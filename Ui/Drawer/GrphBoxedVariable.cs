@@ -1,11 +1,11 @@
-﻿
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Ui.Drawer {
-    using System.Numerics;
 	using System.Drawing;
 	using System.Collections.Generic;
 
-	using CSim.Core;
-	using CSim.Core.Variables;
+	using Core;
+	using Core.Variables;
 
 	/// <summary>
 	/// Represents a variable drawn in the schema.

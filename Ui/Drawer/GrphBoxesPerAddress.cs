@@ -1,4 +1,6 @@
-﻿namespace CSim.Ui.Drawer {
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
+namespace CSim.Ui.Drawer {
     using System.Linq;
     using System.Numerics;
     using System.Collections.Generic;
@@ -28,7 +30,7 @@
             List<GrphBoxedVariable> l;
                         
             if ( this.boxes.TryGetValue( address, out l ) ) {
-                toret =  !( l.TrueForAll( (box) => box.Variable.Name.Name != id ) );
+                toret =  !( l.TrueForAll( (box) => box.Variable.Name.Text != id ) );
             }
             
             return toret;
@@ -56,7 +58,7 @@
             BigInteger address = box.Variable.Address;
             List<GrphBoxedVariable> l;
                 
-            if ( !this.IsBoxContainedWith( box.Variable.Name.Name, address ) ) {
+            if ( !this.IsBoxContainedWith( box.Variable.Name.Text, address ) ) {
 	            if ( this.boxes.TryGetValue( address, out l) ) {
 	                l.Add( box );
 	            } else {

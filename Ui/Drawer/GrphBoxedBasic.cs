@@ -1,11 +1,12 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Ui.Drawer {
 	using System;
 	using System.Drawing;
 
-	using CSim.Core;
-	using CSim.Core.Literals;
-	using CSim.Core.Variables;
-
+	using Core;
+	using Core.Literals;
+	using Core.Variables;
 
 	/// <summary>
 	/// Represents a variable shown in the img window.
@@ -36,7 +37,7 @@ namespace CSim.Ui.Drawer {
 			    this.StrValue = this.Variable.LiteralValue.ToPrettyNumber();
             }
             
-			this.StrName = this.Variable.Name.Name;
+			this.StrName = this.Variable.Name.Text;
 			this.StrType = this.Variable.Type
 				+ " :" + this.Variable.Type.Size
 				+ " ["

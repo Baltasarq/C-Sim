@@ -1,5 +1,8 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core {
+    using Exceptions;
+
 	/// <summary>
 	/// Represents the opcodes of the virtual machine.
 	/// </summary>
@@ -26,15 +29,15 @@ namespace CSim.Core {
         {
             // Check ops
             if ( op1 == null ) {
-                throw new EngineException( "op1 == null!!" );
+                throw new TypeMismatchException( "op1 == null!!" );
             }
             
             if ( op2 == null ) {
-                throw new EngineException( "op2 == null!!" );
+                throw new TypeMismatchException( "op2 == null!!" );
             }
             
             if ( !op1.Type.IsCompatibleWith( op2.Type ) ) {
-                throw new Exceptions.TypeMismatchException(
+                throw new TypeMismatchException(
                                         ": " + op1.Type + " != " + op2.Type );
             }
         }

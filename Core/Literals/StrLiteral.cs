@@ -1,6 +1,9 @@
-﻿
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
+
 namespace CSim.Core.Literals {
     using System.Numerics;
+    
+    using Exceptions;
     
     /// <summary>
     /// Literals of type char*.
@@ -53,7 +56,7 @@ namespace CSim.Core.Literals {
         /// <exception cref="EngineException">Always.</exception>
         public override BigInteger GetValueAsInteger()
         {
-            throw new EngineException( "cannot transform literal to int" );
+            throw new RuntimeException( "cannot transform literal to int" );
         }
 
 		/// <summary>

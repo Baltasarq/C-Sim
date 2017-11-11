@@ -1,7 +1,11 @@
+﻿// CSim - (c) 2014-17 Baltasar MIT License <jbgarcia@uvigo.es>
 
 namespace CSim.Core.FunctionLibrary {
-	using CSim.Core.Functions;
-    using CSim.Core.Types;
+	using Functions;
+    using Literals;
+    using Types;
+    
+    using System;
 
 	/// <summary>
 	/// This is the print function.
@@ -18,7 +22,7 @@ namespace CSim.Core.FunctionLibrary {
 		/// This is not intended to be used directly.
 		/// </summary>
 		private Printf(Machine m)
-			: base( m, Name, null, printFormalParams )
+			: base( m, Name, m.TypeSystem.GetIntType(), printFormalParams )
 		{
 		}
 
@@ -28,8 +32,11 @@ namespace CSim.Core.FunctionLibrary {
 		public static Printf Get(Machine m)
 		{
 			if ( instance == null ) {
+                var ellipsis_id = new Id( m, @"x" );
+                ellipsis_id.SetIdWithoutChecks( "..." );
+                
 				printFormalParams = new Variable[] {
-                    new Variable( new Id( m, @"x" ), Any.Get( m ) )
+                    new Variable( ellipsis_id, Any.Get( m ) )
 				};
 
 				instance = new Printf( m );
@@ -45,10 +52,29 @@ namespace CSim.Core.FunctionLibrary {
 		/// <param name="realParams">The parameters.</param>
 		public override void Execute(RValue[] realParams)
 		{
-			this.Machine.ExecutionStack.Push( realParams[ 0 ].SolveToVariable() );
-		}
+            if ( realParams.Length > 0 ) {
+	            var param0 = realParams[ 0 ].SolveToVariable();
+	            AType pchar_t = this.Machine.TypeSystem.GetPCharType();
+                string data;
+	            
+	            if ( param0.Type == pchar_t ) {
+                    var prms = new RValue[ Math.Max( 0, realParams.Length - 1 ) ];
+                    Array.Copy( realParams, 1, prms, 0, prms.Length );
+                    data = SPrintf.FormatParams( param0, prms );
+	            } else {
+                    data = param0.LiteralValue.Value.ToString();
+	            }
 
-		private static Printf instance = null;
+                this.Machine.ExecutionStack.Push(
+                    new IntLiteral( this.Machine, data.Length ).SolveToVariable()
+                );
+                this.Machine.Outputter( data );
+            }
+            
+            return;
+		}
+        
+		private static Printf instance;
 		private static Variable[] printFormalParams;
 	}
 }

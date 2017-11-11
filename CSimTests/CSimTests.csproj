@@ -38,7 +38,6 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TypeTests.cs" />
     <Compile Include="VbleTests.cs" />
     <Compile Include="ParserTests.cs" />
