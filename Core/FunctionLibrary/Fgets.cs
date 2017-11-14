@@ -91,7 +91,6 @@ namespace CSim.Core.FunctionLibrary {
                 input += '\0';
                 this.Machine.Memory.Write( address,
                                             Encoding.ASCII.GetBytes( input ) );
-                this.Machine.Outputter( input + "\n" );
             } else {
                 address = 0;
             }

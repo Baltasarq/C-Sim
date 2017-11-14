@@ -184,6 +184,7 @@
     <Compile Include="Ui\InputDialog.cs" />
     <Compile Include="Core\FunctionLibrary\SPrintf.cs" />
     <Compile Include="Core\FunctionLibrary\Fgets.cs" />
+    <Compile Include="Ui\REL.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

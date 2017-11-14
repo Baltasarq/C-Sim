@@ -36,11 +36,11 @@ namespace CSim.Ui {
 		/// <summary>
 		/// Initializes a new <see cref="MainWindow"/>.
 		/// </summary>
-        public MainWindow()
+        public MainWindow(Machine m)
         {
-			this.machine = new Machine(
-                            inputter: (msg) => this.DoUserInput( msg ),
-                            outputter: (string s) => this.rtbOutput.Text += s);
+            this.machine = m;
+			this.machine.Inputter = (msg) => this.DoUserInput( msg );
+            this.machine.Outputter = (string s) => this.rtbOutput.Text += s;
 			this.ReadConfiguration();
 
             // Prepare UI
@@ -415,7 +415,7 @@ namespace CSim.Ui {
 			this.DoReset( MemoryManager.ResetType.Zero );
 			this.UpdateView();
 			this.DoSwitchToDrawing();
-			this.PrintOutput( AppInfo.Name + " v" + AppInfo.Version + '\n' );
+			this.PrintOutput( AppInfo.Header );
 		}
 
 		private void DoOpen()
@@ -486,6 +486,7 @@ namespace CSim.Ui {
             
             if ( dlgInput.ShowDialog( this ) == DialogResult.OK ) {
                 toret = dlgInput.Input;
+                this.PrintOutput( toret );
             }
             
             return toret;

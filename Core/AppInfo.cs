@@ -14,5 +14,7 @@ namespace CSim.Core {
 		public const string Web = "http://webs.uvigo.es/jbgarcia/prys/csim/";
 		/// <summary>Extension for files created by this app.</summary>
 		public const string FileExt = "csim";
+        ///<summary>The header to show at the top of output.</summary>
+        public static readonly string Header = Name + " v" + Version + '\n';
     }
 }

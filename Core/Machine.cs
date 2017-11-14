@@ -220,7 +220,7 @@ namespace CSim.Core {
         /// with a explanatory message to the user.
         /// </value>
         public Func<string, string> Inputter {
-            get; private set;
+            get; set;
         }
         
         /// <summary>
@@ -231,7 +231,7 @@ namespace CSim.Core {
         /// accepting a string to be written to standard output.
         /// </value>
         public Action<string> Outputter {
-            get; private set;
+            get; set;
         }
                 
         /// <summary>
