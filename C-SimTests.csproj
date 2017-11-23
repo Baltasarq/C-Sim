@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{31A54A8F-5CD8-436E-8F1A-CA9CEA267F56}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>CSimTests</RootNamespace>
+    <AssemblyName>C-SimTests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework">
+      <HintPath>C-Sim\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="C-SimTests\ArrayTests.cs" />
+    <Compile Include="C-SimTests\FunctionTests.cs" />
+    <Compile Include="C-SimTests\NumericTests.cs" />
+    <Compile Include="C-SimTests\ParserTests.cs" />
+    <Compile Include="C-SimTests\TypeTests.cs" />
+    <Compile Include="C-SimTests\UInt128Tests.cs" />
+    <Compile Include="C-SimTests\VbleTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C-Sim\C-Sim.csproj">
+      <Project>{7301AFF5-913F-46D4-A2AE-878100C67B5A}</Project>
+      <Name>C-Sim</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>

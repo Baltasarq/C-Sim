@@ -1,4 +1,6 @@
 *.userprefs
+*.user
+test-results/
 packages/
 packages.config
 StyleCop*

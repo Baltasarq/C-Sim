@@ -13,4 +13,4 @@ You can start from the beginning with a given file. You can also
 force a random init of memory. Invoke **CSim** with the *--help* 
 argument to show the available options.
 
-    $ mono csim.exe --help
+    $ mono c-sim.exe --help
