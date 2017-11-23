@@ -12,6 +12,8 @@ namespace CSim.Ui {
     public class PPal {
         /// <summary>Start for all option args.</summary>
         public const string ArgPrefix = "--";
+        /// <summary>Argument for showing the version.</summary>
+        public const string ArgVersion = "version";
         /// <summary>Argument for showing help.</summary>
         public const string ArgHelp = "help";
         /// <summary>Arg for offering a gui.</summary>
@@ -25,6 +27,7 @@ namespace CSim.Ui {
         /// <summary>Contents for help.</summary>
         public const string Help = "c-sim [options] <CSim-file>"
                 + "\n\t" + ArgPrefix + ArgHelp + "\t\tThis help."
+                + "\n\t" + ArgPrefix + ArgVersion + "\tCurrent version."
                 + "\n\t" + ArgPrefix + ArgGui + "\t\tStart with gui (default)"
                 + "\n\t" + ArgPrefix + ArgNoGui + "\tStart without gui"
                 + "\n\t" + ArgPrefix + ArgRndReset + "\tReset random reset"
@@ -95,7 +98,9 @@ namespace CSim.Ui {
                 if ( arg.StartsWith( ArgPrefix, InvCulture ) ) {
                     arg = arg.Remove( 0, 2 );
                     
-                    if ( arg == ArgHelp ) {
+                    if ( arg == ArgHelp
+                      || arg == ArgVersion )
+                    {
                         cfg.ShowHelp = true;
                         break;
                     }
