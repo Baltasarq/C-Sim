@@ -113,7 +113,7 @@ namespace CSim.Core {
                 }
                 else {
                     char currentChar = Lexer.GetCurrentChar();
-                    string msg = L18n.Get( L18n.Id.ErrUnexpected ) + ": '";
+                    string msg = L10n.Get( L10n.Id.ErrUnexpected ) + ": '";
                     
                     if ( currentChar == 0 ) {
                         msg += "'";
@@ -484,7 +484,7 @@ namespace CSim.Core {
                     }
                     else {
                         throw new ParsingException(
-                            L18n.Get( L18n.Id.ErrExpected ) + ": " + "]" );
+                            L10n.Get( L10n.Id.ErrExpected ) + ": " + "]" );
                     }
                 }
 
@@ -495,12 +495,12 @@ namespace CSim.Core {
 					this.Opcodes.Add( new CallOpcode( this.Machine, Free.Name, 1 ) );
                 } else {
                     throw new ParsingException(
-                        L18n.Get( L18n.Id.ErrExpected ) + ": id." );
+                        L10n.Get( L10n.Id.ErrExpected ) + ": id." );
                 }
             }
             else {
                 throw new ParsingException(
-                    L18n.Get( L18n.Id.ErrExpected ) + ": " + Reserved.OpDelete
+                    L10n.Get( L10n.Id.ErrExpected ) + ": " + Reserved.OpDelete
                 );
             }
 
@@ -550,7 +550,7 @@ namespace CSim.Core {
 				}
 			} else {
                 throw new ParsingException(
-                    L18n.Get( L18n.Id.ErrExpected ) + ": " + Reserved.OpNew );
+                    L10n.Get( L10n.Id.ErrExpected ) + ": " + Reserved.OpNew );
 			}
 
 			return;
@@ -577,12 +577,12 @@ namespace CSim.Core {
 					this.Opcodes.Add( new AssignOpcode( this.Machine ) );
 				} else {
                     throw new RuntimeException(
-                        L18n.Get( L18n.Id.ErrExpected ) + ": '='" );
+                        L10n.Get( L10n.Id.ErrExpected ) + ": '='" );
 				}
 			} else {
                 throw new ParsingException(
-                    L18n.Get( L18n.Id.ErrUnexpected )
-                                    + " " + L18n.Get( L18n.Id.ErrEOL ) );
+                    L10n.Get( L10n.Id.ErrUnexpected )
+                                    + " " + L10n.Get( L10n.Id.ErrEOL ) );
 			}
 
 			return;
@@ -619,12 +619,12 @@ namespace CSim.Core {
 					this.ParseAssign();
 				} else {
                         throw new ParsingException(
-                            L18n.Get( L18n.Id.ErrExpected )
-                            + " " + L18n.Get( L18n.Id.ErrEOL ) );
+                            L10n.Get( L10n.Id.ErrExpected )
+                            + " " + L10n.Get( L10n.Id.ErrEOL ) );
                 }
 			} else {
                 if ( t is Ref ) {
-                    throw new ParsingException( L18n.Get( L18n.Id.ErrRefInit ) );
+                    throw new ParsingException( L10n.Get( L10n.Id.ErrRefInit ) );
                 }
             }
 
@@ -663,7 +663,7 @@ namespace CSim.Core {
                             else
                             if ( Lexer.GetCurrentChar() != ')' ) {
                                 throw new ParsingException(
-                                    L18n.Get( L18n.Id.ErrExpected )
+                                    L10n.Get( L10n.Id.ErrExpected )
                                         + ": ',', ')'" 
                                 );
                             }
@@ -672,14 +672,14 @@ namespace CSim.Core {
                     }
 
                     if ( Lexer.GetCurrentChar() != ')' ) {
-                        throw new ParsingException( L18n.Get( L18n.Id.ErrExpectedParametersEnd ) );
+                        throw new ParsingException( L10n.Get( L10n.Id.ErrExpectedParametersEnd ) );
                     }
                      
                     Lexer.Advance();
                     Lexer.SkipSpaces();
                     this.Opcodes.Add( new CallOpcode( this.Machine, id, numArgs ) );
 				} else {
-					throw new ParsingException(L18n.Get(  L18n.Id.ErrExpectedParametersBegin ) );
+					throw new ParsingException(L10n.Get(  L10n.Id.ErrExpectedParametersBegin ) );
 				}
 			}
 

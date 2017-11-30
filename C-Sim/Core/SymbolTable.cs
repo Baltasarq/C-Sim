@@ -266,7 +266,7 @@ namespace CSim.Core {
             // Re-check
             if ( toret < 0 ) {
                 throw new ExhaustedMemoryException(
-                    L18n.Get( L18n.Id.ErrReserving ) + ": " + v.Name );
+                    L10n.Get( L10n.Id.ErrReserving ) + ": " + v.Name );
             }
 
             return toret;
@@ -297,7 +297,7 @@ namespace CSim.Core {
             // Re-check
             if ( toret < 0 ) {
                 throw new ExhaustedMemoryException( 
-                    L18n.Get( L18n.Id.ErrReserving ) + ": " + v.Name );
+                    L10n.Get( L10n.Id.ErrReserving ) + ": " + v.Name );
             }
 
             return toret;
@@ -470,7 +470,7 @@ namespace CSim.Core {
             // Vble found?
             if ( !removed ) {
                 throw new IncorrectAddressException(
-                    L18n.Get( L18n.Id.ErrMemoryNotInHeap )
+                    L10n.Get( L10n.Id.ErrMemoryNotInHeap )
                     + ": " + new IntLiteral( this.Machine, address ).ToPrettyNumber()
                     );
             }

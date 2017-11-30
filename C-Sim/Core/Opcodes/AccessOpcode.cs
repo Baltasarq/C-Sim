@@ -35,7 +35,7 @@ namespace CSim.Core.Opcodes {
 		{
             // Check arguments in stack
             if ( this.Machine.ExecutionStack.Count < 1 ) {
-                throw new RuntimeException( L18n.Get( L18n.Id.ErrMissingArguments ) );
+                throw new RuntimeException( L10n.Get( L10n.Id.ErrMissingArguments ) );
             }
             
 			Variable vble = this.Machine.ExecutionStack.Pop().SolveToVariable();

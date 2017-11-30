@@ -118,7 +118,7 @@ namespace CSim.Core {
             else {
                 while( ( Char.IsLetterOrDigit( ch )
                         || ch == '_' )
-                      && Pos < this.Length )
+                      && !this.IsEOL() )
                 {
 					this.CurrentToken += ch;
                     this.Advance();
@@ -260,29 +260,30 @@ namespace CSim.Core {
             bool escaped = false;
             
 			this.CurrentToken = "";
-            SkipSpaces();
+            this.SkipSpaces();
             
             if ( GetCurrentChar() == openDelimiter ) {
 				this.CurrentToken += openDelimiter;
-                Advance();
+                this.Advance();
                 
-                while( GetCurrentChar() != endDelimiter
-                    || escaped )
+                while( ( GetCurrentChar() != endDelimiter
+                      || escaped )
+                    && !this.IsEOL() )
                 {
 					this.CurrentToken += GetCurrentChar();
                     
-                    if ( GetCurrentChar() == '\\' )
+                    if ( this.GetCurrentChar() == '\\' )
                             escaped = true;
                     else    escaped = false;
                     
-                    Advance();
+                    this.Advance();
                 }
                 
-                Advance();
+                this.Advance();
 				this.CurrentToken += endDelimiter;
             }
             
-            SkipSpaces();
+            this.SkipSpaces();
 			return this.CurrentToken;
         }
 

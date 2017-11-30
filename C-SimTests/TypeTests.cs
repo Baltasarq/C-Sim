@@ -11,7 +11,7 @@ namespace CSimTests {
 	[TestFixture]
 	public class TypeTests {
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Init()
 		{
 			this.vm = new Machine();

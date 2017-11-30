@@ -342,7 +342,7 @@ namespace CSim.Ui {
             this.splMain.Hide();
 			this.pnlSettings.Show();
 			this.cbLocales.Focus();
-            this.SetStatus( L18n.Get( L18n.Id.ActSettings ) );
+            this.SetStatus( L10n.Get( L10n.Id.ActSettings ) );
 		}
 
         /// <summary>
@@ -711,7 +711,7 @@ namespace CSim.Ui {
 				MessageBox.Show(
 					this,
 					string.Format( "{0}:\n{1}",
-						L18n.Get( L18n.Id.StReadingConfig ),
+						L10n.Get( L10n.Id.StReadingConfig ),
 						exc.Message ),
 					AppInfo.Name,
 					MessageBoxButtons.OK,
@@ -736,7 +736,7 @@ namespace CSim.Ui {
 				MessageBox.Show(
 					this,
 					string.Format( "{0}:\n{1}",
-						L18n.Get( L18n.Id.StWritingConfig ),
+						L10n.Get( L10n.Id.StWritingConfig ),
 						exc.Message ),
 					AppInfo.Name,
 					MessageBoxButtons.OK,
@@ -806,30 +806,30 @@ namespace CSim.Ui {
 
 		private void ChangeUILanguage(CultureInfo locale)
 		{
-			L18n.SetLanguage( locale );
+			L10n.SetLanguage( locale );
 
 			// Toolbar buttons
-            this.tbbReset.ToolTipText = L18n.Get( L18n.Id.ActReset );
-			this.tbbOpen.ToolTipText = L18n.Get( L18n.Id.ActOpen );
-			this.tbbSave.ToolTipText = L18n.Get( L18n.Id.ActSave );
-			this.tbbHex.ToolTipText = L18n.Get( L18n.Id.ActInHex );
-			this.tbbDec.ToolTipText = L18n.Get( L18n.Id.ActInDec );
-            this.tbbZoomIn.ToolTipText = L18n.Get( L18n.Id.ActZoomIn );
-			this.tbbZoomOut.ToolTipText = L18n.Get( L18n.Id.ActZoomOut );
-			this.tbbMemory.ToolTipText = L18n.Get( L18n.Id.ActShowMemory );
-			this.tbbDiagram.ToolTipText = L18n.Get( L18n.Id.ActShowDiagram );
-            this.tbbStop.ToolTipText = L18n.Get( L18n.Id.ActStop );
-            this.tbbPlay.ToolTipText = L18n.Get( L18n.Id.ActPlay );
-			this.tbbSettings.ToolTipText = L18n.Get( L18n.Id.ActSettings );
-			this.tbbHelp.ToolTipText = L18n.Get( L18n.Id.ActHelp );
-			this.tbbAbout.ToolTipText = L18n.Get( L18n.Id.ActAbout );
+            this.tbbReset.ToolTipText = L10n.Get( L10n.Id.ActReset );
+			this.tbbOpen.ToolTipText = L10n.Get( L10n.Id.ActOpen );
+			this.tbbSave.ToolTipText = L10n.Get( L10n.Id.ActSave );
+			this.tbbHex.ToolTipText = L10n.Get( L10n.Id.ActInHex );
+			this.tbbDec.ToolTipText = L10n.Get( L10n.Id.ActInDec );
+            this.tbbZoomIn.ToolTipText = L10n.Get( L10n.Id.ActZoomIn );
+			this.tbbZoomOut.ToolTipText = L10n.Get( L10n.Id.ActZoomOut );
+			this.tbbMemory.ToolTipText = L10n.Get( L10n.Id.ActShowMemory );
+			this.tbbDiagram.ToolTipText = L10n.Get( L10n.Id.ActShowDiagram );
+            this.tbbStop.ToolTipText = L10n.Get( L10n.Id.ActStop );
+            this.tbbPlay.ToolTipText = L10n.Get( L10n.Id.ActPlay );
+			this.tbbSettings.ToolTipText = L10n.Get( L10n.Id.ActSettings );
+			this.tbbHelp.ToolTipText = L10n.Get( L10n.Id.ActHelp );
+			this.tbbAbout.ToolTipText = L10n.Get( L10n.Id.ActAbout );
 
 			// Tabbed panel
-			this.tcTabs.TabPages[ 0 ].Text = L18n.Get( L18n.Id.ActShowMemory );
-			this.tcTabs.TabPages[ 1 ].Text = L18n.Get( L18n.Id.ActShowDiagram );
+			this.tcTabs.TabPages[ 0 ].Text = L10n.Get( L10n.Id.ActShowMemory );
+			this.tcTabs.TabPages[ 1 ].Text = L10n.Get( L10n.Id.ActShowDiagram );
 
 			// Polishing
-			this.lblLocales.Text = L18n.Get( L18n.Id.LblLanguage );
+			this.lblLocales.Text = L10n.Get( L10n.Id.LblLanguage );
 		}
 
 		private static string FromIntToHex(BigInteger value, int wordSize = 1)

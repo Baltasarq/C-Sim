@@ -12,7 +12,7 @@ namespace CSimTests {
     
     [TestFixture]
     public class FunctionTests {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             Console.WriteLine( "Tests pass individually, but not globally, "

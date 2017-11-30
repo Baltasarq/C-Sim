@@ -7,7 +7,7 @@ namespace CSimTests {
 
     [TestFixture]
     public class NumericTests {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             this.machine = new Machine();

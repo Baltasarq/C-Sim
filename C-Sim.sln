@@ -1,9 +1,9 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C-Sim", "C-Sim.csproj", "{7301AFF5-913F-46D4-A2AE-878100C67B5A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C-Sim", "C-Sim\C-Sim.csproj", "{7301AFF5-913F-46D4-A2AE-878100C67B5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C-SimTests", "..\C-SimTests.csproj", "{31A54A8F-5CD8-436E-8F1A-CA9CEA267F56}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C-SimTests", "C-SimTests\C-SimTests.csproj", "{31A54A8F-5CD8-436E-8F1A-CA9CEA267F56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

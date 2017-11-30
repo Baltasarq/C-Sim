@@ -21,7 +21,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public RuntimeException(string s)
-            : base( L18n.Get( L18n.Id.ExcRuntime ) + ": " + s )
+            : base( L10n.Get( L10n.Id.ExcRuntime ) + ": " + s )
         {
         }
     }
@@ -33,7 +33,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public AlreadyExistingVbleException(string s)
-            : base( L18n.Get( L18n.Id.ExcDuplicatedVble ) + ": " + s )
+            : base( L10n.Get( L10n.Id.ExcDuplicatedVble ) + ": " + s )
         {
         }
     }
@@ -45,7 +45,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public ExhaustedMemoryException(string s)
-            : base( L18n.Get( L18n.Id.ExcMemoryExhausted ) + ": " + s )
+            : base( L10n.Get( L10n.Id.ExcMemoryExhausted ) + ": " + s )
         {
         }
     }
@@ -57,7 +57,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public IncorrectAddressException(string s)
-            :base( L18n.Get( L18n.Id.ExcInvalidMemory ) + ": " + s )
+            :base( L10n.Get( L10n.Id.ExcInvalidMemory ) + ": " + s )
         {
         }
     }
@@ -69,7 +69,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public InvalidIdException(string s)
-            : base( L18n.Get( L18n.Id.ExcInvalidId ) + ": " + s )
+            : base( L10n.Get( L10n.Id.ExcInvalidId ) + ": " + s )
         {
         }
     }
@@ -81,7 +81,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public InvalidMaxMemoryException(string s)
-            : base( L18n.Id.ExcInvalidMaxMemory + ": " + s )
+            : base( L10n.Id.ExcInvalidMaxMemory + ": " + s )
         {
         }
     }
@@ -93,7 +93,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public ParsingException(string s)
-            : base( L18n.Get( L18n.Id.ExcParsing ) + ": " + s )
+            : base( L10n.Get( L10n.Id.ExcParsing ) + ": " + s )
         {
         }
     }
@@ -105,7 +105,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="msg">The detailed message.</param>
         public TypeMismatchException(string msg)
-            : base( L18n.Get( L18n.Id.ExcTypeMismatch ) + ": " + msg )
+            : base( L10n.Get( L10n.Id.ExcTypeMismatch ) + ": " + msg )
         {
         }
     }
@@ -117,7 +117,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public UnknownTypeException(string s)
-            : base( L18n.Get( L18n.Id.ExcUnknownType ) + ": " + s )
+            : base( L10n.Get( L10n.Id.ExcUnknownType ) + ": " + s )
         {
         }
     }
@@ -129,7 +129,7 @@ namespace CSim.Core {
         /// </summary>
         /// <param name="s">The detailed message.</param>
         public UnknownVbleException(string s)
-            : base( L18n.Get( L18n.Id.ExcUnknownVble ) + ": " + s )
+            : base( L10n.Get( L10n.Id.ExcUnknownVble ) + ": " + s )
         {
         }
     }

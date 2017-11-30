@@ -61,7 +61,7 @@ namespace CSim.Core {
 						{
 							throw new InvalidIdException(
 								id + " ("
-								+ L18n.Get( L18n.Id.ErrNotAllowedChar )
+								+ L10n.Get( L10n.Id.ErrNotAllowedChar )
 								+ ": " + id[ i ] + ")" );
 						}
 
@@ -72,7 +72,7 @@ namespace CSim.Core {
 				} else {
 					throw new InvalidIdException( id
 					                             + " ( "
-					                             + L18n.Get( L18n.Id.ErrFirstChar )
+					                             + L10n.Get( L10n.Id.ErrFirstChar )
 					                             + ")"
 					                             );
 				}

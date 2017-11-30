@@ -1,16 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{434B6A59-7F90-4CFF-9B41-EC43DCF67522}</ProjectGuid>
+    <ProjectGuid>{31A54A8F-5CD8-436E-8F1A-CA9CEA267F56}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>CSimTests</RootNamespace>
-    <AssemblyName>csimtests</AssemblyName>
-    <UseMSBuildEngine>False</UseMSBuildEngine>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <AssemblyName>C-SimTests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,35 +17,38 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.3.5.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System.Numerics" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TypeTests.cs" />
-    <Compile Include="VbleTests.cs" />
-    <Compile Include="ParserTests.cs" />
-    <Compile Include="UInt128Tests.cs" />
     <Compile Include="ArrayTests.cs" />
-    <Compile Include="NumericTests.cs" />
     <Compile Include="FunctionTests.cs" />
+    <Compile Include="NumericTests.cs" />
+    <Compile Include="ParserTests.cs" />
+    <Compile Include="TypeTests.cs" />
+    <Compile Include="UInt128Tests.cs" />
+    <Compile Include="VbleTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\C-Sim.csproj">
-      <Project>{1599A484-6C5B-464C-BBC2-72CEF01C3E1D}</Project>
+    <Folder Include="C-SimTests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\C-Sim\C-Sim.csproj">
+      <Project>{7301AFF5-913F-46D4-A2AE-878100C67B5A}</Project>
       <Name>C-Sim</Name>
     </ProjectReference>
   </ItemGroup>

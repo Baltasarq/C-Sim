@@ -28,7 +28,7 @@ namespace CSim.Core.Opcodes {
 		{
 			// Check arguments in stack
 			if ( this.Machine.ExecutionStack.Count < 2 ) {
-				throw new RuntimeException( L18n.Get( L18n.Id.ErrMissingArguments ) );
+				throw new RuntimeException( L10n.Get( L10n.Id.ErrMissingArguments ) );
 			}
 
 			// Take ops

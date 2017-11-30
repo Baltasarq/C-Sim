@@ -98,7 +98,7 @@ namespace CSim.Core {
               || ( pos + size ) > maxMemory )
             {
                 throw new ExhaustedMemoryException(
-                    L18n.Get( L18n.Id.ErrAccessingAt )
+                    L10n.Get( L10n.Id.ErrAccessingAt )
 					+ " " + new IntLiteral( this.Machine, pos ).ToHex() );
             }
             
@@ -115,7 +115,7 @@ namespace CSim.Core {
               || pos >= this.Max )
             {
                 throw new IncorrectAddressException(
-                    L18n.Get( L18n.Id.ErrAccessingAt )
+                    L10n.Get( L10n.Id.ErrAccessingAt )
                     + " " + new IntLiteral( this.Machine, pos ).ToHex() );
             }
             
@@ -160,7 +160,9 @@ namespace CSim.Core {
         {
             var toret = new List<byte>();
 
-            while( this.raw[ (int) pos ] != 0 ) {
+            while( pos < this.Max
+                && this.raw[ (int) pos ] != 0 )
+            {
                 this.CheckSizeFits( pos, 1 );
                 toret.Add( this.raw[ (int) pos ] );
                 ++pos;
@@ -189,7 +191,7 @@ namespace CSim.Core {
 			}
 
 			if ( toret == null ) {
-				throw new RuntimeException( L18n.Get( L18n.Id.ExcUnknownType ) );
+				throw new RuntimeException( L10n.Get( L10n.Id.ExcUnknownType ) );
 			}
 
 			return toret;

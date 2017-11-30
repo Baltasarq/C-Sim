@@ -37,11 +37,11 @@ namespace CSim.Core.Variables {
 		public override BigInteger Access {
 			get {
 				throw new TypeMismatchException(
-                                    L18n.Get( L18n.Id.ErrDerreferencedVoid ) );
+                                    L10n.Get( L10n.Id.ErrDerreferencedVoid ) );
 			}
 			set {
 				throw new TypeMismatchException(
-                                    L18n.Get( L18n.Id.ErrDerreferencedVoid ) );
+                                    L10n.Get( L10n.Id.ErrDerreferencedVoid ) );
 			}
 		}
 	}

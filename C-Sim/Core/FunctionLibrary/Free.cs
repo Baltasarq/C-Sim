@@ -38,8 +38,8 @@ namespace CSim.Core.FunctionLibrary {
               && !( vble.Type is Primitive ) )
             {
                 throw new TypeMismatchException( 
-                    L18n.Get( L18n.Id.LblPointer ).ToLower()
-                    + " (" + L18n.Get( L18n.Id.ErrNotAPointer )
+                    L10n.Get( L10n.Id.LblPointer ).ToLower()
+                    + " (" + L10n.Get( L10n.Id.ErrNotAPointer )
                     + ": " + vble.Name.Text + ")" );
             }
             

@@ -45,7 +45,7 @@
     <Compile Include="Core\ExtensionMethods.cs" />
     <Compile Include="Core\Function.cs" />
     <Compile Include="Core\Id.cs" />
-    <Compile Include="Core\L18n.cs" />
+    <Compile Include="Core\L10n.cs" />
     <Compile Include="Core\Lexer.cs" />
     <Compile Include="Core\Literal.cs" />
     <Compile Include="Core\Locale.cs" />

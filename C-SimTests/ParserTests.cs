@@ -10,7 +10,7 @@ namespace CSimTests {
 	[TestFixture]
 	public class ParserTests {
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void Init()
 		{
 			this.machine = new Machine();

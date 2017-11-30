@@ -5,13 +5,13 @@ namespace CSimTests {
     using System.Linq;
     using System.Collections.Generic;
     using NUnit.Framework;
-    
+
     using CSim.Core;
     using CSim.Core.Variables;
 
     [TestFixture]
     public class ArrayTests {
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Init()
         {
             this.vm = new Machine();

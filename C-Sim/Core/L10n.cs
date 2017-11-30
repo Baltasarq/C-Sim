@@ -8,7 +8,7 @@ namespace CSim.Core {
     /// L18n.
     /// Contains all strings needed in the app
     /// </summary>
-	public static class L18n {
+	public static class L10n {
 
         /// Identifies all available strings
 		public enum Id {

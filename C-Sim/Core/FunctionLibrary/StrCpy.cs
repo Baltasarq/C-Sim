@@ -65,7 +65,7 @@ namespace CSim.Core.FunctionLibrary {
             // Destination address must be valid
             if ( paramDst.IsTemp() ) {
                 throw new Exceptions.IncorrectAddressException(
-                    L18n.Get( L18n.Id.ExcInvalidMemory ) + paramDst.Value
+                    L10n.Get( L10n.Id.ExcInvalidMemory ) + paramDst.Value
                 );
             }
             
@@ -121,9 +121,11 @@ namespace CSim.Core.FunctionLibrary {
 	                ++srcIndex;
 	                ++dstIndex;
                     
-                    if ( srcIndex >= this.Machine.Memory.Max ) {
+                    if ( srcIndex >= this.Machine.Memory.Max
+                      || dstIndex >= this.Machine.Memory.Max )
+                    {
                         throw new Exceptions.IncorrectAddressException(
-                                        L18n.Get( L18n.Id.ExcInvalidMemory )
+                                        L10n.Get( L10n.Id.ExcInvalidMemory )
                                         + this.Machine.Memory.Max );
                     }
 	            } while( value != 0 );

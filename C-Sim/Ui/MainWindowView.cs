@@ -547,7 +547,7 @@ namespace CSim.Ui {
                 Dock = DockStyle.Top,
             };
             this.lblLocales = new Label {
-                Text = L18n.Get( L18n.Id.LblLanguage ),
+                Text = L10n.Get( L10n.Id.LblLanguage ),
                 Dock = DockStyle.Left,
             };
             this.cbLocales = new ComboBox {

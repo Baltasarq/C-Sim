@@ -166,7 +166,7 @@ namespace CSim.Core.FunctionLibrary {
             } else {
                 throw new Exceptions.RuntimeException(
                                 string.Format(
-                                    L18n.Get( L18n.Id.ErrMissingArguments ) ) );
+                                    L10n.Get( L10n.Id.ErrMissingArguments ) ) );
             }
             
             return toret;

@@ -89,7 +89,7 @@ namespace CSim.Core.FunctionLibrary {
                     
                     if ( address >= this.Machine.Memory.Max ) {
                         throw new Exceptions.IncorrectAddressException(
-                                            L18n.Get( L18n.Id.ExcInvalidMemory )
+                                            L10n.Get( L10n.Id.ExcInvalidMemory )
                                             + this.Machine.Memory.Max );
                     }
                 }

@@ -53,7 +53,7 @@ namespace CSim.Core.Opcodes {
             if ( this.NumArgs != numArgs ) {
                 throw new RuntimeException(
                     string.Format(
-                        L18n.Get( L18n.Id.ErrParamCount ),
+                        L10n.Get( L10n.Id.ErrParamCount ),
                         this.Id, this.NumArgs, f.FormalParams.Count )
                 );
             }
@@ -63,7 +63,7 @@ namespace CSim.Core.Opcodes {
             
 			if ( this.Machine.ExecutionStack.Count < numArgs ) {
 				throw new RuntimeException(
-					L18n.Get( L18n.Id.ErrMissingArguments ) + ": " + this.Id
+					L10n.Get( L10n.Id.ErrMissingArguments ) + ": " + this.Id
 				);
 			}
 
@@ -79,7 +79,7 @@ namespace CSim.Core.Opcodes {
 	
 					if ( !t1.IsCompatibleWith( t2 ) ) {
 						throw new TypeMismatchException(
-							string.Format( L18n.Get( L18n.Id.ErrParamType ),
+							string.Format( L10n.Get( L10n.Id.ErrParamType ),
 								i,
 								f.FormalParams[ i ].Name.Text,
 								this.Id,
@@ -105,7 +105,7 @@ namespace CSim.Core.Opcodes {
                     
                     if ( fn == null ) {
                         throw new InvalidIdException(
-                                    L18n.Get( L18n.Id.ErrFunctionNotFound )
+                                    L10n.Get( L10n.Id.ErrFunctionNotFound )
                                     + ": " + this.Id );
                     }
                 }

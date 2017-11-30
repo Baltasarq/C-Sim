@@ -38,7 +38,7 @@ namespace CSim.Core.Variables {
                 if ( this.pointedVble != null ) {
                     return this.pointedVble;
                 } else {
-                    throw new RuntimeException( L18n.Get( L18n.Id.ErrRefNotSet ) );
+                    throw new RuntimeException( L10n.Get( L10n.Id.ErrRefNotSet ) );
                 }
             }
             set {
@@ -47,7 +47,7 @@ namespace CSim.Core.Variables {
                     base.LiteralValue = new IntLiteral( this.Machine,
                                                         this.PointedVble.Address );
                 } else {
-                    throw new RuntimeException( L18n.Get( L18n.Id.ErrRefDoubleSet ) );
+                    throw new RuntimeException( L10n.Get( L10n.Id.ErrRefDoubleSet ) );
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace CSim.Core.Variables {
             while( vble is RefVariable refVble ) {
                 if ( !refVble.IsSet() ) {
                     throw new RuntimeException(
-                                            L18n.Get( L18n.Id.ErrRefNotSet )
+                                            L10n.Get( L10n.Id.ErrRefNotSet )
                                             + ": " + refVble.Name.Text );
                 }
                 
