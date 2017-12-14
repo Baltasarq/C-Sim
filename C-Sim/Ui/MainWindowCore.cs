@@ -38,6 +38,7 @@ namespace CSim.Ui {
 		/// </summary>
         public MainWindow(Machine m)
         {
+            this.updatingMemoryView = false;
             this.machine = m;
 			this.machine.Inputter = (msg) => this.DoUserInput( msg );
             this.machine.Outputter = (string s) => this.rtbOutput.Text += s;
@@ -256,6 +257,49 @@ namespace CSim.Ui {
 			Literal.Display = Literal.DisplayType.Hex;
 			this.UpdateView();
 		}
+        
+        private void DoCellFormat(DataGridViewCellFormattingEventArgs e)
+        {
+            string val = (string) e.Value;
+            
+            e.Value = val.ToLower();
+            e.FormattingApplied = true;
+        }
+        
+        private void DoCellEdited(int rowIndex, int colIndex)
+        {
+            if ( !this.updatingMemoryView
+              && colIndex > 0 )                     // First row is for indexes
+            {
+                string val = (string)
+                            this.grdMemory.Rows[ rowIndex ].
+                                Cells[ colIndex ].Value;
+    
+                if ( byte.TryParse(
+                                    val,
+                                    NumberStyles.HexNumber,
+                                    NumberFormatInfo.InvariantInfo,
+                                    out byte x ) )
+                {
+                    int pos = ( rowIndex * MaxDataColumns ) + colIndex - 1;
+                    this.machine.Memory.Write( pos, new []{ x } );
+                }
+            }
+            
+            return;
+        }
+        
+        private void DoCellValidate(DataGridViewCellValidatingEventArgs e)
+        {
+            int x = -1;
+            bool isHex = int.TryParse(
+                                    (string) e.FormattedValue,
+                                    NumberStyles.HexNumber,
+                                    NumberFormatInfo.InvariantInfo,
+                                    out x );
+
+            e.Cancel = ( !isHex || x < 0 || x >= byte.MaxValue );
+        }
 
         /// <summary>
         /// Updates the font in all visible controls.
@@ -586,6 +630,8 @@ namespace CSim.Ui {
 		{
             var memory = this.machine.Memory.Raw;
 
+            this.updatingMemoryView = true;
+        
 			// Row indexes (first cell in each row)
 			for (int i = 0; i < this.grdMemory.RowCount; ++i) {
 				this.grdMemory.Rows[ i ].Cells[ 0 ].Value = FromIntToHex( i );
@@ -600,6 +646,7 @@ namespace CSim.Ui {
 				this.grdMemory.Rows[ row ].Cells[ col ].ToolTipText = memory[ i ].ToString();
             }
 
+            this.updatingMemoryView = false;
 			this.FocusOnInput();
             return;
         }
@@ -848,6 +895,7 @@ namespace CSim.Ui {
         private Machine machine;
         private SchemaDrawer sdDrawingBoard;
 		private string cfgFile = "";
+        private bool updatingMemoryView;
 
 		/// <summary>
 		/// The current dir, the last one from which a file was last loaded.

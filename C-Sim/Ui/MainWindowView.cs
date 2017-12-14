@@ -8,7 +8,7 @@ namespace CSim.Ui {
 
     using Core;
 
-    /// <summary>The main window for the application. This builds the view.</summary>
+    /// <summary>The view builder for the application.</summary>
     public partial class MainWindow {
         private void BuildInputPanel()
         {
@@ -131,25 +131,25 @@ namespace CSim.Ui {
                 BackColor = Color.Black,
                 ForeColor = Color.White
             };
-
+            
             // Create columns
-            DataGridViewTextBoxColumn[] columns =
-                new DataGridViewTextBoxColumn[ MaxDataColumns +1 ];
+            var columns = new DataGridViewTextBoxColumn[ MaxDataColumns +1 ];
 
             for(int i = 0; i < columns.Length; ++i) {
-                columns[ i ] = new DataGridViewTextBoxColumn();
+                columns[ i ] = new DataGridViewTextBoxColumn {
+                    SortMode = DataGridViewColumnSortMode.NotSortable
+                };
 
                 if ( i == 0 ) {
                     columns[ i ].DefaultCellStyle = styleFirstColumn;
                     columns[ i ].HeaderText = "/";
                     columns[ i ].Width = columnWidth + ( (int) ( columnWidth * 0.2 ) );
+                    columns[ i ].ReadOnly = true;
                 } else {
                     columns[ i ].HeaderText = FromIntToHex( i - 1 );
                     columns[ i ].Width = columnWidth;
+                    columns[ i ].ReadOnly = false;
                 }
-
-                columns[ i ].SortMode = DataGridViewColumnSortMode.NotSortable;
-                columns[ i ].ReadOnly = true;
             }
 
             this.grdMemory.Columns.AddRange( columns );
@@ -162,6 +162,15 @@ namespace CSim.Ui {
             }
 
             this.grdMemory.Rows.AddRange( rows );
+            this.grdMemory.CellValueChanged += 
+                (object sender, DataGridViewCellEventArgs e)
+                    => this.DoCellEdited( e.RowIndex, e.ColumnIndex );
+            this.grdMemory.CellValidating +=
+                (object sender, DataGridViewCellValidatingEventArgs e)
+                    => this.DoCellValidate( e );
+            this.grdMemory.CellFormatting +=
+                (object sender, DataGridViewCellFormattingEventArgs e)
+                    => this.DoCellFormat( e );
 
             this.grdMemory.Dock = DockStyle.Fill;
             this.tcTabs.TabPages[ 0 ].Controls.Add( this.grdMemory );
